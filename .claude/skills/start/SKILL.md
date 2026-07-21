@@ -24,7 +24,7 @@ Follow the 7-question wizard in **`references/design-wizard.md`** (the canonical
 ## What to produce
 - A **plain-language recommendation**: which database to start with, in one sentence, and why — defaulting to the boring, safe choice (usually Postgres) unless an answer genuinely points elsewhere.
 - A **starter data model** for the main things named, with the obvious relationships and the few constraints/keys that keep data clean — described in words, with a simple diagram.
-- A clear next step: "Save this as your schema, then run `/claude-db:audit` to score it" or "Run `/claude-db:design` for the full technical layer."
+- A clear next step: "Save this as your schema, then run `/claude-db:db-audit` to score it" or "Run `/claude-db:design` for the full technical layer."
 
 ## Honesty
 - Never fabricate prices, performance numbers, or row counts; describe trade-offs in plain qualitative terms.

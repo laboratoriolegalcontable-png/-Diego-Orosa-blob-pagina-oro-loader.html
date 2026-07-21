@@ -36,7 +36,7 @@ Each subagent returns a JSON array of findings conforming to `schema/finding.sch
    - **Per-axis category table** (one per score): category, weight, value, active?. Inactive categories shown as such (re-normalized out of the denominator).
    - **Confidence line:** tier reached (0/1/2) + total `needs_api` count across both axes. Never present a `needs_api` check as a pass.
    - **Prioritized actions:** findings sorted by `severity × magnitude ÷ effort` (magnitude banded high|medium|low, never a fabricated %). Each: status, severity, evidence.observed (real DDL/query, secrets redacted), verification.reproduce, recommendation, fixability (auto/proposed/advisory), and expected_impact (axis + confidence + magnitude).
-   - **Footer:** "Run `/claude-db:fix` to apply the safe, reversible migrations — you confirm each change."
+   - **Footer:** "Run `/claude-db:db-fix` to apply the safe, reversible migrations — you confirm each change."
 
 ## Plain-language layer (novice-friendly)
 Alongside the technical report, give a short plain-language summary: what the two scores mean in one sentence each ("your design is solid but it won't hold load yet"), the top 3 things to fix first in non-jargon terms, and what `needs_api` means ("I'd need a read-only connection to confirm these"). Keep the expert detail; add the human translation — never replace one with the other.

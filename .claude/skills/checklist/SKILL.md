@@ -32,4 +32,4 @@ A **production-readiness GO/NO-GO** grid. **Read-only** — runs an audit and ma
 3. Render the grid as a table (Check · Status · Finding id · one-line note). Mark `NEEDS-LIVE` rows distinctly and state the tier needed to resolve them. Checks not applicable to the detected engine/paradigm (e.g. RLS or utf8mb4 on a non-relational store) are shown as N/A with a reason — never a silent pass.
 4. Lead with a **plain-language verdict** at the top: **GO** (no FAILs), **GO WITH CAVEATS** (WARNs/NEEDS-LIVE only), or **NO-GO** (one or more FAILs) — one sentence on the headline blocker.
 
-End by offering: "Run `/claude-db:fix` to apply the safe, reversible fixes, or `/claude-db:next` to see what to tackle first." Read-only throughout. Respond in the user's language (EN/ES).
+End by offering: "Run `/claude-db:db-fix` to apply the safe, reversible fixes, or `/claude-db:next` to see what to tackle first." Read-only throughout. Respond in the user's language (EN/ES).

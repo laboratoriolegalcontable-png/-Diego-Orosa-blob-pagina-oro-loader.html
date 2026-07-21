@@ -9,7 +9,7 @@ allowed-tools: Read, Bash
 
 The coach. Turns a pile of findings into one ranked, do-this-next list with a reason for each item. Read-only — it prioritizes, it never writes or migrates.
 
-`$ARGUMENTS` = `[findings.json] [flags]`. Use the most recent audit's findings, or a findings JSON path. If no audit has run, say so and suggest `/claude-db:audit <target>`.
+`$ARGUMENTS` = `[findings.json] [flags]`. Use the most recent audit's findings, or a findings JSON path. If no audit has run, say so and suggest `/claude-db:db-audit <target>`.
 
 ## Ranking (in order)
 1. **Capped severity-5 first.** Any `status:"fail"` + `severity:5` on a relied-on axis caps that score at band F. These come first regardless of anything else — fixing them is the only way to lift the cap. (`needs_api` and `confidence:"speculative"` never cap, so they never jump the queue this way.)
@@ -18,4 +18,4 @@ The coach. Turns a pile of findings into one ranked, do-this-next list with a re
 4. Then by **least reproduction cost** — break ties toward findings whose `verification.reproduce` is cheapest to confirm (Tier-0 static check before a Tier-1 query before anything `needs_api`).
 
 ## Output
-A numbered list. For each item: the finding (id + one-line title), which score/axis it moves and roughly how much (banded magnitude high|medium|low — never a fabricated %), its fixability class, and the next concrete action ("run `/claude-db:fix --category keys`" / "run `/claude-db:migrate <file>`" / "needs a live DB: set `$DATABASE_URL` and re-audit at Tier 1"). Honor `--axis` and `--top N`. Respond in the user's language (EN/ES).
+A numbered list. For each item: the finding (id + one-line title), which score/axis it moves and roughly how much (banded magnitude high|medium|low — never a fabricated %), its fixability class, and the next concrete action ("run `/claude-db:db-fix --category keys`" / "run `/claude-db:migrate <file>`" / "needs a live DB: set `$DATABASE_URL` and re-audit at Tier 1"). Honor `--axis` and `--top N`. Respond in the user's language (EN/ES).

@@ -20,7 +20,7 @@ Greenfield engine choice + starter model. This is **module M0 (engine-selection)
 ## Format — novice-first, with an expandable technical layer
 - Lead with a **plain, novice-friendly explanation**: which database, in one sentence, and why — no jargon up front.
 - Then an **expandable technical layer**: the DDL/collection spec, index choices, key strategy, and the design-rule rationale (which audit modules each choice satisfies, e.g. M2 keys, M4 types, M11 indexing) for the reader who wants depth.
-- Close by offering: "When you have a first schema, run `/claude-db:audit` to score it on Design & Integrity and Performance & Scale."
+- Close by offering: "When you have a first schema, run `/claude-db:db-audit` to score it on Design & Integrity and Performance & Scale."
 
 ## `--emit <prisma|drizzle|sql>` — scaffold a first migration
 After recommending the model (the steps above still run first; `--emit` never replaces the recommendation), scaffold a **reversible first migration** for the chosen target:
