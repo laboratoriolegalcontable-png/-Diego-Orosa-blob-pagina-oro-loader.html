@@ -1,11 +1,11 @@
 ---
-name: explain
+name: db-explain
 description: Explain a database schema, model, or a single finding in plain language, with a paradigm-aware diagram — what the tables/collections/keyspaces are, how they relate, and where the data lives. Read-only; teaches, does not change anything. Use when the user asks to explain, describe, walk through, draw, or diagram a schema, a data model, a relationship, or what a specific audit finding means.
 argument-hint: "<path|table|finding-id> | --query \"<SQL>\" | <paste an EXPLAIN plan> [--depth overview|detailed] [--lang en|es]"
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
-# /claude-db:explain
+# /claude-db:db-explain
 
 Plain-language description of a schema (or one finding), plus a **paradigm-aware diagram**. Read-only — explains, never edits or migrates.
 

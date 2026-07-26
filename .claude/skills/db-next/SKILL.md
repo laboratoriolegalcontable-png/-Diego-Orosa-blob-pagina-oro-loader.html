@@ -1,11 +1,11 @@
 ---
-name: next
+name: db-next
 description: Coach the user on what to fix first — rank the audit findings into a single, ordered to-do list by score impact and effort, and explain why each item is where it is. Read-only; advises, does not change anything. Use when the user asks what to do next, what to fix first, what matters most, how to prioritize, or where to start after an audit.
 argument-hint: "[findings.json] [--axis design|performance|both] [--top N]"
 allowed-tools: Read, Bash
 ---
 
-# /claude-db:next
+# /claude-db:db-next
 
 The coach. Turns a pile of findings into one ranked, do-this-next list with a reason for each item. Read-only — it prioritizes, it never writes or migrates.
 
@@ -18,4 +18,4 @@ The coach. Turns a pile of findings into one ranked, do-this-next list with a re
 4. Then by **least reproduction cost** — break ties toward findings whose `verification.reproduce` is cheapest to confirm (Tier-0 static check before a Tier-1 query before anything `needs_api`).
 
 ## Output
-A numbered list. For each item: the finding (id + one-line title), which score/axis it moves and roughly how much (banded magnitude high|medium|low — never a fabricated %), its fixability class, and the next concrete action ("run `/claude-db:db-fix --category keys`" / "run `/claude-db:migrate <file>`" / "needs a live DB: set `$DATABASE_URL` and re-audit at Tier 1"). Honor `--axis` and `--top N`. Respond in the user's language (EN/ES).
+A numbered list. For each item: the finding (id + one-line title), which score/axis it moves and roughly how much (banded magnitude high|medium|low — never a fabricated %), its fixability class, and the next concrete action ("run `/claude-db:db-fix --category keys`" / "run `/claude-db:db-migrate <file>`" / "needs a live DB: set `$DATABASE_URL` and re-audit at Tier 1"). Honor `--axis` and `--top N`. Respond in the user's language (EN/ES).

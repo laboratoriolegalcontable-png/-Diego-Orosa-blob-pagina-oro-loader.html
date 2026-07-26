@@ -1,11 +1,11 @@
 ---
-name: migrate
+name: db-migrate
 description: Lint a database migration for safety before it runs — classify lock level, table rewrite, and reversibility; flag destructive/blocking operations; and propose an expand-contract rollout. Read-only analysis by default; any data-loss step requires an explicit token handshake before the writer is involved. Use when the user asks to review, lint, check, or de-risk a migration, an ALTER/DROP, an enum change, a backfill, or a schema change before deploying.
 argument-hint: "<migration-file|migration-dir> | <from-schema> <to-schema> [--engine postgres|mysql|...] [--apply]"
 allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
-# /claude-db:migrate
+# /claude-db:db-migrate
 
 Migration-safety lint, owned by module **db-migration-safety (M22, axis `performance`)** via the **db-migration-safety / MSA** checks. Default mode is **read-only**: it analyzes and explains, it does not run the migration.
 

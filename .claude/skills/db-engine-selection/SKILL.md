@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, WebFetch
 
 # db-engine-selection (M0) — recommend, don't score
 
-M0 runs at **design / `/claude-db:start`** time, when there may be no schema yet — only a described
+M0 runs at **design / `/claude-db:db-start`** time, when there may be no schema yet — only a described
 workload. It answers "which database should this be?" It is **not a scored module**: it emits **no
 findings**, has no axis, no severity, and never enters `score.mjs` or either of the two scores. Its
 output is a separate **recommendation contract** (below). It walks the decision tree in
@@ -38,7 +38,7 @@ Polyglot is a valid answer: name each store and its job. Prefer "Postgres + an e
 JSONB, partitioning, FTS) before adding a second engine, when one engine credibly covers the workload.
 
 ## Recommendation contract (what M0 emits — NOT a finding)
-A structured recommendation object, rendered by `/claude-db:start`, with fields:
+A structured recommendation object, rendered by `/claude-db:db-start`, with fields:
 - `recommended` — `{ paradigm, engine, platform? }`.
 - `rationale` — which access patterns / consistency / scale facts drove it, tied to the tree branch.
 - `runner_up` — `{ paradigm, engine }` and the **explicit trade-off** of choosing the recommendation

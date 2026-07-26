@@ -1,6 +1,6 @@
 ---
-name: stack-detect
-description: Detects the database stack(s) of a project — paradigm, engine, ORM, platform, and the authoritative source_of_truth — by wrapping scripts/detect-stack.mjs. Emits the stacks array plus routing (which paradigm profile and module set each stack drives) and the source_of_truth precedence. Never guesses an engine; an empty result routes to /claude-db:start. Invoked by db-orchestrator (Phase 1); not usually called directly.
+name: db-stack-detect
+description: Detects the database stack(s) of a project — paradigm, engine, ORM, platform, and the authoritative source_of_truth — by wrapping scripts/detect-stack.mjs. Emits the stacks array plus routing (which paradigm profile and module set each stack drives) and the source_of_truth precedence. Never guesses an engine; an empty result routes to /claude-db:db-start. Invoked by db-orchestrator (Phase 1); not usually called directly.
 allowed-tools: Read, Glob, Bash
 ---
 
@@ -17,7 +17,7 @@ Classifies the project into one or more `{ paradigm, engine, orm, platform, sour
    ```
 
    It returns `{ stacks: [...], files_scanned }`. Never edit or re-implement it — it is tested foundation.
-3. **Empty `stacks`** → there is nothing to audit offline. Do **not** guess an engine. Route the user to `/claude-db:start` (the guided wizard) or invite a plain-language description of the intended database. Surface the detector's `hint` verbatim.
+3. **Empty `stacks`** → there is nothing to audit offline. Do **not** guess an engine. Route the user to `/claude-db:db-start` (the guided wizard) or invite a plain-language description of the intended database. Surface the detector's `hint` verbatim.
 
 ## Source-of-truth precedence (see references/detection-signals.md)
 When several sources describe one database, authority is, in order:

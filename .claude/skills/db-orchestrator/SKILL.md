@@ -11,7 +11,7 @@ Coordinates the whole audit. Three phases: **detect → dispatch → synthesize*
 ## 1. Detect
 1. Resolve the target (project dir, or a plain-language description).
 2. Run **stack-detect** (wraps `scripts/detect-stack.mjs`). Get the `stacks` array, each with `paradigm`, `engine`, `orm`, `platform`, `source_of_truth`, `confidence`.
-3. Empty result → route to `/claude-db:start` (wizard) or description mode. Never guess an engine.
+3. Empty result → route to `/claude-db:db-start` (wizard) or description mode. Never guess an engine.
 4. If the user opted into Tier-1, run **introspect** (read-only) so runtime-dependent checks can reach `established`; otherwise those checks will return `needs_api`.
 
 ## 2. Dispatch (parallel, read-only)
@@ -20,7 +20,7 @@ For each stack, spawn the read-only auditor subagents **in parallel** — one me
 - **performance-scale-auditor** → M11–M18 (indexing, hygiene, query patterns, concurrency, pooling, partitioning, replicas/views, storage/bloat). Always.
 - **nosql-paradigm-auditor** → M19 (NoSQL anti-patterns) + access-pattern fit. Only for **document / key-value / wide-column**.
 - **specialized-platform-auditor** → M20 (vector/time-series/graph/search), M21 (platform fit), M0 (engine-selection recommendation in design mode). For vector/TS/graph/search and all platform checks.
-- **migration-safety-auditor** → M22 (migration lint). When migration files are in scope (`/claude-db:migrate`, or audit when a migration dir exists).
+- **migration-safety-auditor** → M22 (migration lint). When migration files are in scope (`/claude-db:db-migrate`, or audit when a migration dir exists).
 
 Each subagent returns a JSON array of findings conforming to `schema/finding.schema.json`. Auditors are read-only (tools `Read, Grep, Glob, Bash, WebFetch` only) — the audit can never mutate files. M19/M20 findings keep their `module` id for provenance but inherit the natural module's category at scoring time.
 

@@ -1,15 +1,15 @@
 ---
-name: seed
+name: db-seed
 description: Generate FK-aware, deterministic sample/seed data from a database schema, ORM model, or migrations — INSERT statements emitted in dependency order (parents first), values derived from row index so output is stable and reviewable. Read-only; never writes to a database. For dev/test fixtures only. Use when the user asks to seed, generate sample/test/fixture/dummy/fake data, populate tables, or create starter rows for Postgres, MySQL, SQLite, and friends.
 argument-hint: "<path-to-schema> [--rows N] [--format sql|json]"
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
-# /claude-db:seed
+# /claude-db:db-seed
 
 Generates **FK-aware, deterministic** sample/seed `INSERT`s from a schema. **Read-only** — it never connects to or writes to a database. The output is **dev/test data only**: predictable values derived from the row index (no RNG), suitable for fixtures, local development, and CI — never for production.
 
-`$ARGUMENTS` = `<path-to-schema> [flags]`. The target is a schema/DDL, ORM model, or migration file. If no path is given, detect one in the working directory (look for `*.sql`, `schema.prisma`, `models.py`, migration dirs). If nothing is found, say so plainly and suggest pointing at a file or running `/claude-db:design` to create one.
+`$ARGUMENTS` = `<path-to-schema> [flags]`. The target is a schema/DDL, ORM model, or migration file. If no path is given, detect one in the working directory (look for `*.sql`, `schema.prisma`, `models.py`, migration dirs). If nothing is found, say so plainly and suggest pointing at a file or running `/claude-db:db-design` to create one.
 
 ## What to do
 1. Resolve the schema path (from `$ARGUMENTS` or detection above).

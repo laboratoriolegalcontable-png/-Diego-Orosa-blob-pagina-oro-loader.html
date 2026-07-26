@@ -24,7 +24,7 @@ allowed-tools: Read, Grep, Glob, Bash, Task
 
 ## Safety (hard rules)
 - **Dry-run is the default**; writing requires dropping `--dry-run` and confirming.
-- Any **data-loss / destructive** step (DROP, TRUNCATE, narrowing, enum-value removal) requires the `/claude-db:migrate` **token handshake** before it is written — `fix` routes such steps through migration-safety, it does not shortcut them. The handshake is **concrete, not yes/no**: the user must type the **affected object's name verbatim** (e.g. type `orders` to confirm dropping the `orders` table) — a non-matching reply aborts the step.
+- Any **data-loss / destructive** step (DROP, TRUNCATE, narrowing, enum-value removal) requires the `/claude-db:db-migrate` **token handshake** before it is written — `fix` routes such steps through migration-safety, it does not shortcut them. The handshake is **concrete, not yes/no**: the user must type the **affected object's name verbatim** (e.g. type `orders` to confirm dropping the `orders` table) — a non-matching reply aborts the step.
 - **Git-aware**: refuse to write to a dirty working tree unless `--force`; prefer a branch. Detect via `git status --porcelain`. **No-git-repo branch**: `git status --porcelain` exits **128** outside a repo — treat "no repo" as **writable** (there is nothing to dirty), and backups still go to the plugin data dir; say so in one line to the user before writing.
 - **Idempotent**: detect existing constraints/indexes; never duplicate (re-running produces no new diffs once applied).
 - **Re-verify**: after writing, re-run each finding's `verification.reproduce` / assertion and report pass/fail per change.

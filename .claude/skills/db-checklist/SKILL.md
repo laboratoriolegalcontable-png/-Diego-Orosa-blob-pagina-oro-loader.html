@@ -1,15 +1,15 @@
 ---
-name: checklist
+name: db-checklist
 description: Render a production-readiness GO/NO-GO grid for a database — runs a read-only audit, then maps the findings onto a fixed launch checklist (PITR/backups, RLS on tenant tables, FK indexes, money-as-numeric, timestamptz/UTC, connection pooling sized, migration reversibility, secrets-not-in-schema, charset/utf8mb4). Each row is PASS/WARN/FAIL/NEEDS-LIVE with the finding id, topped by a plain-language verdict. Read-only. Use when the user asks if a database is production-ready, ready to launch/ship, a go/no-go, a pre-launch or readiness checklist, or what to fix before going live.
 argument-hint: "<path|connection-target> [--tier 0|1|2]"
 allowed-tools: Read, Grep, Glob, Bash, Task
 ---
 
-# /claude-db:checklist
+# /claude-db:db-checklist
 
 A **production-readiness GO/NO-GO** grid. **Read-only** — runs an audit and maps the findings onto a fixed launch checklist; never writes files or mutates the database.
 
-`$ARGUMENTS` = `<path|connection-target> [flags]`. The target is a repo path (schema/ORM/migration files) and, optionally, a live database via `$DATABASE_URL` for Tier-1/2 verification. If no target is given and no artifacts are found, say so and suggest `/claude-db:start` or `/claude-db:design`.
+`$ARGUMENTS` = `<path|connection-target> [flags]`. The target is a repo path (schema/ORM/migration files) and, optionally, a live database via `$DATABASE_URL` for Tier-1/2 verification. If no target is given and no artifacts are found, say so and suggest `/claude-db:db-start` or `/claude-db:db-design`.
 
 ## What to do
 1. Invoke the **db-orchestrator** skill with the target and `--tier` flag to run the read-only audit (stack detection → schema parse → auditor subagents → merged findings → scores). Reuse an existing `findings.json` if the user passes one.
@@ -32,4 +32,4 @@ A **production-readiness GO/NO-GO** grid. **Read-only** — runs an audit and ma
 3. Render the grid as a table (Check · Status · Finding id · one-line note). Mark `NEEDS-LIVE` rows distinctly and state the tier needed to resolve them. Checks not applicable to the detected engine/paradigm (e.g. RLS or utf8mb4 on a non-relational store) are shown as N/A with a reason — never a silent pass.
 4. Lead with a **plain-language verdict** at the top: **GO** (no FAILs), **GO WITH CAVEATS** (WARNs/NEEDS-LIVE only), or **NO-GO** (one or more FAILs) — one sentence on the headline blocker.
 
-End by offering: "Run `/claude-db:db-fix` to apply the safe, reversible fixes, or `/claude-db:next` to see what to tackle first." Read-only throughout. Respond in the user's language (EN/ES).
+End by offering: "Run `/claude-db:db-fix` to apply the safe, reversible fixes, or `/claude-db:db-next` to see what to tackle first." Read-only throughout. Respond in the user's language (EN/ES).

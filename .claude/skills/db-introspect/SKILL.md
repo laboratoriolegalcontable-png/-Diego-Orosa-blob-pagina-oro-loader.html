@@ -1,5 +1,5 @@
 ---
-name: introspect
+name: db-introspect
 description: Tier-1 live read-only introspection. Connects to the running database through a DB MCP server's read-class tools (preferred) or a least-privilege read-only connection string, reads catalogs only (no table data, no writes), and upgrades affected findings to confidence established. Enforces the read-only contract; when no live access is available it marks the dependent checks needs_api — never a silent pass. Invoked by db-orchestrator and the auditors when a check needs runtime truth.
 allowed-tools: Read, Bash
 ---
