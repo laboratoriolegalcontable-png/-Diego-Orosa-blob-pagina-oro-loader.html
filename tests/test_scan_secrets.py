@@ -63,6 +63,26 @@ def test_scan_no_reporta_falsos_positivos_en_repo_limpio(tmp_path):
     assert hits == []
 
 
+def test_no_falso_positivo_palabra_espanola_que_contiene_keyword():
+    # H-09: "secreto" (espanol) contiene "secret" (ingles) como substring. La regex
+    # NO debe matchear texto que solo comparte esas letras sin un separador real
+    # de tipo config/JSON (comillas, dos puntos, igual, espacio) despues.
+    texto = "def test_detecta_secreto_con_prefijo_conocido(): pass"
+    assert PATTERN.search(texto) is None
+
+
+def test_scan_excluye_su_propio_archivo_de_fixtures(tmp_path):
+    # H-09: el propio archivo de tests contiene, a proposito, strings con forma de
+    # secreto para validar la regex (ver tests arriba). Sin excluirlo del escaneo
+    # ampliado (H-03), el CI se detecta a si mismo en cada corrida.
+    fixtures_content = 'texto = \'{"api_key": "abcdef1234567890abcdef"}\'\n'
+    repo = _init_git_repo_with_file(tmp_path, "tests/test_scan_secrets.py", fixtures_content)
+    from scan_secrets import scan
+
+    hits = scan(repo)
+    assert hits == []
+
+
 if __name__ == "__main__":
     # Ejecución manual sin pytest: corre las funciones test_* del módulo.
     import inspect

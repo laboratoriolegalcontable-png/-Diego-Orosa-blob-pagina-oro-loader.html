@@ -16,13 +16,29 @@ import sys
 from pathlib import Path
 
 PATTERN = re.compile(
-    r"(api[_-]?key|secret|password|token|bearer)[\"': ]*[A-Za-z0-9_-]{16,}",
+    # H-09 (2026-08-13, detectado al correr esto en CI real): la version anterior
+    # usaba `[\"': ]*` (separador OPCIONAL), lo que hacia que la keyword matcheara
+    # como substring de una palabra mas larga sin ningun separador real -- por
+    # ejemplo "secreto_con_prefijo_conocido" (espanol, "secreto" contiene "secret")
+    # matcheaba directo contra "secret" + 16 caracteres alfanumericos siguientes,
+    # sin que hubiera ningun secreto real. Se exige `\b` al inicio y al menos UN
+    # separador real (`+` en vez de `*`) para que la keyword tenga que aparecer
+    # como token propio, seguido de un separador tipico de config/JSON (comillas,
+    # dos puntos, igual, espacio) antes del valor.
+    r"\b(api[_-]?key|secret|password|token|bearer)[\"':= ]+[A-Za-z0-9_-]{16,}",
     re.IGNORECASE,
 )
 
 # Extensiones/paths que no aportan (binarios, lockfiles ruidosos, etc.) — mantener
 # esta lista corta y explícita; cualquier exclusión nueva debe justificarse en un PR.
 EXCLUDE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".ico"}
+
+# Archivos excluidos por path exacto (no por extensión). Unica excepcion hoy:
+# el propio archivo de tests de este escaner contiene, a proposito, strings con
+# forma de secreto para verificar que el patron los detecta (ver
+# tests/test_scan_secrets.py). Sin esta exclusion, el escaneo ampliado (H-03) se
+# detecta a si mismo en cada corrida de CI -- documentado como parte de H-09.
+EXCLUDE_PATHS = {"tests/test_scan_secrets.py"}
 
 
 def list_tracked_files(root: Path) -> list[Path]:
@@ -39,7 +55,8 @@ def list_tracked_files(root: Path) -> list[Path]:
 def scan(root: Path) -> list[tuple[Path, str]]:
     hits = []
     for path in list_tracked_files(root):
-        if path.suffix.lower() in EXCLUDE_SUFFIXES or not path.is_file():
+        rel = path.relative_to(root).as_posix()
+        if path.suffix.lower() in EXCLUDE_SUFFIXES or rel in EXCLUDE_PATHS or not path.is_file():
             continue
         try:
             text = path.read_text(errors="ignore")
