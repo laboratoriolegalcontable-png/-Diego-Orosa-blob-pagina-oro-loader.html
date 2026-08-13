@@ -8,6 +8,29 @@
 
 ---
 
+## 0. Addendum de remediación (2026-08-13)
+
+Por instrucción explícita del usuario se corrigieron H-01, H-02, H-03 y H-04 sobre este mismo repositorio (sin PRs sintéticos ni auditoría de sistemas externos). Los hallazgos originales de las secciones 5, 7 y 8 se dejan **intactos como registro histórico** de lo encontrado; este addendum documenta qué se hizo y cómo se verificó cada corrección.
+
+| ID | Acción tomada | Verificación ejecutada | Evidencia | Estado |
+|---|---|---|---|---|
+| H-01 | `MEMORY_FILE_PATH` en `.mcp.json` actualizado a `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl` (ruta real de este entorno, confirmada con `pwd`) | Se instanció el servidor `npx -y @modelcontextprotocol/server-memory` manualmente con esa variable de entorno, se envió un `create_entities` de prueba por stdio (protocolo MCP), y se confirmó que la entidad quedó escrita en el archivo. Se probó primero una ruta *relativa*, que **falló** (resuelve contra el directorio interno del paquete npm instalado por `npx`, no contra el cwd del repo) — se descarta esa alternativa y queda documentado en `CLAUDE.md`. El archivo de memoria se revirtió a 0 bytes antes de commitear, para no dejar datos sintéticos de prueba en el repo | Salida de la llamada `create_entities` con `"result"` no vacío tras usar la ruta absoluta; `ENOENT` explícito al usar la ruta relativa; `wc -c` = 0 tras la reversión | `[HECHO]` Corregido y verificado |
+| H-02 | Se quitó `continue-on-error: true` del job `validate` en `.github/workflows/memory-mcp-validate.yml` — ambos steps (JSON válido + escaneo de secretos) ahora bloquean el check | Corrida local de los mismos comandos que ejecuta el CI (`python3 -c "import json; ..."`, `python3 tests/test_scan_secrets.py`, `python3 scripts/scan_secrets.py`) contra el estado final del repo — los tres terminan en exit 0 | Salidas capturadas en esta sesión (ver comandos ejecutados) | `[HECHO]` Corregido; **pendiente de confirmación real en GitHub Actions** — no se abrió un PR sintético con secreto para forzar un fallo, por instrucción explícita del usuario, así que el comportamiento *bloqueante* en un caso positivo queda `[PENDIENTE]` de observación en la próxima ejecución real del workflow |
+| H-03 | El escaneo de secretos se extrajo de un script inline embebido en el YAML a `scripts/scan_secrets.py`, versionado y testeado, que ahora recorre **todos los archivos versionados por git** (`git ls-files`), no solo `.claude/memory/knowledge-graph.jsonl` | `python3 scripts/scan_secrets.py` ejecutado contra el repo real → `Sin coincidencias...`, exit 0. Test dedicado (`test_scan_detecta_archivo_versionado_fuera_del_knowledge_graph`) confirma en un repo git sintético (fuera de este repositorio, en un directorio temporal) que el script detecta un secreto en un archivo que **no** es el knowledge-graph | Salida de `pytest`/ejecución manual con 5/5 tests OK | `[HECHO]` Corregido y verificado |
+| H-04 | `.mcp.json` ahora pinea `@modelcontextprotocol/server-memory@0.6.3` (versión exacta observada en el campo `serverInfo.version` de la respuesta `initialize` durante la verificación de H-01) | Respuesta JSON-RPC de `initialize` capturada en la misma sesión de prueba de H-01 | `"serverInfo":{"name":"memory-server","version":"0.6.3"}` | `[HECHO]` Corregido y verificado |
+
+**Hallazgo nuevo detectado durante la remediación (no estaba en la lista original):**
+
+| ID | Hallazgo | Severidad | Evidencia | Acción |
+|---|---|---|---|---|
+| H-08 | Al ejecutar los tests localmente se generó `scripts/__pycache__/*.pyc`, un artefacto de bytecode que no debía versionarse y que el repo no tenía forma de ignorar (no existía `.gitignore`) | Baja | `find . -type f` mostró el `.pyc` como archivo nuevo antes de limpiarlo | Se eliminó el bytecode generado y se agregó `.gitignore` (`__pycache__/`, `*.pyc`) para prevenir que vuelva a colarse en un commit futuro |
+
+**Explícitamente NO ejecutado, por instrucción del usuario:**
+- No se abrió ningún PR con contenido sintético (caso T-02 del cuerpo original de este documento sigue en estado `[BLOQUEADO]` en cuanto a confirmación empírica de que GitHub efectivamente bloquea el merge — lo que sí se verificó es que el script y los tests, ejecutados como los ejecutaría el CI, se comportan como se espera).
+- No se auditó ningún sistema externo a este repositorio (el `index.html` / "pagina-oro-loader" mencionado en la conversación sigue fuera de alcance — H-06 permanece sin resolver, es una decisión de producto/repo, no algo corregible desde acá).
+
+---
+
 ## 1. Resumen ejecutivo
 
 `[HECHO]` El repositorio auditado, a la fecha de esta sesión, **no contiene una aplicación web, backend, base de datos, API ni frontend funcional**. Su contenido total es: un archivo de configuración MCP (`.mcp.json`), un archivo de instrucciones de proyecto (`CLAUDE.md`), un archivo de memoria vacío (`.claude/memory/knowledge-graph.jsonl`), un workflow de CI de validación liviana (`.github/workflows/memory-mcp-validate.yml`), y dos documentos Markdown de producto/negocio agregados en esta misma sesión (`docs/propuesta-saas-administracion-consorcios.md` y este archivo).
@@ -141,7 +164,7 @@
 - **Área/componente:** `.github/workflows/memory-mcp-validate.yml`.
 - **Objetivo:** Confirmar si un secreto agregado al `knowledge-graph.jsonl` impide el merge de un PR.
 - **Procedimiento reproducible:**
-  1. En una rama de prueba (nunca en `main` sin aprobación), agregar una línea con un patrón que matchee la regex del scanner (ej. `"token": "abcdef1234567890abcdef"`).
+  1. En una rama de prueba (nunca en `main` sin aprobación), agregar una línea con un patrón que matchee la regex del scanner (ej. una clave de ≥16 caracteres alfanuméricos precedida por una etiqueta como `token`, `secret` o `api_key` — no se transcribe el literal aquí para no hacer que este propio documento dispare el escáner ampliado tras H-03).
   2. Abrir un PR y observar el resultado del check `memory-mcp-validate`.
   3. Verificar si GitHub permite mergear el PR pese al `::warning::` emitido.
 - **Resultado esperado:** dado que el job tiene `continue-on-error: true`, el check debería figurar como no-bloqueante independientemente del resultado del script.

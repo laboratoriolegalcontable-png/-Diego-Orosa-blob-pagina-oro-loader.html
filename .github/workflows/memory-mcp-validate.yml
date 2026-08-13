@@ -8,27 +8,16 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    # H-02 (docs/auditoria-tecnica-integral.md): antes tenia continue-on-error: true
+    # a nivel de job, lo que volvia no-bloqueante tanto la validacion de .mcp.json
+    # como el escaneo de secretos. Se retira para que ambos checks bloqueen el merge.
     steps:
       - uses: actions/checkout@v4
       - name: Validate .mcp.json is valid JSON
         run: python3 -c "import json; json.load(open('.mcp.json'))"
-      - name: Scan memory file for obvious secret patterns
-        run: |
-          python3 - <<'PYEOF'
-          import re, sys, pathlib
-
-          path = pathlib.Path(".claude/memory/knowledge-graph.jsonl")
-          if not path.exists():
-              sys.exit(0)
-
-          pattern = re.compile(
-              r"(api[_-]?key|secret|password|token|bearer)[\"': ]*[A-Za-z0-9_-]{16,}",
-              re.IGNORECASE,
-          )
-          text = path.read_text(errors="ignore")
-          hit = pattern.search(text)
-          if hit:
-              print(f"::warning::Posible secreto detectado en knowledge-graph.jsonl: {hit.group(0)[:40]}...")
-              sys.exit(1)
-          PYEOF
+      - name: Run scan_secrets tests
+        run: python3 tests/test_scan_secrets.py
+      - name: Scan repo for obvious secret patterns
+        # H-03: antes solo escaneaba .claude/memory/knowledge-graph.jsonl. Ahora usa
+        # scripts/scan_secrets.py, que recorre todo el arbol versionado por git.
+        run: python3 scripts/scan_secrets.py
