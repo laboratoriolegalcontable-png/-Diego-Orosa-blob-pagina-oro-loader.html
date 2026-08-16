@@ -482,4 +482,73 @@ Todo endpoint que devuelva datos de una unidad funcional específica debe valida
 
 ---
 
-*Documento de trabajo interno. No distribuir a clientes ni inversores como si fuera una propuesta legal o comercialmente cerrada hasta resolver los puntos marcados `[VERIFICAR]`. El Anexo C es un boceto de ingeniería para acelerar el arranque técnico y debe ser revisado por quien lidere el desarrollo antes de implementarse.*
+## Anexo D — Pricing y estrategia de lanzamiento comercial
+
+`[VERIFICAR]` **Aclaración obligatoria antes de leer este anexo:** no existe, en esta sesión, ninguna fuente verificada de precios de mercado para software de administración de consorcios en Argentina, ni datos reales de disposición a pagar del segmento objetivo. Todo número de este anexo es una **hipótesis de partida para testear**, no un precio de venta definido. Publicar o cobrar estos números sin el testeo de D.3 sería exactamente el tipo de cifra inventada que las reglas de este encargo prohíben. Lo que sí puedo dar con solidez es el **método** para llegar a un precio defendible, y la **estrategia de lanzamiento**, que es una recomendación profesional, no un hecho verificable.
+
+### D.1 Método para fijar el piso (precio mínimo)
+
+El piso no es "lo más barato que se anima a cobrar" — es el precio por debajo del cual el negocio pierde plata en cada cliente. Se calcula así:
+
+```
+Piso mensual por consorcio =
+    (costo de infraestructura por consorcio activo
+   + costo de soporte asignado por consorcio
+   + costo de adquisición amortizado / vida útil esperada del cliente)
+   × (1 + margen mínimo objetivo)
+```
+
+`[SUPUESTO]`: hoy ninguno de esos tres costos está medido (sección 9.3 los deja como categorías, no cifras). Sin esos números reales, cualquier piso en pesos que te dé sería inventado. Lo que corresponde antes de fijar un piso real:
+1. Correr el producto con los pilotos de la fase 0/1 y medir el costo real de infraestructura por consorcio activo durante 1-2 meses.
+2. Sumar el tiempo de soporte que realmente insume cada consorcio piloto (aunque sea informal, cronometrado).
+3. Recién ahí, el piso sale de una cuenta, no de una corazonada.
+
+### D.2 Método para fijar el techo (precio máximo defendible)
+
+El techo no lo pone el costo, lo pone el valor percibido por el administrador. Se ancla al ahorro real que el producto genera, no a lo que "parece razonable":
+
+```
+Techo mensual por consorcio ≈
+    (horas mensuales que el administrador ahorra por consorcio
+   × valor que el administrador le da a su propia hora)
+   × porcentaje del valor generado que estás dispuesto a capturar (típicamente 10-30%)
+```
+
+Esto tampoco tiene un número verificado hoy — depende de la métrica "Tiempo promedio de liquidación mensual por consorcio (antes vs. después)" de la sección 11.2, que está explícitamente pendiente de medición en fase 0.
+
+### D.3 Cómo testear precio sin inventarlo (recomendación concreta)
+
+Con los pilotos de fase 0/1, antes de cobrar nada en serio, te recomiendo correr un **Van Westendorp Price Sensitivity Meter** (técnica estándar de pricing, no una cifra inventada por mí) — cuatro preguntas a cada administrador piloto:
+1. ¿A qué precio mensual por consorcio te parecería tan barato que dudarías de la calidad?
+2. ¿A qué precio te parecería una ganga, un precio bueno?
+3. ¿A qué precio empieza a parecerte caro, pero lo pagarías igual?
+4. ¿A qué precio es tan caro que directamente no lo comprarías?
+
+Con 8-10 respuestas de administradores piloto reales (no encuestas genéricas) se obtiene un rango de precio aceptable con base empírica real, no una suposición. Esto reemplaza cualquier número que yo pudiera "tirar" ahora sin dato.
+
+### D.4 Estructura de pricing recomendada (forma, no monto)
+
+Independientemente del número final, la **estructura** que recomiendo — esto sí es una recomendación profesional legítima, no un hecho a verificar:
+
+| Elemento | Recomendación | Por qué |
+|---|---|---|
+| Métrica de cobro | Por consorcio activo administrado (sección 9.2, opción 1) | Es la más fácil de entender para el administrador y la más fácil de facturar en el MVP; la métrica por unidad funcional se puede introducir en fase 2 cuando haya más datos de uso |
+| Estructura de planes | Un solo plan simple para el MVP, sin tiers | Con pocos clientes piloto, segmentar en tiers antes de tener datos de uso real es prematuro y agrega fricción de venta |
+| Pricing de piloto vs. pricing "de lista" | Precio de piloto explícitamente más bajo que el precio objetivo final, con fecha de vencimiento del descuento | Reduce la fricción de entrada del primer cliente y te da el dato del D.3 con gente que ya está usando el producto de verdad |
+| Compromiso mínimo | Mensual, sin permanencia forzada, al menos en fase 0/1 | Un administrador no le va a confiar la liquidación de sus consorcios a un producto nuevo si además lo atás con un contrato largo — la confianza se gana, no se fuerza |
+
+### D.5 Cómo usaría yo la promoción (recomendación, no hecho verificable)
+
+Con la información que hay hoy de este ecosistema (Estudio Oro ya tiene relación con administradores de consorcios como parte de su práctica de propiedad horizontal y de captación inmobiliaria — `[HECHO, verificado en el repo Diego-Orosa]` existen skills y procesos internos orientados específicamente a "administradores de consorcios" como canal de captación), la promoción que recomendaría **no es publicidad paga ni descuentos masivos** — es aprovechar una relación de confianza preexistente:
+
+1. **Canal cero: la cartera propia del estudio.** Antes de gastar un peso en adquisición externa, ofrecer el piloto gratuito o a precio simbólico a los administradores con los que Estudio Oro ya tiene vínculo profesional (los que aparecen en la práctica de propiedad horizontal, asambleas, reclamos). Es el canal de menor costo y mayor tasa de conversión posible, porque ya hay confianza construida — no hay que "vender frío".
+2. **Oferta de piloto explícita, con fecha de corte.** "Los primeros N consorcios que se suban en los próximos 60 días quedan con el precio de piloto de por vida" — genera urgencia real sin inventar escasez falsa, porque el límite es operativo de verdad (soporte manual en fase 0/1 no escala a más de un puñado de clientes).
+3. **El administrador como multiplicador, no el propietario final.** Un administrador promedio gestiona varios consorcios (sección 1.2) — cada administrador convencido trae de entrada más de un consorcio. La promoción debe apuntarle al administrador, no intentar llegar al propietario final, que no es quien decide ni paga.
+4. **Referido entre administradores, no marketing masivo.** Los administradores de consorcios suelen conocerse entre sí (cámaras, colegios, grupos — `[VERIFICAR]` cuáles existen y tienen actividad real, sección 9.4). Un incentivo de referido simple (ej. un mes bonificado por cada administrador referido que se convierte en cliente pago) es más barato y más creíble que publicidad paga en esta etapa.
+5. **No lanzar "a la cancha" (público general) todavía.** Justamente porque no hay pricing validado (D.3) ni el ciclo de cobro cerrado (fase 2, sección 3), salir a vender masivamente ahora sería vender algo que el producto todavía no sostiene operativamente. La recomendación es sacarlo primero a un círculo controlado y recién escalar la promoción cuando el pricing salga de datos reales, no de esta conversación.
+
+`[VERIFICAR]` antes de ejecutar D.5, punto 1: confirmar cuántos de esos administradores con vínculo existente encajan realmente en el ICP de la sección 1.2 (volumen de consorcios administrados, uso actual de Excel/WhatsApp) — no asumir que todo contacto de la cartera es un buen piloto solo por existir el vínculo.
+
+---
+
+*Documento de trabajo interno. No distribuir a clientes ni inversores como si fuera una propuesta legal o comercialmente cerrada hasta resolver los puntos marcados `[VERIFICAR]`. El Anexo C es un boceto de ingeniería para acelerar el arranque técnico y debe ser revisado por quien lidere el desarrollo antes de implementarse. El Anexo D no fija precios de venta — fija método y estrategia; los montos en pesos deben salir de D.1-D.3 con datos reales, nunca de este documento.*
