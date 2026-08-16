@@ -1,48 +1,39 @@
-# Auditoría Técnica Integral — Repositorio `-Diego-Orosa-blob-pagina-oro-loader.html`
+# Auditoría Técnica Integral
 
-**Fecha de ejecución:** 2026-08-13
-**Auditor:** Sesión Claude Code (agente), sobre el repositorio tal como está clonado en este entorno
-**Alcance solicitado:** Auditoría hiper-exhaustiva de "el programa" (arquitectura, código, APIs, frontend, backend, BD, auth, sesiones, validaciones, errores, logs, dependencias, secretos, config, infra, CI/CD, performance, concurrencia, resiliencia, backups, monitoreo, privacidad, accesibilidad, compatibilidad, UX, integraciones, operación)
+## Repositorio `-Diego-Orosa-blob-pagina-oro-loader.html`
 
-> Convención de etiquetas: `[HECHO]` verificado directamente en este entorno · `[INFERENCIA]` deducción razonable · `[RIESGO]` riesgo identificado · `[PENDIENTE]` requiere acción/insumo externo · `[SUPOSICION]` hipótesis explícita de interpretación del pedido.
+| Campo | Detalle |
+|---|---|
+| **Documento** | Auditoría técnica integral — hallazgos, remediación y plan de auditoría funcional pendiente |
+| **Versión** | 1.1 (incluye Anexo C — Registro de remediación) |
+| **Fecha de emisión** | 2026-08-13 |
+| **Ejecutado por** | Agente Claude Code, sesión asistida sobre el repositorio tal como está clonado en este entorno |
+| **Clasificación** | Uso interno |
+| **Estado** | Hallazgos H-01 a H-04 y H-08/H-09 remediados y verificados localmente; pendiente de confirmación en la primera ejecución real de GitHub Actions posterior al último push |
 
----
+### Convención de etiquetas
 
-## 0. Addendum de remediación (2026-08-13)
-
-Por instrucción explícita del usuario se corrigieron H-01, H-02, H-03 y H-04 sobre este mismo repositorio (sin PRs sintéticos ni auditoría de sistemas externos). Los hallazgos originales de las secciones 5, 7 y 8 se dejan **intactos como registro histórico** de lo encontrado; este addendum documenta qué se hizo y cómo se verificó cada corrección.
-
-| ID | Acción tomada | Verificación ejecutada | Evidencia | Estado |
-|---|---|---|---|---|
-| H-01 | `MEMORY_FILE_PATH` en `.mcp.json` actualizado a `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl` (ruta real de este entorno, confirmada con `pwd`) | Se instanció el servidor `npx -y @modelcontextprotocol/server-memory` manualmente con esa variable de entorno, se envió un `create_entities` de prueba por stdio (protocolo MCP), y se confirmó que la entidad quedó escrita en el archivo. Se probó primero una ruta *relativa*, que **falló** (resuelve contra el directorio interno del paquete npm instalado por `npx`, no contra el cwd del repo) — se descarta esa alternativa y queda documentado en `CLAUDE.md`. El archivo de memoria se revirtió a 0 bytes antes de commitear, para no dejar datos sintéticos de prueba en el repo | Salida de la llamada `create_entities` con `"result"` no vacío tras usar la ruta absoluta; `ENOENT` explícito al usar la ruta relativa; `wc -c` = 0 tras la reversión | `[HECHO]` Corregido y verificado |
-| H-02 | Se quitó `continue-on-error: true` del job `validate` en `.github/workflows/memory-mcp-validate.yml` — ambos steps (JSON válido + escaneo de secretos) ahora bloquean el check | Corrida local de los mismos comandos que ejecuta el CI (`python3 -c "import json; ..."`, `python3 tests/test_scan_secrets.py`, `python3 scripts/scan_secrets.py`) contra el estado final del repo — los tres terminan en exit 0 | Salidas capturadas en esta sesión (ver comandos ejecutados) | `[HECHO]` Corregido; **pendiente de confirmación real en GitHub Actions** — no se abrió un PR sintético con secreto para forzar un fallo, por instrucción explícita del usuario, así que el comportamiento *bloqueante* en un caso positivo queda `[PENDIENTE]` de observación en la próxima ejecución real del workflow |
-| H-03 | El escaneo de secretos se extrajo de un script inline embebido en el YAML a `scripts/scan_secrets.py`, versionado y testeado, que ahora recorre **todos los archivos versionados por git** (`git ls-files`), no solo `.claude/memory/knowledge-graph.jsonl` | `python3 scripts/scan_secrets.py` ejecutado contra el repo real → `Sin coincidencias...`, exit 0. Test dedicado (`test_scan_detecta_archivo_versionado_fuera_del_knowledge_graph`) confirma en un repo git sintético (fuera de este repositorio, en un directorio temporal) que el script detecta un secreto en un archivo que **no** es el knowledge-graph | Salida de `pytest`/ejecución manual con 5/5 tests OK | `[HECHO]` Corregido y verificado |
-| H-04 | `.mcp.json` ahora pinea `@modelcontextprotocol/server-memory@0.6.3` (versión exacta observada en el campo `serverInfo.version` de la respuesta `initialize` durante la verificación de H-01) | Respuesta JSON-RPC de `initialize` capturada en la misma sesión de prueba de H-01 | `"serverInfo":{"name":"memory-server","version":"0.6.3"}` | `[HECHO]` Corregido y verificado |
-
-**Hallazgos nuevos detectados durante la remediación (no estaban en la lista original):**
-
-| ID | Hallazgo | Severidad | Evidencia | Acción |
-|---|---|---|---|---|
-| H-08 | Al ejecutar los tests localmente se generó `scripts/__pycache__/*.pyc`, un artefacto de bytecode que no debía versionarse y que el repo no tenía forma de ignorar (no existía `.gitignore`) | Baja | `find . -type f` mostró el `.pyc` como archivo nuevo antes de limpiarlo | Se eliminó el bytecode generado y se agregó `.gitignore` (`__pycache__/`, `*.pyc`) para prevenir que vuelva a colarse en un commit futuro |
-| H-09 | **Detectado en una corrida real de GitHub Actions** (no localmente): el fix de H-03 (ampliar el escaneo a todo el repo) rompió el propio CI. La regex original usaba un separador *opcional* (`[\"': ]*`) entre la keyword y el valor, por lo que matcheaba como substring dentro de palabras en español que casualmente contienen "secret" — ej. `secreto` dentro del nombre de función `test_detecta_secreto_con_prefijo_conocido` — sin que hubiera ningún secreto real. Además, los propios strings de prueba de `tests/test_scan_secrets.py` (secretos sintéticos usados para validar la regex) también matcheaban al quedar dentro del alcance ampliado del escaneo | **Alta** (bloqueaba el merge del propio PR con un falso positivo) | Check `validate` fallido en `https://github.com/laboratoriolegalcontable-png/-Diego-Orosa-blob-pagina-oro-loader.html/actions/runs/31661138296`, log: `Posible secreto detectado en .../tests/test_scan_secrets.py: secreto_con_prefijo_conocido...` | Regex corregida (`\b` al inicio + separador obligatorio `[\"':= ]+` en vez de opcional) y se agregó `EXCLUDE_PATHS` explícito para `tests/test_scan_secrets.py` (documentado en el propio script, con la razón). Se agregaron 2 tests de regresión (`test_no_falso_positivo_palabra_espanola_que_contiene_keyword`, `test_scan_excluye_su_propio_archivo_de_fixtures`). Re-verificado localmente: 7/7 tests OK, escaneo del repo real en exit 0 |
-
-**Explícitamente NO ejecutado, por instrucción del usuario:**
-- No se abrió ningún PR con contenido sintético (caso T-02 del cuerpo original de este documento sigue en estado `[BLOQUEADO]` en cuanto a confirmación empírica de que GitHub efectivamente bloquea el merge — lo que sí se verificó es que el script y los tests, ejecutados como los ejecutaría el CI, se comportan como se espera).
-- No se auditó ningún sistema externo a este repositorio (el `index.html` / "pagina-oro-loader" mencionado en la conversación sigue fuera de alcance — H-06 permanece sin resolver, es una decisión de producto/repo, no algo corregible desde acá).
+| Etiqueta | Significado |
+|---|---|
+| `[HECHO]` | Verificado directamente en este entorno, con evidencia reproducible |
+| `[INFERENCIA]` | Deducción razonable a partir de hechos, no un hecho en sí |
+| `[RIESGO]` | Riesgo identificado, con severidad e impacto estimados |
+| `[PENDIENTE]` | Requiere una acción o un insumo que no está disponible en esta sesión |
+| `[SUPOSICION]` | Hipótesis explícita adoptada para interpretar un pedido ambiguo |
 
 ---
 
 ## 1. Resumen ejecutivo
 
-`[HECHO]` El repositorio auditado, a la fecha de esta sesión, **no contiene una aplicación web, backend, base de datos, API ni frontend funcional**. Su contenido total es: un archivo de configuración MCP (`.mcp.json`), un archivo de instrucciones de proyecto (`CLAUDE.md`), un archivo de memoria vacío (`.claude/memory/knowledge-graph.jsonl`), un workflow de CI de validación liviana (`.github/workflows/memory-mcp-validate.yml`), y dos documentos Markdown de producto/negocio agregados en esta misma sesión (`docs/propuesta-saas-administracion-consorcios.md` y este archivo).
+`[HECHO]` A la fecha de esta auditoría, el repositorio no contiene una aplicación web, backend, base de datos, API ni frontend funcional. Su contenido consiste en: un archivo de configuración MCP (`.mcp.json`), un archivo de instrucciones de proyecto (`CLAUDE.md`), un archivo de memoria vacío (`.claude/memory/knowledge-graph.jsonl`), un workflow de CI de validación (`.github/workflows/memory-mcp-validate.yml`), un escáner de secretos versionado con su suite de tests (`scripts/scan_secrets.py`, `tests/test_scan_secrets.py`), y documentación de producto/negocio (`docs/*.md`).
 
-`[HECHO]` No existe ningún `index.html`, ni código de "página oro / loader" pese a que el nombre del repositorio lo sugiere. No hay evidencia de que ese código exista en este repositorio en ningún commit del historial (`git log --all` no lo muestra).
+`[HECHO]` No existe ningún `index.html` ni código de "página oro / loader" en este repositorio, pese a que su nombre lo sugiere. El historial completo de commits (`git log --all`) no muestra evidencia de que ese código haya existido aquí en ningún momento.
 
-`[HECHO]` Se identificó y verificó **un defecto reproducible y activo**: la ruta hardcodeada en `.mcp.json` (`MEMORY_FILE_PATH=/home/user/pagina-oro-loader/.claude/memory/knowledge-graph.jsonl`) **no existe** en este entorno de ejecución, cuyo working directory real es `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html`. Esto contradice directamente la advertencia que el propio `CLAUDE.md` deja escrita ("verificar que esa ruta coincide con el working directory real antes de confiar en la persistencia") — la verificación nunca se hizo, o se hizo en otro entorno y quedó desactualizada.
+`[HECHO]` Se identificó, verificó y **corrigió** un defecto activo: la ruta configurada en `MEMORY_FILE_PATH` no coincidía con el directorio real de este entorno, lo que impedía al servidor MCP de memoria leer o escribir su archivo de persistencia. El detalle de la corrección y su verificación se documenta en el Anexo C.
 
-`[SUPOSICION]` Se interpreta que el pedido de auditoría busca cobertura sobre "el sistema disponible en este repositorio conectado a la sesión", no sobre un sistema externo (p. ej. el `index.html` local en la PC Windows del usuario, mencionado en un mensaje anterior de esta conversación, al que este entorno no tiene acceso).
+`[SUPOSICION]` Se interpreta que el alcance de esta auditoría es el sistema disponible en este repositorio conectado a la sesión, y no un sistema externo (por ejemplo, el `index.html` local mencionado en un intercambio previo de esta conversación, al que este entorno no tiene acceso).
 
-**Decisión de cierre (sección 11):** con la información disponible, **no aplica un veredicto de "apto para producción"** porque no existe una aplicación de producción que auditar en este repositorio. Lo que sí se entrega es: (a) auditoría completa de los componentes reales presentes (config MCP + CI), con hallazgos confirmados; y (b) un plan de auditoría exhaustivo y checklist reutilizable para cuando exista código de aplicación real que auditar.
+**Decisión de cierre (ver sección 11):** con la información disponible, no corresponde un veredicto de aptitud para producción, porque no existe una aplicación de producción que auditar en este repositorio. Lo que sí se entrega es: (a) auditoría completa de los componentes reales presentes, con hallazgos confirmados y remediados donde correspondía; y (b) un plan de auditoría exhaustivo y un checklist reutilizable para cuando exista código de aplicación real que auditar.
 
 ---
 
@@ -50,22 +41,22 @@ Por instrucción explícita del usuario se corrigieron H-01, H-02, H-03 y H-04 s
 
 | Alcance | Estado | Detalle |
 |---|---|---|
-| Configuración MCP (`.mcp.json`) | `[HECHO]` Auditado | Ver hallazgo H-01 |
-| Memoria persistente (`knowledge-graph.jsonl`) | `[HECHO]` Auditado (contenido) | Archivo vacío (0 bytes, 0 líneas) al momento de la auditoría |
-| CI/CD (`memory-mcp-validate.yml`) | `[HECHO]` Auditado | Ver hallazgo H-02, H-03 |
-| Documentación de proyecto (`CLAUDE.md`) | `[HECHO]` Auditado | Ver hallazgo H-01 |
-| Documentos Markdown de negocio (`docs/*.md`) | `[HECHO]` Revisados | No aplica auditoría técnica de "sistema" — son texto, no código ejecutable |
-| Frontend / `index.html` / UI | `[PENDIENTE]` **No auditable — no existe en este repo** | Requiere que se suba el código fuente al repositorio, o se conecte el repo/entorno donde realmente vive |
-| Backend / APIs | `[PENDIENTE]` **No auditable — no existe** | Ídem |
-| Base de datos | `[PENDIENTE]` **No auditable — no existe** | Ídem |
-| Autenticación / autorización / sesiones | `[PENDIENTE]` **No auditable — no existe** | Ídem |
-| Infraestructura de despliegue (hosting, DNS, CDN) | `[PENDIENTE]` **No auditable** | No hay evidencia de dónde se despliega "pagina-oro-loader.html" |
-| Dependencias de aplicación (`package.json`, lockfiles) | `[PENDIENTE]` No existen en el repo | Solo hay dependencia indirecta de `@modelcontextprotocol/server-memory` vía `npx` (no está pineada a versión — ver H-04) |
-| Secretos / gestión de credenciales de la app | `[PENDIENTE]` No aplica al repo actual (no hay app); sí se auditó el escáner de secretos del CI (H-03) | |
-| Monitoreo / alertas / observabilidad de producción | `[PENDIENTE]` No auditable — no hay servicio en producción vinculado a este repo | |
-| Backups / recuperación ante incidentes de la app | `[PENDIENTE]` No auditable | El único "dato" persistente versionado es el knowledge-graph, que vive en git (su backup es el propio historial de git) |
-| Accesibilidad / UX / compatibilidad de navegador | `[PENDIENTE]` No auditable — no hay UI | |
-| Runtime real del servidor MCP `memory` en esta sesión | `[RIESGO observado, no confirmable con certeza]` | El servidor MCP `memory` apareció como "conectando" y luego se desconectó durante esta misma sesión, sin llegar a exponer sus herramientas de forma estable — ver H-05 |
+| Configuración MCP (`.mcp.json`) | `[HECHO]` Auditado y remediado | Ver H-01, H-04; detalle en Anexo C |
+| Memoria persistente (`knowledge-graph.jsonl`) | `[HECHO]` Auditado | Archivo vacío (0 bytes) al momento de la auditoría |
+| CI/CD (`memory-mcp-validate.yml`) | `[HECHO]` Auditado y remediado | Ver H-02, H-03, H-09; detalle en Anexo C |
+| Escáner de secretos (`scripts/scan_secrets.py`) | `[HECHO]` Introducido y testeado en esta sesión | 7 tests de regresión en `tests/test_scan_secrets.py` |
+| Documentación de proyecto (`CLAUDE.md`) | `[HECHO]` Auditado y actualizado | Ver H-01 |
+| Documentos de producto/negocio (`docs/*.md`) | `[HECHO]` Revisados | No aplica auditoría técnica de sistema — son texto, no código ejecutable |
+| Frontend / `index.html` / UI | `[PENDIENTE]` No auditable — no existe en este repositorio | Requiere que el código fuente se incorpore al repositorio, o que se conecte el repositorio/entorno donde reside |
+| Backend / APIs | `[PENDIENTE]` No auditable — no existe | Ídem |
+| Base de datos | `[PENDIENTE]` No auditable — no existe | Ídem |
+| Autenticación / autorización / sesiones | `[PENDIENTE]` No auditable — no existe | Ídem |
+| Infraestructura de despliegue (hosting, DNS, CDN) | `[PENDIENTE]` No auditable | No hay evidencia de dónde se despliega "pagina-oro-loader.html" |
+| Gobernanza de la rama `main` (branch protection) | `[PENDIENTE]` No consultado | Requiere permisos de administración del repositorio en GitHub |
+| Monitoreo / observabilidad de producción | `[PENDIENTE]` No auditable | No hay servicio en producción vinculado a este repositorio |
+| Backups / recuperación ante incidentes de la aplicación | `[PENDIENTE]` No auditable | El único dato persistente versionado es el knowledge-graph, respaldado por el propio historial de git |
+| Accesibilidad / UX / compatibilidad de navegador | `[PENDIENTE]` No auditable | No hay interfaz de usuario en este repositorio |
+| Estabilidad de runtime del servidor MCP `memory` | `[RIESGO]` Observado, no aislado con certeza | El servidor apareció como "conectando" y luego figuró desconectado durante la sesión; ver H-05 |
 
 ---
 
@@ -73,144 +64,139 @@ Por instrucción explícita del usuario se corrigieron H-01, H-02, H-03 y H-04 s
 
 | Ítem | Fuente | Estado |
 |---|---|---|
-| `.mcp.json` | Leído íntegramente | `[HECHO]` |
-| `CLAUDE.md` | Leído íntegramente | `[HECHO]` |
-| `.github/workflows/memory-mcp-validate.yml` | Leído íntegramente | `[HECHO]` |
-| `.claude/memory/knowledge-graph.jsonl` | Leído (vacío) | `[HECHO]` |
-| Historial de git completo (4 commits + el de esta sesión) | `git log --all --oneline` | `[HECHO]` |
-| Working directory real del entorno | `pwd` | `[HECHO]` → `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html` |
-| Runtime de Node/npx disponible | `which npx node && node --version` | `[HECHO]` → Node v22.22.2 disponible |
-| Estado de branch protection / reglas del repo en GitHub | No consultado (requiere permisos de administración de repo que no se intentaron ni fueron solicitados) | `[PENDIENTE]` |
-| Código fuente de "pagina-oro-loader" / `index.html` real | No presente en este repo ni en ningún commit | `[PENDIENTE]` — solicitar al usuario dónde vive realmente |
-| Accesos a ambientes (staging/producción), logs, métricas | No provistos | `[PENDIENTE]` |
+| `.mcp.json` | Lectura íntegra | `[HECHO]` |
+| `CLAUDE.md` | Lectura íntegra | `[HECHO]` |
+| `.github/workflows/memory-mcp-validate.yml` | Lectura íntegra | `[HECHO]` |
+| `.claude/memory/knowledge-graph.jsonl` | Lectura (vacío) | `[HECHO]` |
+| Historial completo de git | `git log --all --oneline` | `[HECHO]` |
+| Directorio de trabajo real del entorno | `pwd` | `[HECHO]` → `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html` |
+| Runtime de Node/npx | `which npx node && node --version` | `[HECHO]` → Node v22.22.2 |
+| Versión real del servidor MCP de memoria | Respuesta `initialize` del protocolo MCP, capturada durante la verificación de H-01 | `[HECHO]` → `0.6.3` |
+| Ejecución real de CI de GitHub Actions sobre los commits de esta sesión | `list_workflow_runs` / `get_job_logs` | `[HECHO]` — incluyó una corrida fallida que originó H-09 |
+| Estado de branch protection en GitHub | No consultado; requiere permisos administrativos no solicitados en esta sesión | `[PENDIENTE]` |
+| Código fuente de "pagina-oro-loader" / `index.html` real | No presente en el repositorio ni en su historial | `[PENDIENTE]` — se solicita al usuario su ubicación real |
+| Accesos a ambientes de staging/producción, logs, métricas | No provistos | `[PENDIENTE]` |
 
 ---
 
 ## 4. Datos que requieren verificación
 
-| # | Dato | Por qué importa | Bloqueo |
+| # | Dato | Relevancia | Estado |
 |---|---|---|---|
-| 1 | Ubicación real del código de la aplicación "pagina-oro-loader" (¿otro repo? ¿solo local en la PC del usuario?) | Sin esto no se puede auditar nada del "programa" en sentido funcional | `[PENDIENTE]` — requiere respuesta del usuario o `add_repo` a un repositorio adicional |
-| 2 | Si el `.mcp.json` actual (con ruta hardcodeada rota) está en uso en algún otro entorno donde sí funcione | Determina si H-01 es un problema solo de este entorno o generalizado | `[PENDIENTE]` |
-| 3 | Reglas de protección de la rama `main` (revisiones obligatorias, checks requeridos) | Afecta si el CI no-bloqueante (H-02) es mitigado por otra capa de control | `[PENDIENTE]` — requiere acceso admin al repo en GitHub |
-| 4 | Si existe un pipeline de despliegue real hacia algún hosting para este proyecto | Sin esto no se puede evaluar infra, backups, monitoreo, recuperación ante incidentes | `[PENDIENTE]` |
-| 5 | Versión exacta que resuelve `npx -y @modelcontextprotocol/server-memory` en cada ejecución | Puede variar entre ejecuciones al no estar pineada (H-04) | `[PENDIENTE]` — requiere lockfile o pin de versión explícito |
+| 1 | Ubicación real del código de la aplicación "pagina-oro-loader" | Sin este dato no es posible auditar el "programa" en sentido funcional | `[PENDIENTE]` — requiere respuesta del usuario o conexión de un repositorio adicional |
+| 2 | Reglas de protección de la rama `main` (revisiones obligatorias, checks requeridos) | Determina si el nuevo comportamiento bloqueante del CI (H-02) es efectivamente exigido antes de mergear | `[PENDIENTE]` — requiere acceso administrativo al repositorio |
+| 3 | Existencia de un pipeline de despliegue hacia algún hosting para este proyecto | Sin esto no es posible evaluar infraestructura, backups, monitoreo ni recuperación ante incidentes | `[PENDIENTE]` |
+| 4 | Confirmación en GitHub Actions de que el CI bloquea efectivamente un secreto real | La verificación disponible es local, equivalente a los pasos del CI, pero no una corrida positiva contra un secreto real en GitHub | `[PENDIENTE]` — deliberadamente no ejecutado por instrucción del usuario (sin PRs sintéticos) |
 
 ---
 
 ## 5. Mapa de riesgos priorizados
 
-| ID | Área | Riesgo | Severidad | Probabilidad | Impacto | Estado |
-|---|---|---|---|---|---|---|
-| H-01 | Memoria MCP / persistencia | Ruta hardcodeada en `.mcp.json` no existe en el working directory real de este entorno → el servidor de memoria no puede leer/escribir su archivo (ENOENT) | **Alta** | Alta (confirmado en esta sesión) | Pérdida silenciosa de la funcionalidad de "memoria persistente entre sesiones" que el proyecto dice tener | `[HECHO]` Confirmado |
-| H-02 | CI/CD | El workflow de validación (JSON + escaneo de secretos) corre con `continue-on-error: true`, es decir **nunca bloquea un merge** aunque detecte un secreto o un JSON inválido | **Media-Alta** | Media | Un secreto podría mergearse a `main` sin que nada lo impida a nivel de CI | `[HECHO]` Confirmado por lectura del YAML |
-| H-03 | Seguridad / escaneo de secretos | El escáner de secretos del CI solo cubre `.claude/memory/knowledge-graph.jsonl`; no escanea el resto del repositorio (código, docs, configs futuras) | Media | Media (crece con el tamaño del repo) | Secretos agregados en cualquier otro archivo no serían detectados | `[HECHO]` Confirmado por lectura del YAML |
-| H-04 | Dependencias / supply chain | `.mcp.json` invoca `npx -y @modelcontextprotocol/server-memory` sin pin de versión (`@<versión>`) ni lockfile — cada ejecución puede traer una versión distinta del paquete | Media | Media | Riesgo de comportamiento inconsistente entre sesiones, y de supply-chain (`npx -y` ejecuta código de un paquete de terceros sin confirmación) | `[HECHO]` Confirmado por lectura de `.mcp.json` |
-| H-05 | Estabilidad de servidores MCP | El servidor `memory` se observó "conectando" y luego figuró como desconectado durante la misma sesión, sin exponer sus tools de forma estable | Media | `[INFERENCIA]` — no se pudo aislar la causa (¿H-01 es la causa raíz? ¿inestabilidad del harness?) | Funcionalidad de memoria no disponible cuando se la necesita | `[RIESGO]` — causa raíz no confirmada, requiere reproducción controlada |
-| H-06 | Alcance del producto | El repositorio no contiene la aplicación que su nombre sugiere (`pagina-oro-loader.html`) | **Crítica para el objetivo de "auditar el programa"**, no para el repo en sí | Alta (confirmado) | Imposibilidad de cumplir el objetivo original de auditoría de "el sistema" sin insumo adicional | `[HECHO]` Confirmado — gap de alcance, no un bug |
-| H-07 | Gobernanza de branch protection | No verificado si `main` exige review/checks antes de mergear | `[PENDIENTE]` no evaluable con las herramientas actuales | — | Si no hay protección, cualquier push directo a `main` evita todo control (incluido H-02) | `[PENDIENTE]` |
+| ID | Área | Riesgo | Severidad | Estado actual |
+|---|---|---|---|---|
+| H-01 | Memoria MCP / persistencia | Ruta hardcodeada en `.mcp.json` no coincidía con el directorio real del entorno, impidiendo la lectura/escritura del archivo de memoria | Alta | **Remediado y verificado** (Anexo C) |
+| H-02 | CI/CD | El workflow de validación corría con `continue-on-error: true`, por lo que nunca bloqueaba un merge, aunque detectara un secreto o un JSON inválido | Media-Alta | **Remediado**; confirmación positiva en GitHub Actions pendiente (dato #4 de la sección 4) |
+| H-03 | Seguridad / escaneo de secretos | El escáner cubría un único archivo (`knowledge-graph.jsonl`) y no el resto del repositorio | Media | **Remediado y verificado** (Anexo C) |
+| H-04 | Dependencias / supply chain | `.mcp.json` invocaba el paquete MCP sin pin de versión ni lockfile | Media | **Remediado y verificado** (Anexo C) |
+| H-05 | Estabilidad de servidores MCP | El servidor `memory` se observó inestable (conectando → desconectado) durante la sesión | Media | `[RIESGO]` — causa raíz no confirmada; ver inferencia en sección 9 |
+| H-06 | Alcance del producto | El repositorio no contiene la aplicación que su nombre sugiere | Crítica para el objetivo de auditar "el programa"; no aplica al repositorio en sí | Sin resolver — requiere decisión de producto, no una corrección técnica |
+| H-07 | Gobernanza de branch protection | No verificado si `main` exige revisión o checks obligatorios antes de mergear | No evaluable con las herramientas disponibles en esta sesión | `[PENDIENTE]` |
+| H-08 | Higiene de repositorio | Ausencia de `.gitignore`; se generaron artefactos de bytecode Python (`__pycache__/*.pyc`) durante la ejecución local de tests | Baja | **Remediado** — `.gitignore` agregado |
+| H-09 | Falso positivo del propio escáner de secretos | La ampliación de cobertura de H-03 provocó que el escáner se detectara a sí mismo, bloqueando el CI con un falso positivo | Alta (bloqueaba el propio pipeline) | **Remediado y verificado**, confirmado en una corrida real de GitHub Actions (Anexo C) |
 
 ---
 
 ## 6. Checklist maestro de auditoría por dominio
 
-`[SUPOSICION]` Este checklist es el marco completo a aplicar **cuando exista código de aplicación real**. Las filas marcadas `N/A (repo actual)` documentan honestamente que hoy no hay objeto que evaluar, sin inventar resultados.
+Este checklist constituye el marco completo a aplicar cuando exista código de aplicación real en el repositorio. Las filas marcadas `N/A (repo actual)` documentan que, a la fecha, no existe objeto de auditoría para ese dominio; no se completan con resultados no verificados.
 
-| Dominio | Ítem de checklist | Estado en este repo |
+| Dominio | Ítem de checklist | Estado en este repositorio |
 |---|---|---|
-| Requisitos | Especificación funcional documentada y trazable a pruebas | `N/A (repo actual)` — no hay especificación de producto más allá de `docs/propuesta-...md` (propuesta, no requisitos de este repo) |
+| Requisitos | Especificación funcional documentada y trazable a pruebas | `N/A (repo actual)` |
 | Arquitectura | Diagrama de componentes, límites de confianza, flujo de datos | `N/A (repo actual)` |
-| Código fuente | Linters, formateo, complejidad ciclomática, cobertura de tests | `N/A (repo actual)` — no hay código de aplicación |
-| APIs | Contratos (OpenAPI/GraphQL schema), versionado, rate limiting | `N/A (repo actual)` |
-| Frontend | Manejo de estado, XSS, CSP, sanitización de inputs | `N/A (repo actual)` |
+| Código fuente | Linters, formateo, complejidad ciclomática, cobertura de tests | Parcial — aplicado a `scripts/scan_secrets.py` (7 tests) |
+| APIs | Contratos, versionado, límites de tasa | `N/A (repo actual)` |
+| Frontend | Manejo de estado, XSS, CSP, sanitización de entradas | `N/A (repo actual)` |
 | Backend | Validación de entrada, manejo de errores, idempotencia | `N/A (repo actual)` |
 | Base de datos | Migraciones, integridad referencial, índices, backups | `N/A (repo actual)` |
-| AuthN/AuthZ | Modelo de roles, expiración de sesión, rotación de credenciales | `N/A (repo actual)` |
-| Secretos y configuración | Gestión fuera de código, escaneo automático, rotación | Parcial — ver H-02, H-03, H-04 |
-| CI/CD | Checks bloqueantes, aprobaciones requeridas, despliegue reproducible | Parcial — ver H-02 |
-| Infraestructura | IaC, hardening, gestión de accesos | `N/A (repo actual)` |
+| AuthN / AuthZ | Modelo de roles, expiración de sesión, rotación de credenciales | `N/A (repo actual)` |
+| Secretos y configuración | Gestión fuera de código, escaneo automático, rotación | Aplicado — ver H-02, H-03, H-04, H-09 |
+| CI/CD | Checks bloqueantes, aprobaciones requeridas, despliegue reproducible | Aplicado — ver H-02 |
+| Infraestructura | Infraestructura como código, hardening, gestión de accesos | `N/A (repo actual)` |
 | Performance | Carga, estrés, latencia bajo concurrencia | `N/A (repo actual)` |
 | Resiliencia | Circuit breakers, reintentos, degradación controlada | `N/A (repo actual)` |
-| Backups / DR | RTO/RPO definidos y probados con restauración real | `N/A (repo actual)` — el único dato persistente (knowledge-graph) depende de git como único respaldo, sin prueba de restauración documentada |
+| Backups / DR | RTO/RPO definidos y probados con restauración real | `N/A (repo actual)` — el único dato persistente depende de git como respaldo, sin prueba de restauración documentada |
 | Observabilidad | Logs estructurados, métricas, alertas accionables | `N/A (repo actual)` |
 | Privacidad | Clasificación de datos personales, minimización, retención | `N/A (repo actual)` |
 | Accesibilidad | WCAG, navegación por teclado, lectores de pantalla | `N/A (repo actual)` |
 | Compatibilidad | Matriz de navegadores/dispositivos soportados | `N/A (repo actual)` |
-| Integraciones externas | Manejo de fallas de terceros, timeouts, contratos | Parcial — dependencia de `npx` hacia npm registry (ver H-04) |
-| Operación | Runbooks, on-call, gestión de incidentes | `N/A (repo actual)` |
+| Integraciones externas | Manejo de fallas de terceros, timeouts, contratos | Parcial — dependencia de `npx` hacia el registro de npm; ver H-04 |
+| Operación | Runbooks, guardias, gestión de incidentes | `N/A (repo actual)` |
 
 ---
 
 ## 7. Casos de prueba detallados y reproducibles
 
-### Caso T-01 — Verificar resolución de `MEMORY_FILE_PATH`
+### Caso T-01 — Resolución de `MEMORY_FILE_PATH`
 
-- **Área/componente:** Servidor MCP `memory`, configuración en `.mcp.json`.
-- **Objetivo:** Confirmar si la ruta absoluta configurada existe en el entorno de ejecución real.
-- **Procedimiento reproducible:**
-  1. En una sesión con este repo clonado, ejecutar `pwd`.
-  2. Ejecutar `ls -la /home/user/pagina-oro-loader/.claude/memory/` (la ruta literal de `MEMORY_FILE_PATH`).
-- **Resultado esperado (si el sistema fuera correcto):** el directorio existe y el archivo es escribible.
-- **Resultado obtenido:** `ls: cannot access '/home/user/pagina-oro-loader/.claude/memory/': No such file or directory` — la ruta **no existe**; el working directory real es `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html`.
-- **Evidencia:** salida de comando capturada en esta sesión (ver bloque de comandos ejecutados).
-- **Severidad:** Alta.
-- **Probabilidad e impacto:** Probabilidad alta de que se repita en cualquier sesión nueva sobre este mismo repo (la causa es estructural, no puntual). Impacto: pérdida de memoria persistente, funcionalidad central documentada en `CLAUDE.md`.
-- **Riesgo de negocio/técnico:** Bajo riesgo de negocio directo (es tooling interno), pero alto riesgo de continuidad de contexto entre sesiones de Claude Code — el propósito declarado del sistema de memoria queda incumplido.
-- **Recomendación concreta:** Reemplazar la ruta hardcodeada por una relativa al repo si el harness lo soporta, o por una que se derive dinámicamente del working directory real en cada entorno; en su defecto, documentar explícitamente que la ruta debe ajustarse manualmente por entorno antes de cada uso, y agregar una verificación automática (script o step de CI) que falle visiblemente si la ruta no resuelve.
-- **Criterio de cierre verificable:** `ls` sobre la ruta configurada en `MEMORY_FILE_PATH` resuelve sin error en el entorno donde se ejecute la sesión, verificado en al menos una sesión nueva post-fix.
-- **Estado:** **Validado (hallazgo confirmado, fix pendiente).**
+| Campo | Detalle |
+|---|---|
+| Área/componente | Servidor MCP `memory`, configuración en `.mcp.json` |
+| Objetivo | Confirmar si la ruta absoluta configurada existe en el entorno de ejecución real |
+| Procedimiento | (1) Ejecutar `pwd`. (2) Ejecutar `ls -la` sobre la ruta literal de `MEMORY_FILE_PATH` |
+| Resultado esperado | El directorio existe y el archivo es escribible |
+| Resultado obtenido (previo a la corrección) | `No such file or directory` — la ruta configurada no coincidía con el directorio real del entorno |
+| Severidad | Alta |
+| Recomendación | Corregir la ruta para que coincida con el entorno real; documentar el procedimiento de verificación por sesión |
+| Criterio de cierre | `ls` sobre la ruta configurada resuelve sin error |
+| Estado | **Validado. Corregido y reverificado — ver Anexo C.** |
 
-### Caso T-02 — Verificar si el CI bloquea un secreto detectado
+### Caso T-02 — Comportamiento del CI ante un secreto detectado
 
-- **Área/componente:** `.github/workflows/memory-mcp-validate.yml`.
-- **Objetivo:** Confirmar si un secreto agregado al `knowledge-graph.jsonl` impide el merge de un PR.
-- **Procedimiento reproducible:**
-  1. En una rama de prueba (nunca en `main` sin aprobación), agregar una línea con un patrón que matchee la regex del scanner (ej. una clave de ≥16 caracteres alfanuméricos precedida por una etiqueta como `token`, `secret` o `api_key` — no se transcribe el literal aquí para no hacer que este propio documento dispare el escáner ampliado tras H-03).
-  2. Abrir un PR y observar el resultado del check `memory-mcp-validate`.
-  3. Verificar si GitHub permite mergear el PR pese al `::warning::` emitido.
-- **Resultado esperado:** dado que el job tiene `continue-on-error: true`, el check debería figurar como no-bloqueante independientemente del resultado del script.
-- **Resultado obtenido:** **No ejecutado** — requiere abrir un PR de prueba con contenido sintético; se marca como prueba a ejecutar, no simulada, para no insertar datos falsos en el repo sin autorización.
-- **Evidencia requerida:** captura del check run en GitHub mostrando `continue-on-error` y el resultado del merge.
-- **Severidad:** Media-Alta.
-- **Probabilidad e impacto:** Alta probabilidad de que el comportamiento sea el esperado por el propio YAML (`continue-on-error: true` es una directiva explícita y confiable de GitHub Actions); impacto si se confirma: ningún secreto real quedaría bloqueado por este control.
-- **Recomendación concreta:** Decidir explícitamente si este control debe ser bloqueante. Si el objetivo es solo "avisar", documentarlo como tal en `CLAUDE.md` para que nadie asuma protección real. Si el objetivo es prevenir secretos en el repo, quitar `continue-on-error: true` (o acotarlo a los pasos no críticos) y considerar ampliar el escaneo a todo el repositorio.
-- **Criterio de cierre verificable:** Definición explícita y documentada de la política (bloqueante vs. informativo), reflejada correctamente en el YAML.
-- **Estado:** **Pendiente** (requiere ejecución en PR de prueba con autorización, no se ejecuta de oficio para evitar introducir contenido sintético sin aprobación).
+| Campo | Detalle |
+|---|---|
+| Área/componente | `.github/workflows/memory-mcp-validate.yml` |
+| Objetivo | Confirmar si un secreto agregado al repositorio impide el merge de un PR |
+| Procedimiento | En una rama de prueba, agregar contenido que dispare la regex del escáner; abrir un PR; observar si el check bloquea el merge |
+| Resultado esperado (configuración previa) | Dado `continue-on-error: true`, el check figuraría como no bloqueante independientemente del resultado |
+| Resultado obtenido | No ejecutado con contenido sintético, por instrucción explícita del usuario. Verificación indirecta realizada: los mismos comandos que ejecuta el CI corren en verde localmente tras la corrección (ver Anexo C) |
+| Severidad | Media-Alta |
+| Recomendación | Ejecutar esta prueba con autorización explícita cuando se requiera una confirmación positiva completa |
+| Criterio de cierre | Comportamiento del CI verificado en un PR con contenido sintético autorizado |
+| Estado | **Pendiente de confirmación positiva en GitHub; verificación local equivalente completada.** |
 
-### Caso T-03 — Validar JSON de `.mcp.json`
+### Caso T-03 — Validez de `.mcp.json`
 
-- **Área/componente:** `.mcp.json`.
-- **Objetivo:** Confirmar que el archivo es JSON válido (lo que el propio CI ya valida en cada push/PR).
-- **Procedimiento reproducible:** `python3 -c "import json; json.load(open('.mcp.json'))"`.
-- **Resultado obtenido:** `[HECHO]` Ejecutado localmente en esta auditoría — el archivo es JSON válido, sin errores de sintaxis.
-- **Evidencia:** ejecución sin excepción.
-- **Severidad:** Informativa.
-- **Recomendación:** Ninguna acción requerida sobre este punto puntual.
-- **Criterio de cierre:** Cumplido.
-- **Estado:** **Validado.**
+| Campo | Detalle |
+|---|---|
+| Área/componente | `.mcp.json` |
+| Objetivo | Confirmar que el archivo es JSON válido |
+| Procedimiento | `python3 -c "import json; json.load(open('.mcp.json'))"` |
+| Resultado obtenido | `[HECHO]` Sin errores de sintaxis |
+| Severidad | Informativa |
+| Estado | **Validado.** |
 
-### Caso T-04 — Verificar pin de versión del paquete MCP
+### Caso T-04 — Pin de versión del paquete MCP
 
-- **Área/componente:** `.mcp.json`, dependencia `@modelcontextprotocol/server-memory`.
-- **Objetivo:** Determinar si la versión ejecutada es reproducible entre sesiones.
-- **Procedimiento reproducible:** Inspeccionar el campo `args` de `.mcp.json`: `["-y", "@modelcontextprotocol/server-memory"]` — sin sufijo de versión (`@x.y.z`) ni lockfile en el repo.
-- **Resultado obtenido:** `[HECHO]` Confirmado — no hay pin de versión ni lockfile.
-- **Severidad:** Media.
-- **Riesgo:** Cambios de comportamiento no controlados si el paquete publica una nueva versión con breaking changes; superficie de supply-chain (ejecuta código de un paquete de terceros vía `npx -y` sin intervención humana).
-- **Recomendación concreta:** Pinear a una versión específica (`@modelcontextprotocol/server-memory@<versión exacta>`) y actualizarla de forma deliberada, no automática.
-- **Criterio de cierre verificable:** `.mcp.json` referencia una versión explícita; revisión periódica documentada.
-- **Estado:** **Validado (hallazgo confirmado).**
+| Campo | Detalle |
+|---|---|
+| Área/componente | `.mcp.json`, dependencia `@modelcontextprotocol/server-memory` |
+| Objetivo | Determinar si la versión ejecutada es reproducible entre sesiones |
+| Resultado obtenido (previo a la corrección) | `[HECHO]` Sin pin de versión ni lockfile |
+| Severidad | Media |
+| Recomendación | Pinear una versión exacta y actualizarla de forma deliberada |
+| Estado | **Validado. Corregido y reverificado — ver Anexo C.** |
 
 ### Caso T-05 — Prueba de restauración del backup del knowledge-graph
 
-- **Área/componente:** Persistencia de memoria / continuidad ante pérdida de contenedor.
-- **Objetivo:** Confirmar que, si el contenedor se recicla, el contenido de memoria sobrevive vía git.
-- **Procedimiento reproducible:** Requiere un ciclo real de reciclado de contenedor con contenido no vacío en el knowledge-graph, commit del mismo, y verificación post-reciclado. No ejecutable dentro de esta sesión.
-- **Resultado obtenido:** No ejecutado — `[BLOQUEADO]` requiere ventana operativa y no puede simularse de forma confiable en una sola sesión.
-- **Severidad:** Media (el archivo está vacío hoy, por lo que el riesgo actual es bajo, pero la propiedad no está probada).
-- **Recomendación:** Ejecutar la prueba la próxima vez que el knowledge-graph tenga contenido real, documentando el resultado.
-- **Criterio de cierre:** Restauración exitosa documentada al menos una vez.
-- **Estado:** **Bloqueado** (requiere condiciones que no se dan en esta sesión).
+| Campo | Detalle |
+|---|---|
+| Área/componente | Persistencia de memoria / continuidad ante pérdida de contenedor |
+| Objetivo | Confirmar que el contenido de memoria sobrevive a un reciclado de contenedor, vía git |
+| Procedimiento | Requiere un ciclo real de reciclado de contenedor con contenido no vacío en el knowledge-graph, commit del mismo, y verificación posterior |
+| Resultado obtenido | No ejecutable dentro de esta sesión |
+| Severidad | Media (riesgo actual bajo, dado que el archivo está vacío; la propiedad de recuperación no está probada) |
+| Estado | **Bloqueado** — requiere condiciones que no se dan en esta sesión |
 
 ---
 
@@ -218,11 +204,12 @@ Por instrucción explícita del usuario se corrigieron H-01, H-02, H-03 y H-04 s
 
 | ID | Hallazgo | Severidad | Evidencia | Estado |
 |---|---|---|---|---|
-| H-01 | Ruta hardcodeada de `MEMORY_FILE_PATH` no existe en este entorno (ENOENT) | Alta | `ls` fallido, ver T-01 | Validado |
-| H-02 | CI de validación es no-bloqueante (`continue-on-error: true`) | Media-Alta | Lectura directa del YAML | Validado |
-| H-03 | Escaneo de secretos con cobertura parcial (solo un archivo) | Media | Lectura directa del YAML | Validado |
-| H-04 | Dependencia MCP sin pin de versión ni lockfile | Media | Lectura directa de `.mcp.json` | Validado |
-| H-06 | El repositorio no contiene la aplicación "pagina-oro-loader" que su nombre sugiere | Crítica para el objetivo de auditoría del "programa", no para el repo | `git log --all`, listado de archivos | Validado (gap de alcance) |
+| H-01 | Ruta hardcodeada de `MEMORY_FILE_PATH` no coincidía con el entorno real | Alta | `ls` fallido, ver T-01 | Remediado y verificado |
+| H-02 | CI de validación no bloqueante (`continue-on-error: true`) | Media-Alta | Lectura directa del YAML | Remediado |
+| H-03 | Escaneo de secretos con cobertura parcial | Media | Lectura directa del YAML | Remediado y verificado |
+| H-04 | Dependencia MCP sin pin de versión ni lockfile | Media | Lectura directa de `.mcp.json` | Remediado y verificado |
+| H-06 | El repositorio no contiene la aplicación "pagina-oro-loader" que su nombre sugiere | Crítica para el objetivo de auditoría del "programa" | `git log --all`, inventario de archivos | Sin resolver — gap de alcance, no corregible desde este repositorio |
+| H-09 | Falso positivo del escáner de secretos ampliado, detectado en una corrida real de GitHub Actions | Alta | Log de check `validate` fallido | Remediado y verificado |
 
 ---
 
@@ -230,61 +217,132 @@ Por instrucción explícita del usuario se corrigieron H-01, H-02, H-03 y H-04 s
 
 | # | Inferencia / riesgo | Base | Confianza |
 |---|---|---|---|
-| 1 | `[INFERENCIA]` H-01 es probablemente la causa (o una causa contribuyente) de H-05 (inestabilidad del servidor `memory` observada en esta sesión) | Un `ENOENT` al iniciar el proceso del servidor MCP es una causa típica de que un servidor stdio no llegue a exponer sus tools de forma estable | Media — no confirmado con logs del propio servidor MCP, que no están accesibles desde esta sesión |
-| 2 | `[RIESGO]` Si en algún momento se sube a este repo el código real de "pagina-oro-loader.html" sin pasar por este mismo pipeline de CI, quedaría sin ningún control automático (ni de secretos, ni de sintaxis, ni de tests) | El único workflow existente audita exclusivamente `.mcp.json` y el knowledge-graph | Alta (estructural, no depende de una prueba puntual) |
-| 3 | `[RIESGO]` Ausencia de `LICENSE`, `README.md` funcional y política de contribución puede generar ambigüedad operativa si el repo escala con más colaboradores | No se encontró ninguno de estos archivos | Media |
-| 4 | `[SUPOSICION]` El usuario probablemente espera que esta auditoría cubra también el `index.html` local mencionado anteriormente en la conversación, que no está en este repo | Contexto conversacional previo | Alta como hipótesis de intención, pero no verificable sin que el usuario lo confirme o suba el archivo |
+| 1 | `[INFERENCIA]` H-01 fue probablemente causa contribuyente de H-05 | Un error `ENOENT` al iniciar el proceso de un servidor MCP stdio es una causa típica de inestabilidad en la exposición de sus herramientas | Media — no confirmado con logs propios del servidor, no accesibles desde esta sesión |
+| 2 | `[RIESGO]` Si se incorpora a este repositorio el código real de "pagina-oro-loader" sin pasar por el pipeline actual, quedaría sin ningún control automático de calidad o seguridad | El único workflow existente audita `.mcp.json` y los archivos versionados por el escáner de secretos, no código de aplicación | Alta — estructural, no depende de una prueba puntual |
+| 3 | `[RIESGO]` La ausencia de `LICENSE`, `README.md` funcional y política de contribución puede generar ambigüedad operativa si el repositorio incorpora más colaboradores | No se encontró ninguno de estos archivos | Media |
+| 4 | `[SUPOSICION]` El usuario podría esperar que esta auditoría cubra también el `index.html` local mencionado en un intercambio previo, que no está en este repositorio | Contexto conversacional previo | Alta como hipótesis de intención; no verificable sin confirmación del usuario |
 
 ---
 
 ## 10. Plan de remediación priorizado
 
-| Prioridad | ID | Acción | Responsable sugerido | Evidencia de cierre | Criterio de cierre |
+| Prioridad | ID | Acción | Responsable sugerido | Criterio de cierre | Estado |
 |---|---|---|---|---|---|
-| 1 (Alta) | H-01 | Corregir `MEMORY_FILE_PATH` para que resuelva correctamente en el entorno real, o documentar el procedimiento de ajuste manual por entorno + agregar verificación automática que falle visiblemente si no resuelve | Owner del repo / mantenedor de `CLAUDE.md` | Ejecución de T-01 sin error en una sesión nueva | `ls` sobre la ruta configurada resuelve sin error |
-| 2 (Media-Alta) | H-02 | Decidir y documentar explícitamente si el CI debe ser bloqueante; ajustar `continue-on-error` en consecuencia | Owner del repo | YAML actualizado + PR de prueba (T-02) mostrando el comportamiento esperado | Comportamiento del CI coincide con la política documentada |
-| 3 (Media) | H-04 | Pinear versión de `@modelcontextprotocol/server-memory` en `.mcp.json` | Owner del repo | Diff del `.mcp.json` con versión explícita | Ejecuciones sucesivas usan la misma versión verificablemente |
-| 4 (Media) | H-03 | Evaluar ampliar el escaneo de secretos a todo el repositorio (o justificar por qué el alcance actual es suficiente) | Owner del repo / seguridad | YAML actualizado o nota de decisión documentada | Escaneo cubre el alcance decidido, documentado |
-| 5 (Media) | H-06 | Definir dónde vive realmente el código de "pagina-oro-loader" y, si corresponde, incorporarlo a este repositorio o vincular el repo correcto a la sesión | Usuario / owner de producto | Repo conectado o archivo subido | Auditoría funcional del "programa" puede ejecutarse con evidencia real |
-| 6 (Baja) | — | Agregar `README.md` explicando el propósito del repositorio | Owner del repo | Archivo creado | Archivo presente y accesible |
+| 1 | H-01 | Corregir `MEMORY_FILE_PATH` para el entorno real | Owner del repositorio | `ls` sobre la ruta configurada resuelve sin error | **Cerrado** |
+| 2 | H-02 | Definir y aplicar política de bloqueo del CI | Owner del repositorio | Comportamiento del CI coincide con la política documentada | **Cerrado**; confirmación positiva en GitHub pendiente |
+| 3 | H-04 | Pinear versión de la dependencia MCP | Owner del repositorio | Ejecuciones sucesivas usan la misma versión verificablemente | **Cerrado** |
+| 4 | H-03 | Ampliar el escaneo de secretos a todo el repositorio | Owner del repositorio / seguridad | Escaneo cubre el alcance decidido, documentado | **Cerrado** |
+| 5 | H-09 | Corregir el falso positivo del escáner sobre sí mismo | Owner del repositorio | Suite de tests y escaneo repo-real en verde, confirmado en GitHub Actions | **Cerrado** |
+| 6 | H-06 | Definir dónde vive el código real de "pagina-oro-loader" e incorporarlo o vincularlo a la sesión | Usuario / owner de producto | Repositorio conectado o código incorporado | Abierto |
+| 7 | — | Agregar `README.md` explicando el propósito del repositorio | Owner del repositorio | Archivo presente y accesible | Abierto (baja prioridad) |
 
 ---
 
 ## 11. Criterios de salida a producción
 
-`[HECHO]` **No existe una aplicación de producción en este repositorio** sobre la cual emitir un veredicto de apto/no apto en el sentido funcional del pedido.
+`[HECHO]` No existe una aplicación de producción en este repositorio sobre la cual emitir un veredicto de aptitud en el sentido funcional del pedido original.
 
-**Veredicto sobre lo que sí existe (tooling de memoria MCP + CI):**
+**Veredicto sobre el tooling existente (configuración MCP + CI):**
 
-> **Apto con condiciones.**
-
-Condiciones para levantar la reserva:
-1. Resolver H-01 (ruta de memoria persistente) y verificarlo en al menos una sesión nueva.
-2. Decidir y documentar explícitamente la política de bloqueo del CI (H-02).
-3. Pinear versión de la dependencia MCP (H-04).
+> **Apto con condiciones.** Las condiciones originales (H-01, H-02, H-04) fueron remediadas y verificadas localmente en esta sesión. Queda pendiente únicamente la confirmación positiva en una ejecución real de GitHub Actions de que el CI bloquea un secreto efectivo (dato #4 de la sección 4), no ejecutada por instrucción explícita del usuario.
 
 **Veredicto sobre el objetivo original ("auditar el programa"):**
 
-> **No aplica / no ejecutable con la evidencia disponible.** No es un "no apto" del programa — es la ausencia del objeto de auditoría en este repositorio. Se requiere el insumo de la sección 12 para poder emitir cualquier veredicto funcional.
+> **No aplica con la evidencia disponible.** No se trata de un veredicto de "no apto", sino de la ausencia del objeto de auditoría en este repositorio. Se requiere el insumo detallado en la sección 12 para emitir cualquier veredicto funcional.
 
 ---
 
 ## 12. Preguntas bloqueantes y próximos pasos
 
-| # | Pregunta bloqueante | Por qué es necesaria |
+| # | Pregunta bloqueante | Relevancia |
 |---|---|---|
-| 1 | ¿Dónde vive el código real de "pagina-oro-loader.html" / el `index.html` mencionado antes en la conversación — es otro repositorio de GitHub, o solo un archivo local en tu PC que aún no se subió a ningún repo? | Sin esto no se puede auditar frontend, backend, APIs, BD, auth, ni ningún ítem funcional del checklist de la sección 6 |
-| 2 | Si es otro repositorio: ¿puedo conectarlo a esta sesión (`add_repo`) para auditarlo directamente? | Habilitaría una auditoría real de código, en vez de un plan teórico |
-| 3 | ¿La corrección de H-01 (ruta de memoria) se autoriza para ejecutarse ahora, o preferís revisarla vos primero? | Es un cambio de configuración de bajo riesgo pero toca un archivo ya documentado como "bug confirmado" — se prefiere confirmación antes de tocarlo de nuevo |
-| 4 | ¿Se autoriza abrir un PR de prueba sintético para ejecutar el caso T-02 (verificar si el CI realmente no bloquea un secreto)? | Requiere insertar contenido sintético temporal en una rama, que se recomienda hacer solo con autorización explícita |
-| 5 | ¿Existe algún ambiente de staging/producción vinculado a este proyecto sobre el que deba evaluarse infraestructura, backups y monitoreo? | Sin esto, esas secciones del checklist quedan como plan, no como auditoría ejecutada |
+| 1 | ¿Dónde vive el código real de "pagina-oro-loader.html" — otro repositorio de GitHub, o un archivo local aún no incorporado a ningún repositorio? | Sin esta definición no es posible auditar frontend, backend, APIs, base de datos ni autenticación |
+| 2 | Si se trata de otro repositorio, ¿corresponde conectarlo a esta sesión para su auditoría directa? | Habilitaría una auditoría real de código en lugar de un plan teórico |
+| 3 | ¿Existe algún ambiente de staging/producción vinculado a este proyecto sobre el que deba evaluarse infraestructura, backups y monitoreo? | Sin esto, esas secciones del checklist permanecen como plan, no como auditoría ejecutada |
 
-**Próximos pasos sugeridos (en orden):**
-1. Responder la pregunta bloqueante #1 — es la que desbloquea el resto de la auditoría funcional.
-2. Autorizar (o no) la corrección de H-01.
-3. Definir política de CI (bloqueante vs. informativo) para H-02.
-4. Si aparece código de aplicación real, re-ejecutar esta auditoría usando el checklist de la sección 6 como marco completo.
+**Próximos pasos sugeridos:**
+1. Definir la ubicación real del código de aplicación (pregunta #1) — desbloquea la auditoría funcional completa.
+2. Autorizar, si corresponde, la ejecución de un PR de prueba controlado para confirmar T-02 de forma positiva en GitHub Actions.
+3. Ante la incorporación de código de aplicación real, reejecutar esta auditoría utilizando el checklist de la sección 6 como marco completo.
 
 ---
 
-*No puedo confirmar con la información disponible en esta sesión cuál es el estado de una aplicación "pagina-oro-loader.html" fuera de este repositorio, ni el estado de branch protection en GitHub, ni el comportamiento exacto del CI ante un secreto real sin ejecutar la prueba correspondiente. Estos puntos quedan marcados como pendientes, no como hallazgos asumidos.*
+## Anexo A — Síntesis: hechos, inferencias, riesgos y pendientes
+
+- **Hechos verificados:** todos los hallazgos H-01 a H-04, H-08 y H-09 cuentan con evidencia reproducible capturada en esta sesión (comandos ejecutados, respuestas de protocolo MCP, logs de GitHub Actions).
+- **Inferencias:** la relación entre H-01 y H-05 (sección 9, ítem 1) es razonable pero no confirmada con logs internos del servidor MCP.
+- **Riesgos abiertos:** H-05 (estabilidad del servidor de memoria) y H-06 (ausencia del código de aplicación) permanecen sin resolver al cierre de este documento.
+- **Datos pendientes de verificación crítica:** confirmación positiva en GitHub Actions de que el CI bloquea un secreto real (sección 4, ítem 4); estado de branch protection sobre `main`; ubicación real del código de aplicación.
+
+## Anexo B — Preguntas de validación sugeridas para una futura auditoría funcional
+
+1. ¿Cuál es la arquitectura y el stack tecnológico de la aplicación real, una vez identificada su ubicación?
+2. ¿Existen ambientes de staging y producción diferenciados, y quién administra sus accesos?
+3. ¿Qué nivel de cobertura de tests automatizados tiene el código de aplicación, si existe?
+4. ¿Existen incidentes previos documentados sobre esta aplicación que deban considerarse en el alcance de la auditoría?
+5. ¿Qué datos personales o sensibles procesa la aplicación, si los procesa?
+
+## Anexo C — Registro de remediación (2026-08-13)
+
+Por instrucción explícita del usuario, se corrigieron H-01, H-02, H-03 y H-04 sobre este mismo repositorio, sin abrir PRs sintéticos ni auditar sistemas externos. Los hallazgos originales de las secciones 5, 7 y 8 permanecen documentados como registro histórico; este anexo detalla qué se hizo y cómo se verificó cada corrección.
+
+### H-01 — Ruta de memoria persistente
+
+`MEMORY_FILE_PATH` en `.mcp.json` se actualizó a `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl`, la ruta real de este entorno, confirmada con `pwd`.
+
+**Verificación:** se instanció manualmente el servidor `npx -y @modelcontextprotocol/server-memory` con esa variable de entorno y se envió una llamada `create_entities` de prueba por el protocolo MCP (stdio). Se confirmó que la entidad quedó escrita en el archivo. Previamente se probó una ruta relativa, que falló — resuelve contra el directorio interno del paquete npm instalado por `npx`, no contra el directorio del repositorio — alternativa descartada y documentada en `CLAUDE.md`. El archivo de memoria se revirtió a 0 bytes antes de commitear, para no dejar datos sintéticos de prueba en el repositorio.
+
+**Evidencia:** respuesta de `create_entities` con resultado no vacío usando la ruta absoluta; error `ENOENT` explícito usando la ruta relativa; `wc -c` = 0 tras la reversión.
+
+**Estado:** corregido y verificado.
+
+### H-02 — CI no bloqueante
+
+Se eliminó `continue-on-error: true` del job `validate` en `.github/workflows/memory-mcp-validate.yml`. Ambos steps (validación de JSON y escaneo de secretos) bloquean ahora el check.
+
+**Verificación:** se ejecutaron localmente los mismos comandos que corre el CI contra el estado final del repositorio; los tres terminan en código de salida 0.
+
+**Estado:** corregido. La confirmación positiva de que el CI bloquea un secreto real en una ejecución de GitHub Actions queda pendiente (no se ejecutó, por instrucción explícita del usuario, para evitar introducir contenido sintético sin autorización).
+
+### H-03 — Cobertura del escaneo de secretos
+
+El escaneo se extrajo de un script embebido en el YAML a `scripts/scan_secrets.py`, versionado y testeado, que recorre todos los archivos versionados por git (`git ls-files`) en lugar de un único archivo.
+
+**Verificación:** ejecución contra el repositorio real sin coincidencias, código de salida 0. Un test dedicado confirma, sobre un repositorio git sintético en un directorio temporal, que el script detecta un secreto en un archivo distinto del knowledge-graph.
+
+**Estado:** corregido y verificado.
+
+### H-04 — Dependencia sin pin de versión
+
+`.mcp.json` pinea ahora `@modelcontextprotocol/server-memory@0.6.3`, versión exacta observada en el campo `serverInfo.version` de la respuesta `initialize` capturada durante la verificación de H-01.
+
+**Estado:** corregido y verificado.
+
+### H-08 — Artefactos de bytecode sin ignorar (detectado durante la remediación)
+
+Al ejecutar los tests localmente se generó `scripts/__pycache__/*.pyc`, un artefacto que no debía versionarse; el repositorio no contaba con un `.gitignore`.
+
+**Acción:** se eliminó el bytecode generado y se agregó `.gitignore` (`__pycache__/`, `*.pyc`).
+
+**Estado:** corregido.
+
+### H-09 — Falso positivo del escáner sobre sí mismo (detectado en una corrida real de GitHub Actions)
+
+El fix de H-03 rompió el propio CI: la regex original usaba un separador opcional entre la palabra clave y el valor, por lo que matcheaba como subcadena dentro de palabras en español que contienen accidentalmente "secret" — por ejemplo, "secreto" dentro del nombre de la función `test_detecta_secreto_con_prefijo_conocido` — sin que existiera un secreto real. Adicionalmente, los propios strings de prueba de `tests/test_scan_secrets.py`, usados para validar la regex, quedaron dentro del alcance ampliado del escaneo y también generaban coincidencias.
+
+**Evidencia:** check `validate` fallido en la ejecución `31661138296` de GitHub Actions, con el mensaje `Posible secreto detectado en .../tests/test_scan_secrets.py: secreto_con_prefijo_conocido...`.
+
+**Corrección:** la regex ahora exige un límite de palabra al inicio y un separador obligatorio (`[\"':= ]+` en lugar de opcional) entre la palabra clave y el valor; se agregó una exclusión explícita y documentada para `tests/test_scan_secrets.py` en el propio script. Se sumaron dos tests de regresión que cubren específicamente este caso.
+
+**Verificación:** 7 de 7 tests en verde localmente; escaneo del repositorio real en código de salida 0.
+
+**Estado:** corregido y verificado, incluyendo confirmación en una ejecución real de GitHub Actions posterior a la corrección.
+
+### Explícitamente no ejecutado, por instrucción del usuario
+
+- No se abrió ningún PR con contenido sintético. El caso T-02 permanece sin confirmación empírica positiva de que GitHub bloquea el merge ante un secreto real; lo verificado es que el script y los tests, ejecutados como lo haría el CI, se comportan según lo esperado.
+- No se auditó ningún sistema externo a este repositorio. El `index.html` / "pagina-oro-loader" mencionado en la conversación permanece fuera de alcance; H-06 sigue sin resolver, por tratarse de una decisión de producto y no de una corrección técnica ejecutable desde este repositorio.
+
+---
+
+*Este documento no afirma la ausencia de errores ni una condición de seguridad absoluta sobre los componentes auditados. Todo punto sin evidencia directa se marca explícitamente como pendiente o como inferencia, y no como hallazgo confirmado.*
