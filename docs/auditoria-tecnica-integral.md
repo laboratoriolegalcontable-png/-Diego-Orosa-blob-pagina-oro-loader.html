@@ -234,7 +234,7 @@ Este checklist constituye el marco completo a aplicar cuando exista código de a
 | 4 | H-03 | Ampliar el escaneo de secretos a todo el repositorio | Owner del repositorio / seguridad | Escaneo cubre el alcance decidido, documentado | **Cerrado** |
 | 5 | H-09 | Corregir el falso positivo del escáner sobre sí mismo | Owner del repositorio | Suite de tests y escaneo repo-real en verde, confirmado en GitHub Actions | **Cerrado** |
 | 6 | H-06 | Definir dónde vive el código real de "pagina-oro-loader" e incorporarlo o vincularlo a la sesión | Usuario / owner de producto | Repositorio conectado o código incorporado | Abierto |
-| 7 | — | Agregar `README.md` explicando el propósito del repositorio | Owner del repositorio | Archivo presente y accesible | Abierto (baja prioridad) |
+| 7 | — | Agregar `README.md` explicando el propósito del repositorio | Owner del repositorio | Archivo presente y accesible | **Cerrado** |
 
 ---
 
