@@ -336,4 +336,150 @@ Un SaaS vertical para administradores de consorcios (propiedad horizontal) en Ar
 
 ---
 
-*Documento de trabajo interno. No distribuir a clientes ni inversores como si fuera una propuesta legal o comercialmente cerrada hasta resolver los puntos marcados `[VERIFICAR]`.*
+## Anexo C — Especificación técnica preliminar del MVP (borrador de ingeniería)
+
+`[SUPUESTO]` Todo el contenido de este anexo es una **propuesta de diseño técnico**, no una implementación existente ni una decisión cerrada. Se incluye para acelerar el arranque de la fase 1 (sección 3), pero debe ser revisado y ajustado por quien lidere el desarrollo antes de escribir código — en particular las reglas de prorrateo, que varían por consorcio y reglamento (ver 4.4).
+
+### C.1 Modelo de datos — boceto de esquema relacional
+
+Boceto ilustrativo en SQL (PostgreSQL), pensado para validar el modelo conceptual de la sección 4.3, no como DDL final. Omite índices, particionado y auditoría detallada por brevedad — deben agregarse antes de implementar (ver 6.4).
+
+```sql
+-- Boceto de esquema — no ejecutar en producción sin revisión de ingeniería
+CREATE TABLE consorcio (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre          TEXT NOT NULL,
+    direccion       TEXT NOT NULL,
+    cuit            TEXT,                    -- [VERIFICAR] si es obligatorio para facturación (sección 7)
+    creado_en       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE unidad_funcional (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    consorcio_id    UUID NOT NULL REFERENCES consorcio(id),
+    identificador   TEXT NOT NULL,            -- ej. "UF 12", "PB A"
+    porcentual      NUMERIC(6,4) NOT NULL,    -- % de copropiedad; suma por consorcio debe validarse = 100.0000
+    UNIQUE (consorcio_id, identificador)
+);
+
+CREATE TABLE persona (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre          TEXT NOT NULL,
+    email           TEXT,
+    telefono        TEXT,
+    creado_en       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Relación N:M entre persona y unidad_funcional, con rol explícito
+CREATE TABLE persona_unidad (
+    persona_id          UUID NOT NULL REFERENCES persona(id),
+    unidad_funcional_id UUID NOT NULL REFERENCES unidad_funcional(id),
+    rol                 TEXT NOT NULL CHECK (rol IN ('propietario', 'inquilino', 'consejo')),
+    desde               DATE NOT NULL DEFAULT CURRENT_DATE,
+    hasta               DATE,                 -- NULL = vigente; requerido para historial (ver 4.4)
+    PRIMARY KEY (persona_id, unidad_funcional_id, rol, desde)
+);
+
+CREATE TABLE proveedor (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    consorcio_id    UUID NOT NULL REFERENCES consorcio(id),
+    nombre          TEXT NOT NULL,
+    rubro           TEXT
+);
+
+CREATE TABLE gasto (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    consorcio_id    UUID NOT NULL REFERENCES consorcio(id),
+    proveedor_id    UUID REFERENCES proveedor(id),
+    rubro           TEXT NOT NULL,
+    tipo            TEXT NOT NULL CHECK (tipo IN ('ordinario', 'extraordinario', 'fondo_reserva')),
+    importe         NUMERIC(14,2) NOT NULL,
+    periodo         DATE NOT NULL,             -- primer día del mes que corresponde
+    comprobante_url TEXT
+);
+
+CREATE TABLE liquidacion (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    consorcio_id    UUID NOT NULL REFERENCES consorcio(id),
+    periodo         DATE NOT NULL,
+    publicada_en    TIMESTAMPTZ,               -- NULL = borrador, no visible al propietario (ver 5.2)
+    UNIQUE (consorcio_id, periodo)
+);
+
+CREATE TABLE detalle_liquidacion (
+    id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    liquidacion_id       UUID NOT NULL REFERENCES liquidacion(id),
+    unidad_funcional_id  UUID NOT NULL REFERENCES unidad_funcional(id),
+    importe              NUMERIC(14,2) NOT NULL,   -- resultado del prorrateo para esta unidad
+    UNIQUE (liquidacion_id, unidad_funcional_id)
+);
+
+CREATE TABLE pago (
+    id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    unidad_funcional_id  UUID NOT NULL REFERENCES unidad_funcional(id),
+    detalle_liquidacion_id UUID REFERENCES detalle_liquidacion(id),
+    importe              NUMERIC(14,2) NOT NULL,
+    medio                TEXT NOT NULL CHECK (medio IN ('transferencia', 'efectivo', 'pasarela_online')),
+    registrado_en        TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE reclamo (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    consorcio_id    UUID NOT NULL REFERENCES consorcio(id),
+    unidad_funcional_id UUID REFERENCES unidad_funcional(id),
+    creado_por      UUID NOT NULL REFERENCES persona(id),
+    categoria       TEXT,
+    descripcion     TEXT NOT NULL,
+    estado          TEXT NOT NULL DEFAULT 'recibido' CHECK (estado IN ('recibido', 'en_curso', 'resuelto')),
+    creado_en       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+Puntos abiertos que este boceto deja explícitamente sin resolver (marcar `[VERIFICAR]` con el equipo de desarrollo antes de implementar):
+- Estrategia de multi-tenancy a nivel de fila (row-level security de Postgres vs. filtrado en capa de aplicación) — impacta directamente el control de acceso por consorcio de la sección 4.2.
+- Modelo de auditoría (tabla de eventos separada vs. columnas `created_by`/`updated_by` en cada tabla) — requerido por 4.4 y 6.4.
+- Si `persona_unidad` necesita soft-delete o basta con el rango `desde`/`hasta` para el historial.
+
+### C.2 Diagrama entidad-relación (boceto)
+
+```mermaid
+erDiagram
+    CONSORCIO ||--o{ UNIDAD_FUNCIONAL : tiene
+    CONSORCIO ||--o{ PROVEEDOR : contrata
+    CONSORCIO ||--o{ GASTO : registra
+    CONSORCIO ||--o{ LIQUIDACION : emite
+    CONSORCIO ||--o{ RECLAMO : recibe
+    UNIDAD_FUNCIONAL ||--o{ PERSONA_UNIDAD : vincula
+    PERSONA ||--o{ PERSONA_UNIDAD : ocupa
+    PROVEEDOR ||--o{ GASTO : factura
+    LIQUIDACION ||--o{ DETALLE_LIQUIDACION : desglosa
+    UNIDAD_FUNCIONAL ||--o{ DETALLE_LIQUIDACION : recibe
+    DETALLE_LIQUIDACION ||--o{ PAGO : salda
+    UNIDAD_FUNCIONAL ||--o{ RECLAMO : origina
+    PERSONA ||--o{ RECLAMO : crea
+```
+
+### C.3 Endpoints REST — boceto del MVP
+
+Boceto de superficie de API para el alcance de la sección 2.1, sin definir aún autenticación (JWT vs. sesión), formato exacto de error ni versionado — decisiones que corresponden al equipo de desarrollo.
+
+| Método | Ruta | Propósito | Rol mínimo |
+|---|---|---|---|
+| `POST` | `/consorcios` | Alta de consorcio | administrador |
+| `POST` | `/consorcios/{id}/unidades` | Alta de unidad funcional (o importación masiva) | administrador |
+| `POST` | `/consorcios/{id}/personas` | Vincular propietario/inquilino a una unidad | administrador |
+| `POST` | `/consorcios/{id}/gastos` | Cargar un gasto del período | administrador |
+| `POST` | `/consorcios/{id}/liquidaciones` | Generar borrador de liquidación de un período | administrador |
+| `POST` | `/liquidaciones/{id}/publicar` | Publicar liquidación (dispara notificación a propietarios) | administrador |
+| `GET`  | `/liquidaciones/{id}/pdf` | Descargar cupón/liquidación en PDF | administrador, propietario (solo su unidad) |
+| `GET`  | `/unidades/{id}/estado-cuenta` | Estado de cuenta de una unidad | administrador, propietario (solo su unidad) |
+| `POST` | `/unidades/{id}/pagos` | Registrar un pago manual | administrador |
+| `POST` | `/consorcios/{id}/reclamos` | Crear un reclamo | propietario, administrador |
+| `PATCH`| `/reclamos/{id}` | Cambiar estado de un reclamo | administrador |
+| `POST` | `/consorcios/{id}/comunicaciones` | Publicar un aviso/circular | administrador |
+
+Todo endpoint que devuelva datos de una unidad funcional específica debe validar en backend que el `propietario` autenticado tenga vínculo vigente con esa unidad (`persona_unidad.hasta IS NULL`) — control que no puede delegarse al frontend, en línea con el requisito de aislamiento por consorcio de la sección 4.2.
+
+---
+
+*Documento de trabajo interno. No distribuir a clientes ni inversores como si fuera una propuesta legal o comercialmente cerrada hasta resolver los puntos marcados `[VERIFICAR]`. El Anexo C es un boceto de ingeniería para acelerar el arranque técnico y debe ser revisado por quien lidere el desarrollo antes de implementarse.*
