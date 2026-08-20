@@ -4,7 +4,7 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "env": {
-        "MEMORY_FILE_PATH": "/home/user/pagina-oro-loader/.claude/memory/knowledge-graph.jsonl"
+        "MEMORY_FILE_PATH": "/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl"
       }
     }
   }
