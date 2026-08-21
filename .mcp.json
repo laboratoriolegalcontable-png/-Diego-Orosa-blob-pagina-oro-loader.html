@@ -1,11 +1,8 @@
 {
   "mcpServers": {
     "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "env": {
-        "MEMORY_FILE_PATH": "/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl"
-      }
+      "command": "bash",
+      "args": [".claude/bin/run-memory-mcp.sh"]
     }
   }
 }

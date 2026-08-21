@@ -30,3 +30,13 @@ Se corrigio `MEMORY_FILE_PATH` en `.mcp.json` para que apunte a la ruta real:
 `/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl`.
 Si el entorno vuelve a montar el repo en otra carpeta, volver a verificar esta
 ruta antes de confiar en la persistencia.
+
+**FIX #3 — ruta ya no hardcodeada (2026-08-21):** por sugerencia del bot de
+revision `cubic` en el PR #4, `.mcp.json` ya no fija `MEMORY_FILE_PATH` a una
+ruta absoluta. Ahora `"memory"` corre via `.claude/bin/run-memory-mcp.sh`, que
+resuelve su propia ubicacion en runtime (`BASH_SOURCE`) y arma la ruta a
+partir de ahi. Si el harness vuelve a montar el repo en otra carpeta, esto
+deberia seguir funcionando sin tocar nada — pero si `.mcp.json` vuelve a fallar,
+revisar primero que el `command`/`args` sigan apuntando al wrapper (a veces un
+entorno headless resuelve `args` relativos contra un cwd distinto al root del
+repo; en ese caso, usar una ruta absoluta explicita en `args` como fallback).
