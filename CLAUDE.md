@@ -18,6 +18,15 @@ observaciones) para que Claude recuerde contexto entre sesiones.
 **BUG CONFIRMADO (2026-07-21):** `${CLAUDE_PROJECT_DIR}` en `env.MEMORY_FILE_PATH`
 NO se expande en este harness para servidores MCP tipo `command`/stdio (ENOENT
 resolviendo contra la carpeta del paquete npm, no el repo). Se reemplazo por
-ruta absoluta hardcodeada (`/home/user/pagina-oro-loader/.claude/memory/knowledge-graph.jsonl`).
-Verificar que esa ruta coincide con el working directory real antes de confiar
-en la persistencia; ajustar si el entorno monta el repo en otro lugar.
+ruta absoluta hardcodeada.
+
+**BUG #2 CONFIRMADO Y CORREGIDO (2026-08-20):** la ruta absoluta hardcodeada
+original (`/home/user/pagina-oro-loader/.claude/memory/knowledge-graph.jsonl`)
+NO coincidia con el working directory real de este entorno
+(`/home/user/-Diego-Orosa-blob-pagina-oro-loader.html`). Esa carpeta no existe,
+asi que el servidor de memoria nunca pudo escribir nada — el archivo real
+(`knowledge-graph.jsonl` en este repo) quedo vacio (0 lineas) todo este tiempo.
+Se corrigio `MEMORY_FILE_PATH` en `.mcp.json` para que apunte a la ruta real:
+`/home/user/-Diego-Orosa-blob-pagina-oro-loader.html/.claude/memory/knowledge-graph.jsonl`.
+Si el entorno vuelve a montar el repo en otra carpeta, volver a verificar esta
+ruta antes de confiar en la persistencia.
