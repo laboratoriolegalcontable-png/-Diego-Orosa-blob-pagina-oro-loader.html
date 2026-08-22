@@ -73,12 +73,22 @@ confirmar el número exacto: **Settings → Billing and plans → Actions**, en 
 cuenta de GitHub. Ahí vas a ver minutos consumidos este mes y el desglose por
 repo.
 
-### Acción recomendada (no la ejecuté, queda para que la apruebes)
+### Acción ejecutada — [ACTUALIZACIÓN 2026-08-22 04:02 UTC]
 
-- **Bajar la frecuencia del cron** de `model-router-ovh-guards.yml` de cada 2
-  horas a, por ejemplo, cada 6 u 8 horas (3-4 corridas/día en vez de 12) —
-  corta el consumo de ese workflow a un cuarto o un tercio sin perder la
-  detección de drift.
+Aprobada por el usuario ("Si baja costos"). Se abrió y está en revisión:
+**PR #1134 en `Diego-Orosa`** —
+[chore(infra): bajar frecuencia de model-router-ovh-guards de cada 2hs a
+cada 6hs](https://github.com/laboratoriolegalcontable-png/Diego-Orosa/pull/1134)
+(draft). Cambia únicamente `cron: '17 */2 * * *'` → `cron: '17 */6 * * *'`
+— de 12 corridas/día a 4/día (-66%), sin tocar los triggers de
+`pull_request` ni `workflow_dispatch` ni la lógica de auto-reparación.
+Verificado byte a byte contra el original antes de abrir el PR. Falta
+mergearlo.
+
+- **(Pendiente, no ejecutado)** evaluar si `claude-security-review.yml` y
+  `repo-sanity-check.yml` necesitan correr en TODOS los PR, o si alcanza
+  con que corran solo contra la rama principal o antes de mergear a
+  producción.
 - **Evaluar si `claude-security-review.yml` y `repo-sanity-check.yml`
   necesitan correr en TODOS los PR**, o si alcanza con que corran solo contra
   la rama principal o antes de mergear a producción.
