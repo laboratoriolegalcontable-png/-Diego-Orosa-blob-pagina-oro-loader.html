@@ -231,6 +231,20 @@ corriendo sin que nadie los mire.
 
 ---
 
+## 9.5. Hallazgo adicional (no relacionado al PR #1134) — checks rotos preexistentes en `Diego-Orosa`
+
+Al revisar el CI del PR #1134 apareció un check en rojo, **"Workflows YAML
+validos"** (parte del workflow `repo-sanity-check.yml`). Confirmado que
+**no lo causó mi cambio**: el mismo check ya fallaba en el commit base
+exacto (`7c7cd434`, del 21/08, un día antes de tocar nada), junto con otros
+dos checks del mismo workflow (`JSON valido en todo el repo` y `Scan de
+secrets hardcodeados`). Es decir: `repo-sanity-check.yml` viene fallando de
+forma consistente desde antes — otro síntoma más del desorden general del
+repo (44 workflows en `.github/workflows/`, no 6 como estimé en la sección
+2 — subestimé bastante). No identifiqué el archivo YAML exacto que dispara
+el error (el log de la corrida vieja ya expiró), pero no bloquea nada del
+PR #1134. Queda como item de auditoría separado para una próxima pasada.
+
 ## 9. Próximos pasos
 
 1. **Vos:** confirmame plan y servicios de OVH (§6) y el corte de fecha de
