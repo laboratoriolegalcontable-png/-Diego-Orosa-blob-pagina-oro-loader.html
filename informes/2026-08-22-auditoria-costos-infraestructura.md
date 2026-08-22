@@ -212,32 +212,81 @@ migrado y confirmado lo demás, cancelar la suscripción Pro de Make.
 
 ---
 
-## 6. OVH — dato tuyo confirmado, falta inventario
+## 6. OVH — [VERIFICADO 2026-08-22 04:35 UTC] inventario real, sin pedirte nada
 
-**[DATO DEL USUARIO]** ~$32-35 USD/mes.
+Encontré el repo `laboratoriolegalcontable-png/orosa-ovh-control` — es el
+control plane que Codex/Claude/Gemini usan para proponer y desplegar
+recursos en el OVH sin tener acceso SSH directo (el servidor solo tiene una
+deploy key de lectura y sincroniza `main` periódicamente). Ahí está
+documentado, con evidencia real, qué corre y qué está solo propuesto:
 
-No tengo conector a OVH desde esta sesión, así que no puedo ver qué corre
-ahí. Encontré que existe un repo `orosa-ovh-control` en tu cuenta de GitHub
-(lo agregué a esta sesión mientras armaba este informe) — dice referencias a
-"capacidad OVH pendiente de acceso al repo orosa-ovh-control" en commits
-recientes del repo Diego-Orosa, lo que sugiere que ya hay trabajo en curso
-ahí sobre esto mismo.
+**Confirmado operativo (con evidencia real, `reports/`):**
+- **Oro Nexus 360** — modo demo, salud verificada (`/api/health` →
+  `{"status":"ok","mode":"demo"}`), expuesto únicamente en
+  `127.0.0.1:18787` (sin salir a internet), filesystem read-only, sin
+  integraciones externas activas. Footprint mínimo.
 
-**Para completar esta parte del informe, necesito:**
-1. Plan exacto contratado (VPS/dedicado, specs)
-2. Qué corre ahí ahora (si tenés acceso SSH, corré `docker ps -a` o
-   `systemctl list-units --type=service --state=running` y pasame el output)
-3. Si el "servidor nuevo" 24/7 del que hablás (la desktop que dejaste
-   prendida) **reemplaza** al OVH o es algo **adicional**
+**Aprobado pero NO confirmado operativo todavía** (`content/control-plane-status.md`
+dice explícitamente "no declarado operativo — pendiente de que el
+sincronizador del OVH lo levante y el operador confirme evidencia real"):
 
-Sobre la idea de "explotar" la desktop 24/7 nueva: tiene sentido para la
-memoria unificada (WSL, ya documentado en el informe del 2026-08-22 de
-arquitectura de memoria) y para cargas de trabajo que no necesitan estar
-expuestas a internet — pero **no reemplaza automáticamente a OVH** si algo
-en OVH necesita responder desde una IP pública fija 24/7 (bots de WhatsApp,
-webhooks de Make, un sitio con dominio propio). Antes de mover algo de OVH a
-la desktop, confirmemos qué de lo que corre en OVH realmente necesita IP
-pública fija.
+- **RealEstate360Ultra** — stack completo de 8 servicios Docker (postgres,
+  redis, backend, frontend, ai-valuation, ai-nlp, mcp-server, pgadmin).
+  Límites declarados: **6 CPU / ~4.25 GB RAM** en total si arranca todo.
+  Imágenes propias pineadas por `@sha256` (no tags mutables), todo en
+  `127.0.0.1` sin exposición externa.
+- **Voicebox** — clonado/TTS de voz local (Whisper + multi-motor),
+  **pensado para reemplazar a ElevenLabs** generando las voces de Lucrecia,
+  Natalia y Megan sin pagarle a un proveedor externo. Límites: **2 CPU / 4
+  GB RAM**. Puerto `127.0.0.1:17600`.
+- **backup-pull-mirror** (`proposals/`, status `proposed`, todavía ni
+  aprobado) — contenedor liviano que un cron diario usa para bajar un
+  espejo de solo lectura del backup de Supabase (CRM, leads, causas,
+  facturación, memoria de conversaciones) a un volumen local del OVH. Pedido
+  explícito tuyo del 2026-08-21: **2 nodos de backup** — este OVH + una PC
+  Ubuntu de oficina — para continuidad si Supabase o la conexión fallan. NO
+  reemplaza a Supabase como fuente de verdad.
+
+### Lo que esto significa para tu pregunta original ("¿para qué nos sirve el OVH?")
+
+Hoy, confirmado, el OVH solo está cargando una demo liviana. Pero ya tiene
+**aprobado** (no operativo aún) un stack de 8 CPU / ~8.25 GB RAM combinado
+entre RealEstate360Ultra + Voicebox. Si esos dos se activan con tu plan
+actual de ~$32-35/mes, es **muy probable que el servidor esté
+subdimensionado** para eso — un VPS de esa gama normalmente no trae 8
+núcleos ni 8GB de RAM libres. Antes de preocuparte por "bajar" el costo de
+OVH, la pregunta real es al revés: **¿vas a activar RealEstate360Ultra y
+Voicebox pronto?** Si sí, probablemente necesites *subir* de plan, no
+bajarlo — y ahí el OVH deja de ser un candidato a recortar y pasa a ser
+infraestructura que vale la pena, porque reemplaza suscripciones (ElevenLabs)
+en vez de sumarlas.
+
+**Confirmame:** ¿el plan actual de OVH ya tiene esos 8 CPU/8GB disponibles,
+o hay que revisar el dimensionamiento antes de activar RealEstate360Ultra y
+Voicebox?
+
+Sobre la desktop 24/7 nueva (WSL): no reemplaza al OVH — cumple un rol
+distinto (memoria unificada, cómputo que no necesita IP pública). El OVH sí
+necesita seguir existiendo para lo que tiene que responder desde afuera
+(el backup-pull-mirror, y eventualmente RealEstate360Ultra/Voicebox si se
+exponen mediante el Nginx Proxy Manager que menciona el repo).
+
+## 6.5. Otros cron excesivos en `Diego-Orosa` — [VERIFICADO] chequeado, nada más que arreglar
+
+Revisé los otros 43 workflows del repo buscando el mismo patrón que
+`model-router-ovh-guards.yml` (cron demasiado frecuente). Solo hay otros 4
+con `schedule:`, y ninguno es un problema:
+
+| Workflow | Cron | Frecuencia | Qué hace |
+|---|---|---|---|
+| `portal-check.yml` | `0 */6 * * *` | 4x/día | Login automático a portales judiciales (PJN, MEV, SCBA, AFIP/SRT, etc.) para chequear estado de causas |
+| `audit-reclamai-daily.yml` | `0 9 * * *` | 1x/día | Auditoría diaria de CI/seguridad de la app ReclamaIA |
+| `docs-skill-sync.yml` | `0 11 * * 1` | 1x/semana | Chequeo de desvío entre docs y skills instaladas |
+| `orogest-weekly-update.yml` | `0 12 * * 1` | 1x/semana | Verifica que los links de directorios judiciales sigan respondiendo |
+
+Ninguno corre por `push`/`pull_request` (solo por cron o manualmente), pero
+las frecuencias son razonables — no hay otro "cada 2hs 24/7" escondido. No
+se necesita tocar nada más acá.
 
 ---
 
