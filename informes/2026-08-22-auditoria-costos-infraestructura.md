@@ -73,17 +73,17 @@ confirmar el número exacto: **Settings → Billing and plans → Actions**, en 
 cuenta de GitHub. Ahí vas a ver minutos consumidos este mes y el desglose por
 repo.
 
-### Acción ejecutada — [ACTUALIZACIÓN 2026-08-22 04:02 UTC]
+### Acción ejecutada y mergeada — [ACTUALIZACIÓN 2026-08-22 04:20 UTC]
 
-Aprobada por el usuario ("Si baja costos"). Se abrió y está en revisión:
-**PR #1134 en `Diego-Orosa`** —
+Aprobada por el usuario ("Si baja costos"). **PR #1134 en `Diego-Orosa`
+mergeado** (squash, commit `23d01b1`) —
 [chore(infra): bajar frecuencia de model-router-ovh-guards de cada 2hs a
-cada 6hs](https://github.com/laboratoriolegalcontable-png/Diego-Orosa/pull/1134)
-(draft). Cambia únicamente `cron: '17 */2 * * *'` → `cron: '17 */6 * * *'`
+cada 6hs](https://github.com/laboratoriolegalcontable-png/Diego-Orosa/pull/1134).
+Cambia únicamente `cron: '17 */2 * * *'` → `cron: '17 */6 * * *'`
 — de 12 corridas/día a 4/día (-66%), sin tocar los triggers de
 `pull_request` ni `workflow_dispatch` ni la lógica de auto-reparación.
-Verificado byte a byte contra el original antes de abrir el PR. Falta
-mergearlo.
+Verificado byte a byte contra el original antes de abrir el PR. **Ya está
+en producción.**
 
 - **(Pendiente, no ejecutado)** evaluar si `claude-security-review.yml` y
   `repo-sanity-check.yml` necesitan correr en TODOS los PR, o si alcanza
@@ -149,7 +149,7 @@ sumando uso sin que lo estés usando.
 
 ---
 
-## 5. Make.com — [VERIFICADO] plan, pendiente detalle de escenarios
+## 5. Make.com — [VERIFICADO] plan y detalle completo de escenarios
 
 Organización: **Pro**, zona `us2.make.com`.
 
@@ -157,17 +157,58 @@ Organización: **Pro**, zona `us2.make.com`.
 - 20.971.520 (20MB) de tamaño de data store
 - Retención de logs: 30 días
 
-El team tiene una cantidad grande de escenarios activos (más de 3.000 líneas
-de datos al listarlos, no cupo en un solo llamado). Mandé ese análisis a un
-proceso en segundo plano para identificar cuáles son los escenarios que más
-operaciones consumen y cuáles parecen duplicados/de prueba — **lo agrego a
-este informe apenas termine** (probablemente en el próximo mensaje).
+**47 escenarios en total**: **27 activos**, **20 inactivos/pausados**
+(43%). De esos 20 inactivos, **13 tienen 0 operaciones registradas en toda
+su historia** — nunca corrieron ni una vez. Total de operaciones acumuladas
+de todos los escenarios (histórico, no mensual): ~20.779 — muy por debajo
+del límite de 240.000/mes del plan, así que el costo de Make **no viene por
+overage de operaciones**, viene directamente de la suscripción Pro en sí.
 
-Lo que ya sabemos por vos: tenés **n8n disponible** como alternativa
-self-hosted, y la idea es migrar los flujos de Make ahí para bajar el costo
-recurrente de licencia. Con el detalle de escenarios que traiga el análisis
-en curso, te digo cuáles migrar primero (los que más operaciones consumen)
-y cuáles simplemente dar de baja porque no se usan.
+**Top 10 escenarios activos por uso real** (candidatos a migrar primero a
+n8n, en orden de prioridad):
+
+| Escenario | Operaciones | Frecuencia |
+|---|---|---|
+| Scheduler — Recordatorios Lucrecia Natalia Megan | 2.086 | indefinidamente |
+| Kairos — Monitor estudiooro.com (cada 1h) | 1.530 | cada hora |
+| OroAgentes — Meta Ads Campaign Manager | 1.366 | diario |
+| Resumen diario — Lucrecia + Natalia | 1.366 | diario |
+| Narakia Tools — Conversión de Documentos | 1.077 | inmediato (webhook) |
+| Narakia Tools — OSINT Due Diligence | 1.077 | inmediato (webhook) |
+| Narakia Tools — Scraping Automático de Leads | 1.077 | inmediato (webhook) |
+| Narakia Tools — Transcripción Audios Largos | 1.077 | inmediato (webhook) |
+| Diagnóstico Legal + Model Router → WhatsApp Diego | 1.064 | inmediato (webhook) |
+| Paula — Arsenal IA Lead + Model Router → WhatsApp Diego | 1.064 | inmediato (webhook) |
+
+**Candidatos a simplemente borrar en Make (sin migrar a nada — 0 operaciones
+registradas, nunca se usaron):**
+
+`Email contacto@estudiooro → Lucrecia + NARAKIA`, `Google Calendar — Crear
+Meet (todos los agentes)`, `Lead Distribution — Derivadores Penales`, `Lead
+Scraper — Envío WhatsApp Masivo`, `Lead Scraper WhatsApp — DIEGO (No
+tocar)`, `Lucrecia → Crear Meet en Google Calendar`, `NARAKIA — Dashboard
+Diario 8am`, `Newsletter → WhatsApp Bienvenida (Whapi)`, `Oráculo — Enviar
+WhatsApp Whapi FIXED`, `OroAgentes — Agente Lead Webhook v2 (Penal +
+Inmobiliario)`, `OroAgentes — Calendarizador de Turnos v2`, `Paula —
+Asistente IA OroProp`, `ReclamAI — Captura Leads Consumidor → Planilla`,
+`Redes Marketing — Reporte Semanal WhatsApp` (14 escenarios — nota: uno
+dice explícitamente "No tocar" en el nombre, así que ese lo dejo para que
+lo confirmes vos, no lo doy por muerto solo por tener 0 ops).
+
+Otros inactivos con algo de uso histórico (revisar si siguen sirviendo o se
+archivan): `bh-alerts → WhatsApp Diego (Whapi)` (519 ops), `Buenos días
+Diego — mensaje personal diario` (282 ops), `Captación 1000 - Lead + Model
+Router → WhatsApp Diego` (1.066 ops), `Narakia Tools — Monitor de
+Competencia (Diario)` (397 ops), `NARAKIA Dreaming — Cron 03:00 ART` (9
+ops), `Narakia — Claude API + web_fetch Legal` (7 ops).
+
+**Recomendación:** dado que el costo de Make es la suscripción en sí (no
+overage), migrar operaciones a n8n **no reduce el costo hasta que se dé de
+baja el plan Pro de Make completo** — no tiene sentido migrar de a poco y
+seguir pagando ambos en paralelo más de lo necesario. Sugerencia de plan:
+(1) migrar primero los 10 de la tabla de arriba (son el 70% del uso real),
+(2) confirmar con vos los 14 candidatos a borrar sin migrar, (3) una vez
+migrado y confirmado lo demás, cancelar la suscripción Pro de Make.
 
 ---
 
