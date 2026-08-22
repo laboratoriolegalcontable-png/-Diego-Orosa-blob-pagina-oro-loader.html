@@ -335,6 +335,65 @@ repo (44 workflows en `.github/workflows/`, no 6 como estimé en la sección
 el error (el log de la corrida vieja ya expiró), pero no bloquea nada del
 PR #1134. Queda como item de auditoría separado para una próxima pasada.
 
+## 9.6. Vercel — [VERIFICADO 2026-08-22] qué proyectos están realmente muertos
+
+Chequeé el último deploy real de los 30 proyectos sin repo de GitHub linkeado
+(no 28, como estimé antes — eran 30). Ninguno tiene dominio propio
+asignado (todos usan solo el subdominio automático `*.vercel.app`), así que
+no hay evidencia de que alguno esté sirviendo tráfico real de un cliente.
+
+**Sin ningún deploy jamás (cáscaras vacías):** `app`, `arquitecto-oro`.
+
+**Muertos hace 100-150+ días** (uno o dos deploys en toda su historia, nunca
+más tocados): `estudio-oro`, `lexnova`, `estudio-oro-seo`, `conclave-app`,
+`conclave-oro`, `oro-bot`, `oro-crm`, `oroturbolex`, `arq`, `arq3`,
+`arqfinal`, `arqdeploy4`, `agente-automatico`, `estudiooro-final`,
+`estudiooro-deploy`, `stack-ia-creador` (16 proyectos).
+
+**Zona gris, valen una segunda mirada tuya (60-90 días sin tocar, podrían
+ser herramientas internas de uso esporádico):** `causa-manager`, `oroprop`,
+`lobo-confiteria`, `estudiooro-app`.
+
+**Activos de verdad, no tocar:** `juris-master`, `deploy-oro`,
+`estudiooro-web`, `orodesk`, `scrapling`, `sabueso-oro`, y sobre todo
+`oro-consumidor-pro` / `frontend` — estos dos tuvieron ~20 redeploys en las
+últimas 48hs, claramente en desarrollo activo ahora mismo.
+
+**Total: 18 proyectos con evidencia fuerte de abandono** (2 sin deploy +
+16 muertos hace 100-150 días), 4 en zona gris, 6 confirmados activos.
+
+No borré nada — Vercel Pro no cobra por cantidad de proyectos, así que esto
+es limpieza de orden y superficie de riesgo, no ahorro directo de dinero.
+Si querés que borre los 18 con evidencia fuerte, confirmámelo explícitamente
+(te paso la lista de nuevo lista para copiar/pegar si querés revisarla vos
+primero en el dashboard).
+
+## 9.7. GitHub — [VERIFICADO 2026-08-22] los 4 repos "OroGest", cuál es el real
+
+Revisé los 4 repos que parecían versiones sucesivas del mismo producto.
+**Hallazgo clave que cambia el diagnóstico:** los 4 tienen **un solo commit
+cada uno**, todos en una ventana de ~10 días de hace 5 meses — es decir, son
+4 volcados/importaciones puntuales, ninguno tuvo desarrollo iterativo real
+después de crearse. No hay "actividad reciente" que comparar, solo qué tan
+completo y qué tan bien matchea cada uno con el producto real.
+
+| Repo | Stack | Qué es | Veredicto |
+|---|---|---|---|
+| **OroGest-Lex-v4** | Next.js 15 + FastAPI + PostgreSQL, con CI | Coincide exacto con "OroGest Lex (Next.js+FastAPI)" que mencionás en tus docs. El más completo (frontend + backend + CI). | **Mantener — es el real** |
+| `orogest-lex-backend` | Solo FastAPI (sin frontend), con CI | README dice explícitamente 77 endpoints, 140 tests, pgvector, cadena de auditoría SHA-256 — más maduro que el backend de arriba, pero sin UI y ~10 días más viejo | **Revisar antes de archivar** — puede ser una iteración de backend más avanzada que se perdió, no un intento abandonado. Vale la pena diferenciar las dos carpetas `backend/` antes de decidir. |
+| `OroGest-Platform` | JS vanilla en un solo HTML de 3.2MB + backend FastAPI simple | Otro producto distinto ("EstudioOro"), no una iteración de OroGest Lex | **Archivar** |
+| `OroGest-v13` | React+Vite (no Next.js) + FastAPI, con Stripe/WhatsApp | Panel interno funcional pero con stack distinto al documentado como el real | **Archivar** |
+
+**Confianza: media, no alta** — al ser todos commits únicos, la recomendación
+se basa en qué tanto matchea cada uno con lo que vos describís como el
+producto real, no en historial de desarrollo sostenido. Si tenés logs de
+deploy de Railway/Netlify/Vercel del "OroGest Lex" que está en producción
+hoy, cruzarlos contra estos 4 repos sería mucho más concluyente que solo
+mirar el código.
+
+No archivé ni toqué ningún repo — confirmame si coincide con lo que sabés
+vos del proyecto antes de que archive `OroGest-Platform` y `OroGest-v13`.
+
 ## 9. Próximos pasos
 
 1. **Vos:** confirmame plan y servicios de OVH (§6) y el corte de fecha de
