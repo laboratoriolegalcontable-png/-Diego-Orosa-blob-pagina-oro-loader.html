@@ -247,23 +247,19 @@ sincronizador del OVH lo levante y el operador confirme evidencia real"):
   Ubuntu de oficina — para continuidad si Supabase o la conexión fallan. NO
   reemplaza a Supabase como fuente de verdad.
 
-### Lo que esto significa para tu pregunta original ("¿para qué nos sirve el OVH?")
+### [CORRECCIÓN 2026-08-22, más tarde el mismo día] El OVH NO está corto — está sobrado
 
-Hoy, confirmado, el OVH solo está cargando una demo liviana. Pero ya tiene
-**aprobado** (no operativo aún) un stack de 8 CPU / ~8.25 GB RAM combinado
-entre RealEstate360Ultra + Voicebox. Si esos dos se activan con tu plan
-actual de ~$32-35/mes, es **muy probable que el servidor esté
-subdimensionado** para eso — un VPS de esa gama normalmente no trae 8
-núcleos ni 8GB de RAM libres. Antes de preocuparte por "bajar" el costo de
-OVH, la pregunta real es al revés: **¿vas a activar RealEstate360Ultra y
-Voicebox pronto?** Si sí, probablemente necesites *subir* de plan, no
-bajarlo — y ahí el OVH deja de ser un candidato a recortar y pasa a ser
-infraestructura que vale la pena, porque reemplaza suscripciones (ElevenLabs)
-en vez de sumarlas.
-
-**Confirmame:** ¿el plan actual de OVH ya tiene esos 8 CPU/8GB disponibles,
-o hay que revisar el dimensionamiento antes de activar RealEstate360Ultra y
-Voicebox?
+Lo de arriba (que el plan podría estar subdimensionado) quedó **desmentido**
+al encontrar `PLAN-REDUCCION-COSTOS-Y-CALIDAD-2026-08.md` (escrito 2026-08-18
+por otra sesión, con inventario real del servidor `ns520272`): el OVH tiene
+**~70 contenedores Docker corriendo**, la mayoría sin uso real (Authentik,
+Matomo, Wiki.js, Firefly III, Paperless-ngx, Planka, Vaultwarden, un stack
+Dify completo, OpenHands, Netdata, RustDesk, **n8n ya instalado**, entre
+otros). Disco: 1.8TB total, 1.2-1.3TB libres (31% usado). RAM: 62GB, ~50GB
+reclamable. **Sobra capacidad de sobra** para RealEstate360Ultra + Voicebox
+sin necesidad de subir de plan — la pregunta real ya no es de capacidad,
+sino de qué de esos ~70 contenedores vale la pena activar/usar vs. dejar
+apagado.
 
 Sobre la desktop 24/7 nueva (WSL): no reemplaza al OVH — cumple un rol
 distinto (memoria unificada, cómputo que no necesita IP pública). El OVH sí
@@ -393,6 +389,42 @@ mirar el código.
 
 No archivé ni toqué ningún repo — confirmame si coincide con lo que sabés
 vos del proyecto antes de que archive `OroGest-Platform` y `OroGest-v13`.
+
+## 9.8. Make → n8n — [VERIFICADO 2026-08-22] la migración ya empezó, no desde cero
+
+Hallazgo tardío pero importante: ya existía un plan de reducción de costos
+completo (`PLAN-REDUCCION-COSTOS-Y-CALIDAD-2026-08.md`, escrito 2026-08-18
+por otra sesión, con datos reales — no las estimaciones de este informe).
+Cosas que corrige/agrega a lo de arriba:
+
+- **Números de Make ligeramente distintos** (medidos 4 días antes): 29
+  escenarios activos, 23.762 operaciones acumuladas, 33 inactivos. La
+  diferencia con lo que yo medí (47 total / 27 activos / ~20.779 ops) es
+  normal — la cuenta cambió en esos días.
+- **La migración a n8n ya arrancó**: `kairosMonitorN8n01` (equivalente al
+  escenario "Kairos — Monitor estudiooro.com", el más pesado en payload de
+  Make con 144MB acumulados) ya está construido, importado y verificado en
+  n8n. Se dejó `active:false` **a propósito** hasta que el usuario decida
+  activarlo — regla acordada: nunca borrar el de Make hasta confirmar que
+  el equivalente en n8n funciona 100%, se corren en paralelo/sombra primero.
+- **Próxima tanda ya priorizada** (por impacto): Scheduler de Recordatorios
+  Lucrecia/Natalia/Megan (1987 ops, el de mayor frecuencia — mayor ahorro
+  relativo), Resumen diario, y 4 escenarios diarios simples (Alertas de
+  cobranza, Cierre nocturno, Followup avanzado, S3 Recordatorio Audiencias).
+- **No migrar todavía**: OroAgentes Meta Ads Campaign Manager (usa módulos
+  nativos de Meta Ads sin equivalente 1:1 simple en n8n) ni los 4 "Narakia
+  Tools" (falta entender el flujo upstream que los dispara).
+- **Limpieza gratis identificada**: ~6 escenarios de debug/test con 0
+  operaciones, borrado instantáneo sin riesgo.
+- Encontrado además `N8N_WEBHOOK_URL=https://n8n.estudiooro.com` en
+  `docker/env.example` del repo — pero esta sesión tiene bloqueada la
+  salida de red hacia ese dominio (egress proxy), así que no pude verificar
+  si responde. Tampoco tengo `N8N_API_URL`/`N8N_API_KEY` — viven en un
+  Vaultwarden self-hosted en el propio OVH, al que no tengo acceso.
+
+**Bloqueo actual para seguir migrando desde esta sesión:** necesito las
+credenciales reales de n8n (URL + API key), o que el usuario mismo active
+`kairosMonitorN8n01` como primer paso concreto ya listo.
 
 ## 9. Próximos pasos
 
