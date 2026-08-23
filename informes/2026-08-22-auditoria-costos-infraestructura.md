@@ -247,23 +247,19 @@ sincronizador del OVH lo levante y el operador confirme evidencia real"):
   Ubuntu de oficina — para continuidad si Supabase o la conexión fallan. NO
   reemplaza a Supabase como fuente de verdad.
 
-### Lo que esto significa para tu pregunta original ("¿para qué nos sirve el OVH?")
+### [CORRECCIÓN 2026-08-22, más tarde el mismo día] El OVH NO está corto — está sobrado
 
-Hoy, confirmado, el OVH solo está cargando una demo liviana. Pero ya tiene
-**aprobado** (no operativo aún) un stack de 8 CPU / ~8.25 GB RAM combinado
-entre RealEstate360Ultra + Voicebox. Si esos dos se activan con tu plan
-actual de ~$32-35/mes, es **muy probable que el servidor esté
-subdimensionado** para eso — un VPS de esa gama normalmente no trae 8
-núcleos ni 8GB de RAM libres. Antes de preocuparte por "bajar" el costo de
-OVH, la pregunta real es al revés: **¿vas a activar RealEstate360Ultra y
-Voicebox pronto?** Si sí, probablemente necesites *subir* de plan, no
-bajarlo — y ahí el OVH deja de ser un candidato a recortar y pasa a ser
-infraestructura que vale la pena, porque reemplaza suscripciones (ElevenLabs)
-en vez de sumarlas.
-
-**Confirmame:** ¿el plan actual de OVH ya tiene esos 8 CPU/8GB disponibles,
-o hay que revisar el dimensionamiento antes de activar RealEstate360Ultra y
-Voicebox?
+Lo de arriba (que el plan podría estar subdimensionado) quedó **desmentido**
+al encontrar `PLAN-REDUCCION-COSTOS-Y-CALIDAD-2026-08.md` (escrito 2026-08-18
+por otra sesión, con inventario real del servidor `ns520272`): el OVH tiene
+**~70 contenedores Docker corriendo**, la mayoría sin uso real (Authentik,
+Matomo, Wiki.js, Firefly III, Paperless-ngx, Planka, Vaultwarden, un stack
+Dify completo, OpenHands, Netdata, RustDesk, **n8n ya instalado**, entre
+otros). Disco: 1.8TB total, 1.2-1.3TB libres (31% usado). RAM: 62GB, ~50GB
+reclamable. **Sobra capacidad de sobra** para RealEstate360Ultra + Voicebox
+sin necesidad de subir de plan — la pregunta real ya no es de capacidad,
+sino de qué de esos ~70 contenedores vale la pena activar/usar vs. dejar
+apagado.
 
 Sobre la desktop 24/7 nueva (WSL): no reemplaza al OVH — cumple un rol
 distinto (memoria unificada, cómputo que no necesita IP pública). El OVH sí
@@ -334,6 +330,101 @@ repo (44 workflows en `.github/workflows/`, no 6 como estimé en la sección
 2 — subestimé bastante). No identifiqué el archivo YAML exacto que dispara
 el error (el log de la corrida vieja ya expiró), pero no bloquea nada del
 PR #1134. Queda como item de auditoría separado para una próxima pasada.
+
+## 9.6. Vercel — [VERIFICADO 2026-08-22] qué proyectos están realmente muertos
+
+Chequeé el último deploy real de los 30 proyectos sin repo de GitHub linkeado
+(no 28, como estimé antes — eran 30). Ninguno tiene dominio propio
+asignado (todos usan solo el subdominio automático `*.vercel.app`), así que
+no hay evidencia de que alguno esté sirviendo tráfico real de un cliente.
+
+**Sin ningún deploy jamás (cáscaras vacías):** `app`, `arquitecto-oro`.
+
+**Muertos hace 100-150+ días** (uno o dos deploys en toda su historia, nunca
+más tocados): `estudio-oro`, `lexnova`, `estudio-oro-seo`, `conclave-app`,
+`conclave-oro`, `oro-bot`, `oro-crm`, `oroturbolex`, `arq`, `arq3`,
+`arqfinal`, `arqdeploy4`, `agente-automatico`, `estudiooro-final`,
+`estudiooro-deploy`, `stack-ia-creador` (16 proyectos).
+
+**Zona gris, valen una segunda mirada tuya (60-90 días sin tocar, podrían
+ser herramientas internas de uso esporádico):** `causa-manager`, `oroprop`,
+`lobo-confiteria`, `estudiooro-app`.
+
+**Activos de verdad, no tocar:** `juris-master`, `deploy-oro`,
+`estudiooro-web`, `orodesk`, `scrapling`, `sabueso-oro`, y sobre todo
+`oro-consumidor-pro` / `frontend` — estos dos tuvieron ~20 redeploys en las
+últimas 48hs, claramente en desarrollo activo ahora mismo.
+
+**Total: 18 proyectos con evidencia fuerte de abandono** (2 sin deploy +
+16 muertos hace 100-150 días), 4 en zona gris, 6 confirmados activos.
+
+No borré nada — Vercel Pro no cobra por cantidad de proyectos, así que esto
+es limpieza de orden y superficie de riesgo, no ahorro directo de dinero.
+Si querés que borre los 18 con evidencia fuerte, confirmámelo explícitamente
+(te paso la lista de nuevo lista para copiar/pegar si querés revisarla vos
+primero en el dashboard).
+
+## 9.7. GitHub — [VERIFICADO 2026-08-22] los 4 repos "OroGest", cuál es el real
+
+Revisé los 4 repos que parecían versiones sucesivas del mismo producto.
+**Hallazgo clave que cambia el diagnóstico:** los 4 tienen **un solo commit
+cada uno**, todos en una ventana de ~10 días de hace 5 meses — es decir, son
+4 volcados/importaciones puntuales, ninguno tuvo desarrollo iterativo real
+después de crearse. No hay "actividad reciente" que comparar, solo qué tan
+completo y qué tan bien matchea cada uno con el producto real.
+
+| Repo | Stack | Qué es | Veredicto |
+|---|---|---|---|
+| **OroGest-Lex-v4** | Next.js 15 + FastAPI + PostgreSQL, con CI | Coincide exacto con "OroGest Lex (Next.js+FastAPI)" que mencionás en tus docs. El más completo (frontend + backend + CI). | **Mantener — es el real** |
+| `orogest-lex-backend` | Solo FastAPI (sin frontend), con CI | README dice explícitamente 77 endpoints, 140 tests, pgvector, cadena de auditoría SHA-256 — más maduro que el backend de arriba, pero sin UI y ~10 días más viejo | **Revisar antes de archivar** — puede ser una iteración de backend más avanzada que se perdió, no un intento abandonado. Vale la pena diferenciar las dos carpetas `backend/` antes de decidir. |
+| `OroGest-Platform` | JS vanilla en un solo HTML de 3.2MB + backend FastAPI simple | Otro producto distinto ("EstudioOro"), no una iteración de OroGest Lex | **Archivar** |
+| `OroGest-v13` | React+Vite (no Next.js) + FastAPI, con Stripe/WhatsApp | Panel interno funcional pero con stack distinto al documentado como el real | **Archivar** |
+
+**Confianza: media, no alta** — al ser todos commits únicos, la recomendación
+se basa en qué tanto matchea cada uno con lo que vos describís como el
+producto real, no en historial de desarrollo sostenido. Si tenés logs de
+deploy de Railway/Netlify/Vercel del "OroGest Lex" que está en producción
+hoy, cruzarlos contra estos 4 repos sería mucho más concluyente que solo
+mirar el código.
+
+No archivé ni toqué ningún repo — confirmame si coincide con lo que sabés
+vos del proyecto antes de que archive `OroGest-Platform` y `OroGest-v13`.
+
+## 9.8. Make → n8n — [VERIFICADO 2026-08-22] la migración ya empezó, no desde cero
+
+Hallazgo tardío pero importante: ya existía un plan de reducción de costos
+completo (`PLAN-REDUCCION-COSTOS-Y-CALIDAD-2026-08.md`, escrito 2026-08-18
+por otra sesión, con datos reales — no las estimaciones de este informe).
+Cosas que corrige/agrega a lo de arriba:
+
+- **Números de Make ligeramente distintos** (medidos 4 días antes): 29
+  escenarios activos, 23.762 operaciones acumuladas, 33 inactivos. La
+  diferencia con lo que yo medí (47 total / 27 activos / ~20.779 ops) es
+  normal — la cuenta cambió en esos días.
+- **La migración a n8n ya arrancó**: `kairosMonitorN8n01` (equivalente al
+  escenario "Kairos — Monitor estudiooro.com", el más pesado en payload de
+  Make con 144MB acumulados) ya está construido, importado y verificado en
+  n8n. Se dejó `active:false` **a propósito** hasta que el usuario decida
+  activarlo — regla acordada: nunca borrar el de Make hasta confirmar que
+  el equivalente en n8n funciona 100%, se corren en paralelo/sombra primero.
+- **Próxima tanda ya priorizada** (por impacto): Scheduler de Recordatorios
+  Lucrecia/Natalia/Megan (1987 ops, el de mayor frecuencia — mayor ahorro
+  relativo), Resumen diario, y 4 escenarios diarios simples (Alertas de
+  cobranza, Cierre nocturno, Followup avanzado, S3 Recordatorio Audiencias).
+- **No migrar todavía**: OroAgentes Meta Ads Campaign Manager (usa módulos
+  nativos de Meta Ads sin equivalente 1:1 simple en n8n) ni los 4 "Narakia
+  Tools" (falta entender el flujo upstream que los dispara).
+- **Limpieza gratis identificada**: ~6 escenarios de debug/test con 0
+  operaciones, borrado instantáneo sin riesgo.
+- Encontrado además `N8N_WEBHOOK_URL=https://n8n.estudiooro.com` en
+  `docker/env.example` del repo — pero esta sesión tiene bloqueada la
+  salida de red hacia ese dominio (egress proxy), así que no pude verificar
+  si responde. Tampoco tengo `N8N_API_URL`/`N8N_API_KEY` — viven en un
+  Vaultwarden self-hosted en el propio OVH, al que no tengo acceso.
+
+**Bloqueo actual para seguir migrando desde esta sesión:** necesito las
+credenciales reales de n8n (URL + API key), o que el usuario mismo active
+`kairosMonitorN8n01` como primer paso concreto ya listo.
 
 ## 9. Próximos pasos
 
