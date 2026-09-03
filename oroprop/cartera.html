@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartera OroProp</title>
+<meta name="description" content="Panel interno de OroProp para cargar y gestionar la cartera de propiedades en venta y alquiler.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<style>
+:root{
+  --bg:#0c0b0f;
+  --bg-elevated:#14131a;
+  --bg-card:#1a1920;
+  --bg-card-hover:#211f29;
+  --bg-input:#17161d;
+
+  --gold:#D4B46A;
+  --gold-bright:#E8CC82;
+  --gold-dim:#8f7a49;
+  --gold-10:rgba(212,180,106,.10);
+  --gold-14:rgba(212,180,106,.14);
+
+  --text:#EFEBE3;
+  --text-secondary:#C8C3B8;
+  --text-tertiary:#8f897c;
+
+  --border:rgba(212,180,106,.14);
+  --border-strong:rgba(212,180,106,.32);
+
+  --ok:#7FB69E;
+  --ok-bg:rgba(127,182,158,.13);
+  --warn:#E0A458;
+  --warn-bg:rgba(224,164,88,.13);
+  --done:#C97B63;
+  --done-bg:rgba(201,123,99,.13);
+  --danger:#D97066;
+
+  --font-display:'Italiana',serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-body:'Inter',sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--text-secondary);
+  font-family:var(--font-body);
+  line-height:1.5;
+  min-height:100vh;
+}
+::selection{background:var(--gold-14);color:var(--text)}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+input,select,textarea{
+  background:var(--bg-input);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);padding:10px 12px;width:100%;outline:none;
+  transition:border-color .2s var(--ease);
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+input::placeholder,textarea::placeholder{color:var(--text-tertiary)}
+button{cursor:pointer;background:none;border:none}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tabular{font-variant-numeric:tabular-nums}
+
+/* HEADER */
+.app-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(12,11,15,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:18px 28px;
+}
+.header-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand-mark{font-family:var(--font-display);font-size:1.5rem;letter-spacing:.06em;color:var(--text)}
+.brand-mark em{color:var(--gold);font-style:normal}
+.brand-sub{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:11px 20px;border-radius:6px;transition:all .25s var(--ease);white-space:nowrap;
+}
+.btn-primary{background:var(--gold);color:#0c0b0f;font-weight:600}
+.btn-primary:hover{background:var(--gold-bright)}
+.btn-ghost{border:1px solid var(--border-strong);color:var(--text)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-bright);background:var(--gold-10)}
+.btn-danger{color:var(--danger);border:1px solid rgba(217,112,102,.4)}
+.btn-danger:hover{background:rgba(217,112,102,.12)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+main{max-width:1320px;margin:0 auto;padding:28px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
+.stat{background:var(--bg-elevated);padding:20px 22px}
+.stat-label{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px}
+.stat-value{font-family:var(--font-display);font-size:1.9rem;color:var(--text)}
+.stat-value.gold{color:var(--gold)}
+.stat-value small{font-family:var(--font-mono);font-size:1rem;color:var(--text-tertiary);margin-left:4px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:12px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:220px}
+.search-wrap input{padding-left:36px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);pointer-events:none}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 14px;border-radius:20px;border:1px solid var(--border);color:var(--text-secondary);
+  transition:all .2s var(--ease);
+}
+.chip:hover{border-color:var(--border-strong)}
+.chip.active{background:var(--gold);border-color:var(--gold);color:#0c0b0f;font-weight:600}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column;position:relative;transition:border-color .25s var(--ease),transform .25s var(--ease);
+}
+.card:hover{border-color:var(--border-strong)}
+.card-stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
+.card-media{
+  height:150px;position:relative;overflow:hidden;background:var(--bg-elevated);
+  display:flex;align-items:center;justify-content:center;
+}
+.card-media img{width:100%;height:100%;object-fit:cover}
+.card-media.placeholder{
+  background-image:
+    linear-gradient(var(--gold-14) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gold-14) 1px, transparent 1px);
+  background-size:18px 18px;
+}
+.placeholder-label{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-tertiary);background:rgba(12,11,15,.6);padding:4px 10px;border-radius:20px}
+.example-badge{
+  position:absolute;top:10px;right:10px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;background:rgba(12,11,15,.75);color:var(--gold-bright);border:1px solid var(--border-strong);
+  padding:3px 9px;border-radius:20px;
+}
+.card-body{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-title{font-family:var(--font-display);font-size:1.2rem;color:var(--text);line-height:1.25}
+.card-addr{font-size:.83rem;color:var(--text-tertiary);margin-top:2px}
+.status-pill{
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+}
+.status-disponible{background:var(--ok-bg);color:var(--ok)}
+.status-reservada{background:var(--warn-bg);color:var(--warn)}
+.status-cerrada{background:var(--done-bg);color:var(--done)}
+.card-price{font-family:var(--font-display);font-size:1.5rem;color:var(--gold)}
+.card-price .op{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-left:8px}
+.card-meta{display:flex;gap:14px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-secondary);flex-wrap:wrap}
+.card-meta span{white-space:nowrap}
+.card-notes{font-size:.82rem;color:var(--text-tertiary);flex:1}
+.card-actions{display:flex;gap:8px;margin-top:auto;padding-top:6px}
+.card-actions .btn{flex:1;justify-content:center;padding:8px 10px;font-size:.66rem}
+
+/* EMPTY / LOADING */
+.empty-state{
+  text-align:center;padding:90px 24px;border:1px dashed var(--border-strong);border-radius:12px;
+}
+.empty-state h2{font-family:var(--font-display);font-size:1.7rem;color:var(--text);margin-bottom:10px}
+.empty-state p{color:var(--text-tertiary);max-width:420px;margin:0 auto 22px}
+.status-banner{
+  font-family:var(--font-mono);font-size:.76rem;padding:12px 18px;border-radius:8px;margin-bottom:20px;
+  border:1px solid var(--border-strong);color:var(--warn);background:var(--warn-bg);
+}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(6,5,8,.72);backdrop-filter:blur(2px);
+  display:flex;align-items:flex-start;justify-content:center;padding:48px 20px;overflow-y:auto;z-index:100;
+}
+.modal{
+  background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:14px;
+  width:100%;max-width:560px;padding:28px;
+}
+.modal h2{font-family:var(--font-display);font-size:1.5rem;color:var(--text);margin-bottom:20px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.single{grid-template-columns:1fr}
+.field label{
+  display:block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-tertiary);margin-bottom:6px;
+}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.field-error{font-size:.74rem;color:var(--danger);margin-top:14px}
+
+footer{max-width:1320px;margin:0 auto;padding:8px 28px 40px;font-family:var(--font-mono);font-size:.68rem;color:var(--text-tertiary);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media(max-width:860px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  main{padding:18px}
+  .app-header{padding:14px 18px}
+  .stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const { useState, useEffect, useRef, useMemo, createElement: h } = React;
+
+const STATUS = {
+  disponible: { label: 'Disponible', className: 'status-disponible' },
+  reservada:  { label: 'Reservada',  className: 'status-reservada' },
+  cerrada:    { label: 'Vendida / Alquilada', className: 'status-cerrada' },
+};
+const OPS = { venta: 'Venta', alquiler: 'Alquiler' };
+
+function fmtMoney(amount, currency) {
+  const n = Number(amount) || 0;
+  try {
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: currency || 'USD', maximumFractionDigits: 0 }).format(n);
+  } catch (e) {
+    return (currency || 'USD') + ' ' + n.toLocaleString('es-AR');
+  }
+}
+
+function emptyForm() {
+  return { title: '', address: '', neighborhood: '', operation: 'venta', price: '', currency: 'USD', m2: '', ambientes: '', status: 'disponible', photoUrl: '', notes: '' };
+}
+
+function PropertyModal({ initial, onSave, onClose, saving }) {
+  const [form, setForm] = useState(initial || emptyForm());
+  const [error, setError] = useState('');
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  function submit(e) {
+    e.preventDefault();
+    if (!form.title.trim() || !form.address.trim()) {
+      setError('Completá al menos el título y la dirección.');
+      return;
+    }
+    setError('');
+    onSave({
+      ...form,
+      price: form.price === '' ? 0 : Number(form.price),
+      m2: form.m2 === '' ? null : Number(form.m2),
+      ambientes: form.ambientes === '' ? null : Number(form.ambientes),
+    });
+  }
+
+  return h('div', { className: 'modal-overlay', onMouseDown: (e) => { if (e.target === e.currentTarget) onClose(); } },
+    h('div', { className: 'modal' },
+      h('h2', null, initial ? 'Editar propiedad' : 'Agregar propiedad'),
+      h('form', { onSubmit: submit },
+        h('div', { className: 'form-row single' },
+          h('div', { className: 'field' },
+            h('label', null, 'Título'),
+            h('input', { value: form.title, onChange: set('title'), placeholder: 'PH 3 ambientes con balcón', required: true }))),
+        h('div', { className: 'form-row' },
+          h('div', { className: 'field' },
+            h('label', null, 'Dirección'),
+            h('input', { value: form.address, onChange: set('address'), placeholder: 'Salguero 2835', required: true })),
+          h('div', { className: 'field' },
+            h('label', null, 'Barrio'),
+            h('input', { value: form.neighborhood, onChange: set('neighborhood'), placeholder: 'Palermo' }))),
+        h('div', { className: 'form-row' },
+          h('div', { className: 'field' },
+            h('label', null, 'Operación'),
+            h('select', { value: form.operation, onChange: set('operation') },
+              h('option', { value: 'venta' }, 'Venta'),
+              h('option', { value: 'alquiler' }, 'Alquiler'))),
+          h('div', { className: 'field' },
+            h('label', null, 'Estado'),
+            h('select', { value: form.status, onChange: set('status') },
+              Object.keys(STATUS).map((k) => h('option', { key: k, value: k }, STATUS[k].label))))),
+        h('div', { className: 'form-row' },
+          h('div', { className: 'field' },
+            h('label', null, 'Precio'),
+            h('input', { type: 'number', min: '0', value: form.price, onChange: set('price'), placeholder: '150000' })),
+          h('div', { className: 'field' },
+            h('label', null, 'Moneda'),
+            h('select', { value: form.currency, onChange: set('currency') },
+              h('option', { value: 'USD' }, 'USD'),
+              h('option', { value: 'ARS' }, 'ARS')))),
+        h('div', { className: 'form-row' },
+          h('div', { className: 'field' },
+            h('label', null, 'Metros cuadrados'),
+            h('input', { type: 'number', min: '0', value: form.m2, onChange: set('m2'), placeholder: '65' })),
+          h('div', { className: 'field' },
+            h('label', null, 'Ambientes'),
+            h('input', { type: 'number', min: '0', value: form.ambientes, onChange: set('ambientes'), placeholder: '3' }))),
+        h('div', { className: 'form-row single' },
+          h('div', { className: 'field' },
+            h('label', null, 'URL de foto (opcional)'),
+            h('input', { value: form.photoUrl, onChange: set('photoUrl'), placeholder: 'https://...' }))),
+        h('div', { className: 'form-row single' },
+          h('div', { className: 'field' },
+            h('label', null, 'Notas internas'),
+            h('textarea', { rows: 3, value: form.notes, onChange: set('notes'), placeholder: 'Estado de títulos, contacto del propietario, observaciones...' }))),
+        error && h('div', { className: 'field-error' }, error),
+        h('div', { className: 'modal-actions' },
+          h('button', { type: 'button', className: 'btn btn-ghost', onClick: onClose, disabled: saving }, 'Cancelar'),
+          h('button', { type: 'submit', className: 'btn btn-primary', disabled: saving }, saving ? 'Guardando…' : (initial ? 'Guardar cambios' : 'Agregar propiedad'))))));
+}
+
+function PropertyCard({ p, onEdit, onDelete, confirming, onConfirm, onCancelConfirm }) {
+  const status = STATUS[p.status] || STATUS.disponible;
+  const stripeColor = p.status === 'reservada' ? 'var(--warn)' : p.status === 'cerrada' ? 'var(--done)' : 'var(--ok)';
+  return h('div', { className: 'card' },
+    h('div', { className: 'card-stripe', style: { background: stripeColor } }),
+    p.isExample && h('div', { className: 'example-badge' }, 'Ejemplo'),
+    p.photoUrl
+      ? h('div', { className: 'card-media' }, h('img', { src: p.photoUrl, alt: p.title, loading: 'lazy' }))
+      : h('div', { className: 'card-media placeholder' }, h('span', { className: 'placeholder-label' }, 'Sin foto')),
+    h('div', { className: 'card-body' },
+      h('div', { className: 'card-top' },
+        h('div', null,
+          h('div', { className: 'card-title' }, p.title || 'Sin título'),
+          h('div', { className: 'card-addr' }, [p.address, p.neighborhood].filter(Boolean).join(' · '))),
+        h('span', { className: 'status-pill ' + status.className }, status.label)),
+      h('div', { className: 'card-price tabular' }, fmtMoney(p.price, p.currency), h('span', { className: 'op' }, OPS[p.operation] || '')),
+      h('div', { className: 'card-meta tabular' },
+        p.m2 != null && h('span', null, p.m2 + ' m²'),
+        p.ambientes != null && h('span', null, p.ambientes + ' amb.')),
+      p.notes && h('div', { className: 'card-notes' }, p.notes),
+      h('div', { className: 'card-actions' },
+        h('button', { className: 'btn btn-ghost', onClick: () => onEdit(p) }, 'Editar'),
+        confirming
+          ? h('button', { className: 'btn btn-danger', onClick: () => onConfirm(p.id) }, 'Confirmar')
+          : h('button', { className: 'btn btn-danger', onClick: () => onDelete(p.id) }, 'Eliminar'))));
+}
+
+function App() {
+  const dbRef = useRef(null);
+  const [dbState, setDbState] = useState('loading'); // loading | ready | unavailable | error
+  const [properties, setProperties] = useState([]);
+  const [loadingDocs, setLoadingDocs] = useState(true);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('todas');
+  const [opFilter, setOpFilter] = useState('todas');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let unsub = null;
+    (async () => {
+      if (typeof window.claude === 'undefined' || !window.claude.use) {
+        if (!cancelled) { setDbState('unavailable'); setLoadingDocs(false); }
+        return;
+      }
+      const database = await window.claude.use('db');
+      if (cancelled) return;
+      if (!database) { setDbState('unavailable'); setLoadingDocs(false); return; }
+      dbRef.current = database;
+      setDbState('ready');
+      const q = database.collection('properties').orderBy('createdAt', 'desc').limit(200);
+      unsub = q.onSnapshot(
+        (snap) => {
+          setProperties(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+          setLoadingDocs(false);
+        },
+        (err) => { console.error('db error', err); setDbState('error'); setLoadingDocs(false); }
+      );
+    })();
+    return () => { cancelled = true; if (unsub) unsub(); };
+  }, []);
+
+  useEffect(() => {
+    if (!confirmDeleteId) return;
+    const t = setTimeout(() => setConfirmDeleteId(null), 4000);
+    return () => clearTimeout(t);
+  }, [confirmDeleteId]);
+
+  async function handleSave(data) {
+    const db = dbRef.current;
+    if (!db) return;
+    setSaving(true);
+    try {
+      if (editing && editing.id) {
+        await db.doc('properties/' + editing.id).update(data);
+      } else {
+        await db.collection('properties').add({ ...data, createdAt: Date.now() });
+      }
+      setModalOpen(false);
+      setEditing(null);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(id) {
+    const db = dbRef.current;
+    if (!db) return;
+    try { await db.doc('properties/' + id).delete(); } catch (e) { console.error(e); }
+    setConfirmDeleteId(null);
+  }
+
+  const filtered = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return properties.filter((p) => {
+      if (statusFilter !== 'todas' && p.status !== statusFilter) return false;
+      if (opFilter !== 'todas' && p.operation !== opFilter) return false;
+      if (s) {
+        const hay = [p.title, p.address, p.neighborhood].filter(Boolean).join(' ').toLowerCase();
+        if (!hay.includes(s)) return false;
+      }
+      return true;
+    });
+  }, [properties, search, statusFilter, opFilter]);
+
+  const stats = useMemo(() => {
+    const s = { total: properties.length, disponible: 0, reservada: 0, cerrada: 0, usd: 0, ars: 0 };
+    properties.forEach((p) => {
+      if (s[p.status] !== undefined) s[p.status]++;
+      if (p.status !== 'cerrada') {
+        if ((p.currency || 'USD') === 'ARS') s.ars += Number(p.price) || 0;
+        else s.usd += Number(p.price) || 0;
+      }
+    });
+    return s;
+  }, [properties]);
+
+  return h(React.Fragment, null,
+    h('header', { className: 'app-header' },
+      h('div', { className: 'header-inner' },
+        h('div', { className: 'brand' },
+          h('span', { className: 'brand-mark' }, 'ORO', h('em', null, 'PROP')),
+          h('span', { className: 'brand-sub' }, '· Cartera')),
+        h('button', { className: 'btn btn-primary', onClick: () => { setEditing(null); setModalOpen(true); } }, '+ Agregar propiedad'))),
+    h('main', null,
+      dbState === 'unavailable' && h('div', { className: 'status-banner' }, 'No se pudo conectar al panel de datos en esta vista. Abrí la página publicada (no una vista previa) para cargar y guardar propiedades.'),
+      dbState === 'error' && h('div', { className: 'status-banner' }, 'Hubo un problema leyendo la cartera. Recargá la página.'),
+      h('div', { className: 'stats' },
+        h('div', { className: 'stat' }, h('div', { className: 'stat-label' }, 'Total'), h('div', { className: 'stat-value tabular' }, stats.total)),
+        h('div', { className: 'stat' }, h('div', { className: 'stat-label' }, 'Disponibles'), h('div', { className: 'stat-value tabular', style: { color: 'var(--ok)' } }, stats.disponible)),
+        h('div', { className: 'stat' }, h('div', { className: 'stat-label' }, 'Reservadas'), h('div', { className: 'stat-value tabular', style: { color: 'var(--warn)' } }, stats.reservada)),
+        h('div', { className: 'stat' }, h('div', { className: 'stat-label' }, 'Cerradas'), h('div', { className: 'stat-value tabular', style: { color: 'var(--done)' } }, stats.cerrada)),
+        h('div', { className: 'stat' }, h('div', { className: 'stat-label' }, 'Valor cartera activa'),
+          h('div', { className: 'stat-value gold tabular', style: { fontSize: '1.1rem' } },
+            fmtMoney(stats.usd, 'USD'), stats.ars > 0 && h('small', null, '+ ' + fmtMoney(stats.ars, 'ARS'))))),
+      h('div', { className: 'filter-bar' },
+        h('div', { className: 'search-wrap' },
+          h('span', { className: 'search-icon' }, '⌕'),
+          h('input', { value: search, onChange: (e) => setSearch(e.target.value), placeholder: 'Buscar por dirección, barrio o título…' })),
+        h('div', { className: 'chip-row' },
+          ['todas', 'disponible', 'reservada', 'cerrada'].map((k) =>
+            h('button', {
+              key: k, className: 'chip' + (statusFilter === k ? ' active' : ''),
+              onClick: () => setStatusFilter(k),
+            }, k === 'todas' ? 'Todas' : STATUS[k].label))),
+        h('div', { className: 'chip-row' },
+          ['todas', 'venta', 'alquiler'].map((k) =>
+            h('button', {
+              key: k, className: 'chip' + (opFilter === k ? ' active' : ''),
+              onClick: () => setOpFilter(k),
+            }, k === 'todas' ? 'Toda operación' : OPS[k])))),
+      loadingDocs
+        ? h('div', { className: 'empty-state' }, h('p', null, 'Cargando cartera…'))
+        : filtered.length === 0
+        ? h('div', { className: 'empty-state' },
+            h('h2', null, properties.length === 0 ? 'Todavía no hay propiedades cargadas' : 'Nada coincide con el filtro'),
+            h('p', null, properties.length === 0 ? 'Sumá la primera propiedad de la cartera de OroProp.' : 'Probá con otra búsqueda o limpiá los filtros.'),
+            properties.length === 0 && h('button', { className: 'btn btn-primary', onClick: () => { setEditing(null); setModalOpen(true); } }, '+ Agregar propiedad'))
+        : h('div', { className: 'grid' },
+            filtered.map((p) =>
+              h(PropertyCard, {
+                key: p.id, p,
+                onEdit: (prop) => { setEditing(prop); setModalOpen(true); },
+                onDelete: (id) => setConfirmDeleteId(id),
+                confirming: confirmDeleteId === p.id,
+                onConfirm: handleDelete,
+                onCancelConfirm: () => setConfirmDeleteId(null),
+              })))),
+    h('footer', null,
+      h('span', null, 'Estudio Oro S.A.S. · OroProp · CUCICBA 9901'),
+      h('span', null, dbState === 'ready' ? 'Sincronizado en tiempo real' : '')),
+    modalOpen && h(PropertyModal, {
+      initial: editing,
+      saving,
+      onSave: handleSave,
+      onClose: () => { setModalOpen(false); setEditing(null); },
+    }));
+}
+
+ReactDOM.render(h(App), document.getElementById('root'));
+</script>
+</body>
+</html>
