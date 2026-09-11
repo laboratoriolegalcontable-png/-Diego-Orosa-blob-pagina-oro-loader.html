@@ -367,7 +367,7 @@
     z-index:1;
     pointer-events:none;
     animation:astroFloat 7s ease-in-out infinite;
-    filter:drop-shadow(0 30px 40px rgba(0,0,0,.5));
+    filter:drop-shadow(0 26px 20px rgba(0,0,0,.55)) drop-shadow(0 4px 6px rgba(0,0,0,.4));
   }
   .astronaut-wrap .astronaut{ width:100%; height:auto; display:block; }
   @keyframes astroFloat{
@@ -959,29 +959,38 @@
           <stop offset="0%" stop-color="#b6a2e8" stop-opacity=".4"/>
           <stop offset="100%" stop-color="#b6a2e8" stop-opacity="0"/>
         </radialGradient>
-        <radialGradient id="suitGloss" cx="38%" cy="30%" r="75%">
+        <radialGradient id="suitGloss" cx="34%" cy="26%" r="80%">
           <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="55%" stop-color="#e7e9ee"/>
-          <stop offset="100%" stop-color="#b7bbc6"/>
+          <stop offset="35%" stop-color="#f1f2f5"/>
+          <stop offset="65%" stop-color="#cfd2da"/>
+          <stop offset="88%" stop-color="#9598a5"/>
+          <stop offset="100%" stop-color="#6d7180"/>
         </radialGradient>
-        <radialGradient id="helmetGloss" cx="35%" cy="28%" r="70%">
+        <radialGradient id="helmetGloss" cx="32%" cy="24%" r="78%">
           <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="60%" stop-color="#eceef2"/>
-          <stop offset="100%" stop-color="#c2c6d0"/>
+          <stop offset="45%" stop-color="#eef0f4"/>
+          <stop offset="75%" stop-color="#c6cad4"/>
+          <stop offset="100%" stop-color="#888c99"/>
         </radialGradient>
-        <radialGradient id="visorGrad" cx="35%" cy="30%" r="75%">
-          <stop offset="0%" stop-color="#4a4f9e"/>
-          <stop offset="35%" stop-color="#181b3a"/>
-          <stop offset="100%" stop-color="#020208"/>
+        <radialGradient id="visorGrad" cx="32%" cy="26%" r="80%">
+          <stop offset="0%" stop-color="#6a70c9"/>
+          <stop offset="22%" stop-color="#33366e"/>
+          <stop offset="55%" stop-color="#0e0f22"/>
+          <stop offset="100%" stop-color="#000002"/>
         </radialGradient>
         <linearGradient id="padGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f4f5f8"/>
-          <stop offset="100%" stop-color="#c7cad3"/>
-        </linearGradient>
-        <linearGradient id="ringGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#dcdfe6"/>
+          <stop offset="0%" stop-color="#fbfbfd"/>
+          <stop offset="55%" stop-color="#d3d6dd"/>
           <stop offset="100%" stop-color="#9a9eaa"/>
         </linearGradient>
+        <linearGradient id="ringGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#eceef2"/>
+          <stop offset="100%" stop-color="#7d818e"/>
+        </linearGradient>
+        <radialGradient id="rimShadow" cx="50%" cy="50%" r="50%">
+          <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#1a1c22" stop-opacity=".55"/>
+        </radialGradient>
       </defs>
 
       <circle cx="165" cy="185" r="185" fill="url(#astroGlow)"/>
@@ -1003,9 +1012,12 @@
 
       <!-- torso -->
       <ellipse cx="169" cy="225" rx="78" ry="92" fill="url(#suitGloss)"/>
+      <ellipse cx="169" cy="225" rx="78" ry="92" fill="url(#rimShadow)"/>
+      <ellipse cx="140" cy="180" rx="22" ry="34" fill="#fff" opacity=".4" transform="rotate(-18 140 180)"/>
       <!-- panel de pecho -->
       <rect x="138" y="205" width="62" height="40" rx="12" fill="#e9ebf0" stroke="#c3c6d0" stroke-width="2"/>
       <circle cx="153" cy="225" r="7" fill="#b6a2e8"/>
+      <circle cx="153" cy="225" r="7" fill="url(#rimShadow)"/>
       <rect x="167" y="219" width="24" height="6" rx="3" fill="#9aa0ac"/>
       <rect x="167" y="230" width="16" height="6" rx="3" fill="#9aa0ac"/>
 
@@ -1024,9 +1036,11 @@
 
       <!-- casco -->
       <circle cx="169" cy="112" r="78" fill="url(#helmetGloss)"/>
+      <circle cx="169" cy="112" r="78" fill="url(#rimShadow)"/>
       <circle cx="169" cy="115" r="60" fill="url(#visorGrad)"/>
-      <ellipse cx="146" cy="94" rx="16" ry="10" fill="#fff" opacity=".55"/>
+      <ellipse cx="144" cy="90" rx="20" ry="13" fill="#fff" opacity=".7" transform="rotate(-25 144 90)"/>
       <circle cx="188" cy="132" r="4" fill="#fff" opacity=".5"/>
+      <ellipse cx="150" cy="60" rx="30" ry="14" fill="#fff" opacity=".35" transform="rotate(-12 150 60)"/>
       <!-- auriculares del casco -->
       <circle cx="98" cy="118" r="16" fill="url(#ringGrad)"/>
       <circle cx="98" cy="118" r="8" fill="#d9dbe1"/>
