@@ -68,7 +68,16 @@
   html{scroll-behavior:smooth;}
 
   body{
-    background:var(--bg-void);
+    background:
+      radial-gradient(ellipse 70% 55% at 18% 8%, #3a4f9e 0%, transparent 55%),
+      radial-gradient(ellipse 60% 55% at 55% 30%, #6b4fae 0%, transparent 58%),
+      radial-gradient(ellipse 65% 60% at 78% 12%, #9e4f8f 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 30% 60%, #c9917f 0%, transparent 52%),
+      radial-gradient(ellipse 60% 55% at 85% 70%, #3a6a9e 0%, transparent 55%),
+      radial-gradient(ellipse 80% 70% at 50% 95%, #2a2050 0%, transparent 60%),
+      var(--bg-void);
+    background-attachment:fixed;
+    background-size:100% 100%;
     color:var(--text-primary);
     font-family:var(--font-sans);
     line-height:1.55;
@@ -221,26 +230,25 @@
       repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 90px);
   }
 
-  /* fondo galáctico: nebulosa de color detrás de todo, tipo Vía Láctea real */
+  /* fondo galáctico: capa extra de nebulosa animada, encima de la base fija del body */
   .nebula{
     position:fixed;
-    inset:-25%;
+    inset:0;
     z-index:0;
     pointer-events:none;
-    opacity:.85;
+    opacity:.55;
     background:
-      radial-gradient(ellipse 55% 45% at 15% 10%, var(--neb-blue), transparent 62%),
-      radial-gradient(ellipse 45% 40% at 55% 35%, var(--neb-violet), transparent 60%),
-      radial-gradient(ellipse 50% 45% at 40% 65%, var(--neb-rose), transparent 58%),
-      radial-gradient(ellipse 45% 40% at 80% 25%, var(--neb-magenta), transparent 60%),
-      radial-gradient(ellipse 50% 50% at 85% 80%, var(--neb-cyan), transparent 60%);
-    filter:blur(55px) saturate(1.5);
-    animation:nebulaDrift 40s ease-in-out infinite alternate;
-    mix-blend-mode:screen;
+      radial-gradient(ellipse 50% 45% at 20% 15%, var(--neb-blue), transparent 65%),
+      radial-gradient(ellipse 45% 40% at 60% 40%, var(--neb-violet), transparent 62%),
+      radial-gradient(ellipse 55% 50% at 35% 70%, var(--neb-rose), transparent 60%),
+      radial-gradient(ellipse 45% 40% at 82% 30%, var(--neb-magenta), transparent 62%),
+      radial-gradient(ellipse 50% 50% at 88% 82%, var(--neb-cyan), transparent 62%);
+    filter:blur(70px) saturate(1.6);
+    animation:nebulaDrift 50s ease-in-out infinite alternate;
   }
   @keyframes nebulaDrift{
     0%{ transform:translate(0,0) scale(1); }
-    100%{ transform:translate(2%,-3%) scale(1.06); }
+    100%{ transform:translate(3%,-3%) scale(1.08); }
   }
 
   /* ---------- PORTHOLE (portal circular con estrellas) ---------- */
@@ -355,9 +363,9 @@
     justify-content:center;
     /* [IMG-1] Reemplazar por: background-image:url('tu-imagen.jpg'); */
     background:
-      radial-gradient(ellipse 70% 55% at 50% -5%, rgba(182,162,232,.10), transparent 60%),
-      radial-gradient(ellipse 60% 45% at 85% 95%, rgba(143,179,201,.10), transparent 60%),
-      var(--bg-void);
+      radial-gradient(ellipse 70% 55% at 50% -5%, rgba(182,162,232,.18), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 85% 95%, rgba(143,179,201,.18), transparent 60%),
+      rgba(10,11,13,.55);
     border-bottom:1px solid var(--line);
     overflow:hidden;
   }
@@ -494,10 +502,10 @@
     align-items:center;
     /* [IMG-2] Reemplazar por: background-image:url('tu-imagen.jpg'); */
     background:
-      linear-gradient(100deg, rgba(10,11,13,.95) 20%, rgba(10,11,13,.55) 78%),
-      radial-gradient(circle at 80% 30%, rgba(182,162,232,.10), transparent 55%),
-      radial-gradient(circle at 30% 80%, rgba(143,179,201,.10), transparent 55%),
-      var(--bg-deep);
+      linear-gradient(100deg, rgba(10,11,13,.85) 20%, rgba(10,11,13,.45) 78%),
+      radial-gradient(circle at 80% 30%, rgba(182,162,232,.18), transparent 55%),
+      radial-gradient(circle at 30% 80%, rgba(143,179,201,.18), transparent 55%),
+      rgba(16,18,21,.55);
     border-top:1px solid var(--line);
     border-bottom:1px solid var(--line);
     z-index:1;
@@ -571,8 +579,8 @@
     position:relative;
     /* [IMG-3] Reemplazar por: background-image:url('tu-imagen.jpg'); */
     background:
-      radial-gradient(ellipse 70% 60% at 50% 100%, rgba(143,179,201,.10), transparent 60%),
-      var(--bg-deep);
+      radial-gradient(ellipse 70% 60% at 50% 100%, rgba(143,179,201,.18), transparent 60%),
+      rgba(16,18,21,.5);
     border-top:1px solid var(--line);
     border-bottom:1px solid var(--line);
     z-index:1;
@@ -784,7 +792,7 @@
     justify-content:center;
     align-items:center;
     /* [IMG-6] Reemplazar por: background-image:url('tu-imagen.jpg'); */
-    background:var(--bg-void);
+    background:rgba(10,11,13,.5);
     border-top:1px solid var(--line);
     overflow:hidden;
     z-index:1;
