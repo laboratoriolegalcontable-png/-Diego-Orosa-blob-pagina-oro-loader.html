@@ -7,278 +7,356 @@
 <meta name="description" content="Sologint, la división de Inteligencia Artificial de Estudio Oro. Automatización, bots y agentes IA para negocios.">
 <style>
   :root{
-    --bg:#000000;
-    --bg-soft:#0b0d17;
-    --panel:#10131f;
-    --border:#242a3d;
-    --text:#f4f6fb;
-    --muted:#a7adc2;
-    --accent:#3a86ff;
-    --accent-2:#7dd3fc;
-    --danger:#fc3d21;
+    --black:#000000;
+    --near-black:#0b0b0c;
+    --panel:#141416;
+    --line:#2a2a2d;
+    --white:#ffffff;
+    --ink:#0d0d0e;
+    --grey:#5b5f66;
+    --nasa-red:#fc3d21;
+    --nasa-red-dark:#d6300f;
+    --metal-1:#8e9299;
+    --metal-2:#e7e9ec;
+    --metal-3:#5b5e64;
+    --accent:#7dd3fc;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--white);
+    color:var(--ink);
+    font-family:"Public Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     line-height:1.5;
     overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none;}
   img{max-width:100%;display:block;}
+  ul{list-style:none;}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 24px;}
 
-  /* estrellas de fondo */
-  .stars{
-    position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:
-      radial-gradient(1px 1px at 20% 30%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 75% 15%, #fff 100%, transparent),
-      radial-gradient(2px 2px at 60% 70%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 90% 40%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 35% 85%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 10% 60%, #fff 100%, transparent),
-      radial-gradient(2px 2px at 50% 20%, #fff 100%, transparent);
-    background-repeat:repeat;
-    background-size:600px 600px;
-    opacity:.35;
+  /* ---------- metallic + galactic helpers ---------- */
+  .metallic-text{
+    background:linear-gradient(180deg,#fff 0%,#d9dce1 28%,#8e9299 55%,#f2f3f5 70%,#9a9ea4 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 1px 0 rgba(255,255,255,.15);
   }
-
-  header{
-    position:sticky;top:0;z-index:50;
-    background:rgba(0,0,0,.75);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--border);
-  }
-  .nav{
-    max-width:1200px;margin:0 auto;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:16px 20px;
-    gap:16px;
-  }
-  .logo{
-    display:flex;align-items:center;gap:10px;
-    font-weight:800;letter-spacing:.08em;font-size:1.05rem;
-  }
-  .logo .dot{
-    width:12px;height:12px;border-radius:50%;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 0 14px var(--accent);
-  }
-  nav.links{display:flex;gap:28px;flex-wrap:wrap;}
-  nav.links a{font-size:.85rem;color:var(--muted);letter-spacing:.03em;text-transform:uppercase;font-weight:600;transition:color .2s;}
-  nav.links a:hover{color:var(--text);}
-  .cta{
-    background:var(--accent);color:#fff;
-    padding:10px 20px;border-radius:999px;
-    font-size:.85rem;font-weight:700;letter-spacing:.02em;
-    white-space:nowrap;
+  .btn-metal{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 30px;border-radius:999px;font-weight:800;font-size:.9rem;
+    letter-spacing:.02em;
+    background:linear-gradient(180deg,#f4f5f7 0%,#c7cad0 45%,#9a9ea4 55%,#e9ebee 100%);
+    color:#111;border:1px solid #fff;
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 10px 24px rgba(0,0,0,.35);
     transition:transform .15s, box-shadow .15s;
   }
-  .cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(58,134,255,.4);}
-
-  .hero{
-    position:relative;z-index:1;
-    min-height:88vh;
-    display:flex;flex-direction:column;justify-content:center;
-    padding:120px 20px 80px;
-    text-align:center;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(58,134,255,.18), transparent 70%),
-      linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  .btn-metal:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 14px 30px rgba(0,0,0,.45);}
+  .btn-red{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 30px;border-radius:999px;font-weight:800;font-size:.9rem;letter-spacing:.02em;
+    background:linear-gradient(180deg,var(--nasa-red),var(--nasa-red-dark));
+    color:#fff;box-shadow:0 10px 24px rgba(252,61,33,.4);
+    transition:transform .15s;
   }
-  .eyebrow{
+  .btn-red:hover{transform:translateY(-1px);}
+
+  .stars{
+    position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(1.5px 1.5px at 12% 22%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 78% 12%, #fff 100%, transparent),
+      radial-gradient(2px 2px at 55% 65%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 90% 45%, #fff 100%, transparent),
+      radial-gradient(1.5px 1.5px at 33% 82%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 8% 58%, #fff 100%, transparent),
+      radial-gradient(2px 2px at 47% 18%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 68% 88%, #fff 100%, transparent);
+    background-repeat:repeat;background-size:620px 620px;
+    opacity:.55;animation:drift 120s linear infinite;
+  }
+  @keyframes drift{from{background-position:0 0;}to{background-position:-1200px 600px;}}
+
+  /* ---------- top utility bar ---------- */
+  .utility{background:var(--black);color:#c9cbce;font-size:.72rem;letter-spacing:.03em;}
+  .utility .wrap{display:flex;justify-content:flex-end;gap:22px;padding:7px 24px;}
+  .utility a{color:#c9cbce;text-transform:uppercase;font-weight:600;}
+  .utility a:hover{color:#fff;}
+
+  /* ---------- header ---------- */
+  header{background:var(--black);border-bottom:1px solid #1c1c1e;position:sticky;top:0;z-index:60;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;gap:20px;}
+  .wordmark{
+    font-family:Arial,Helvetica,sans-serif;font-weight:900;font-size:1.6rem;letter-spacing:-.02em;
+    display:flex;align-items:center;gap:2px;
+  }
+  .wordmark .o1{color:var(--nasa-red);}
+  nav.links{display:flex;gap:30px;flex-wrap:wrap;}
+  nav.links a{font-size:.78rem;color:#e8e9eb;letter-spacing:.06em;text-transform:uppercase;font-weight:700;}
+  nav.links a:hover{color:var(--nasa-red);}
+  .nav-right{display:flex;align-items:center;gap:18px;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:50%;border:1px solid #333;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;
+  }
+  @media (max-width:860px){nav.links{display:none;}}
+
+  /* ---------- hero (galactic + metallic) ---------- */
+  .hero{
+    position:relative;overflow:hidden;color:#fff;
+    min-height:78vh;display:flex;align-items:flex-end;
+    background:
+      radial-gradient(ellipse 90% 70% at 70% 0%, rgba(252,61,33,.18), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 15% 100%, rgba(125,211,252,.12), transparent 60%),
+      linear-gradient(160deg,#050506 0%,#0e0e10 45%,#1a1a1d 70%,#050506 100%);
+  }
+  .hero .stars{opacity:.7;}
+  .hero-inner{position:relative;z-index:2;padding:60px 24px 64px;width:100%;}
+  .tag-red{
     display:inline-flex;align-items:center;gap:8px;
-    margin:0 auto 24px;
-    padding:6px 16px;border:1px solid var(--border);border-radius:999px;
-    font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-2);
-    background:rgba(58,134,255,.08);
+    background:var(--nasa-red);color:#fff;font-weight:800;font-size:.7rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;margin-bottom:20px;
   }
   .hero h1{
-    font-size:clamp(2.4rem,6vw,5rem);
-    font-weight:800;letter-spacing:-.02em;line-height:1.05;
-    max-width:960px;margin:0 auto 24px;
+    font-size:clamp(2.4rem,7vw,5.4rem);font-weight:900;letter-spacing:-.03em;line-height:.98;
+    max-width:900px;margin-bottom:20px;
   }
-  .hero h1 span{color:var(--accent-2);}
-  .hero p.lead{
-    max-width:640px;margin:0 auto 40px;
-    color:var(--muted);font-size:clamp(1rem,2vw,1.2rem);
+  .hero p.lead{max-width:560px;color:#cfd1d5;font-size:1.05rem;margin-bottom:34px;}
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;}
+  .scanline{
+    position:absolute;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(125,211,252,.6),transparent);
+    animation:scan 6s linear infinite;opacity:.6;
   }
-  .hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
-  .btn-primary{
-    background:linear-gradient(135deg,var(--accent),#2563eb);
-    color:#fff;padding:14px 30px;border-radius:999px;font-weight:700;font-size:.95rem;
-    box-shadow:0 10px 30px rgba(58,134,255,.35);
-  }
-  .btn-ghost{
-    border:1px solid var(--border);color:var(--text);
-    padding:14px 30px;border-radius:999px;font-weight:700;font-size:.95rem;
-  }
+  @keyframes scan{0%{top:0%;}100%{top:100%;}}
 
-  section{position:relative;z-index:1;padding:90px 20px;max-width:1200px;margin:0 auto;}
-  .section-head{max-width:640px;margin-bottom:48px;}
-  .kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2);font-weight:700;margin-bottom:12px;}
-  h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-.01em;}
-  .section-head p{color:var(--muted);margin-top:14px;font-size:1.05rem;}
+  /* ---------- red rule + section headers, NASA style ---------- */
+  .section-title{
+    display:flex;align-items:center;gap:14px;margin-bottom:36px;
+  }
+  .section-title .bar{width:38px;height:6px;background:var(--nasa-red);}
+  .section-title h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:900;letter-spacing:-.01em;text-transform:uppercase;}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+  section{padding:70px 0;}
+  .white{background:#fff;}
+  .grey{background:#f4f5f6;}
+
+  /* ---------- card grid, NASA "latest" style ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0;}
   .card{
-    background:var(--panel);border:1px solid var(--border);border-radius:18px;
-    padding:28px;transition:border-color .2s, transform .2s;
+    border-top:4px solid var(--nasa-red);background:#fff;
+    padding:26px 22px 30px;border-right:1px solid #e7e7e8;
   }
-  .card:hover{border-color:var(--accent);transform:translateY(-4px);}
-  .card .icon{
-    width:44px;height:44px;border-radius:12px;margin-bottom:18px;
-    display:flex;align-items:center;justify-content:center;
-    background:rgba(58,134,255,.12);color:var(--accent-2);font-size:1.3rem;
-  }
-  .card h3{font-size:1.1rem;margin-bottom:10px;}
-  .card p{color:var(--muted);font-size:.92rem;}
+  .card:last-child{border-right:none;}
+  .card .cat{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--nasa-red);margin-bottom:12px;}
+  .card h3{font-size:1.15rem;font-weight:800;margin-bottom:10px;letter-spacing:-.01em;}
+  .card p{color:var(--grey);font-size:.9rem;}
+  @media (max-width:900px){.card{border-right:none;border-bottom:1px solid #e7e7e8;}}
 
+  /* ---------- metallic stat strip ---------- */
   .stats{
-    border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-    background:var(--bg-soft);
+    position:relative;color:#fff;overflow:hidden;
+    background:linear-gradient(120deg,#0a0a0b,#1b1b1e 40%,#0a0a0b 100%);
   }
-  .stats .grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));text-align:center;}
-  .stat h3{font-size:clamp(2rem,4vw,2.8rem);color:var(--accent-2);font-weight:800;}
-  .stat p{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;margin-top:6px;}
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;text-align:center;position:relative;z-index:1;}
+  .stat h3{font-size:clamp(2.1rem,4.4vw,3rem);font-weight:900;}
+  .stat p{color:#9a9ea4;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-top:8px;}
 
-  .mission{
-    display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;
+  /* ---------- mission control timeline ---------- */
+  .mission{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+  @media (max-width:900px){.mission{grid-template-columns:1fr;}}
+  .timeline{display:flex;flex-direction:column;gap:0;}
+  .tstep{display:flex;gap:18px;padding:20px 0;border-bottom:1px solid #e2e2e3;}
+  .tstep:last-child{border-bottom:none;}
+  .tnum{
+    font-weight:900;font-size:1.4rem;width:46px;flex:0 0 46px;
+    background:linear-gradient(180deg,#f4f5f7,#9a9ea4);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
   }
-  @media (max-width:860px){.mission{grid-template-columns:1fr;}}
-  .mission-panel{
-    background:linear-gradient(160deg,var(--panel),var(--bg-soft));
-    border:1px solid var(--border);border-radius:24px;padding:32px;
-    position:relative;overflow:hidden;
+  .tstep h4{font-size:1rem;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em;}
+  .tstep p{color:var(--grey);font-size:.9rem;}
+  .panel-visual{
+    position:relative;border-radius:8px;overflow:hidden;min-height:360px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(252,61,33,.25), transparent 55%),
+      radial-gradient(circle at 75% 70%, rgba(125,211,252,.2), transparent 55%),
+      linear-gradient(160deg,#0a0a0b,#1c1c1f 60%,#0a0a0b);
+    display:flex;align-items:center;justify-content:center;
   }
-  .mission-panel::before{
-    content:"";position:absolute;inset:-40%;
-    background:radial-gradient(circle,rgba(58,134,255,.25),transparent 60%);
+  .panel-visual .stars{opacity:.7;}
+  .orbit{
+    position:relative;width:220px;height:220px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.18);z-index:1;
   }
-  .mission-panel ul{position:relative;list-style:none;display:flex;flex-direction:column;gap:18px;}
-  .mission-panel li{display:flex;gap:14px;align-items:flex-start;color:var(--muted);font-size:.95rem;}
-  .mission-panel li b{color:var(--text);}
-  .badge{
-    width:26px;height:26px;flex:0 0 26px;border-radius:50%;
-    background:var(--accent);color:#fff;font-size:.75rem;font-weight:800;
-    display:flex;align-items:center;justify-content:center;margin-top:2px;
+  .orbit::before,.orbit::after{
+    content:"";position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.1);
   }
+  .orbit::before{inset:-40px;}
+  .orbit::after{inset:-80px;}
+  .core{
+    position:absolute;top:50%;left:50%;width:64px;height:64px;margin:-32px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--nasa-red) 55%, #7a1608 100%);
+    box-shadow:0 0 50px rgba(252,61,33,.7);
+  }
+  .sat{
+    position:absolute;width:10px;height:10px;border-radius:50%;
+    background:linear-gradient(180deg,#fff,#9a9ea4);
+    top:50%;left:50%;margin:-5px;
+    animation:orbit 9s linear infinite;
+    transform-origin:5px 115px;
+  }
+  @keyframes orbit{from{transform:rotate(0deg) translateY(-115px);}to{transform:rotate(360deg) translateY(-115px);}}
 
-  footer{
-    border-top:1px solid var(--border);
-    padding:50px 20px 30px;text-align:center;color:var(--muted);
-    font-size:.85rem;position:relative;z-index:1;
+  /* ---------- CTA / contacto ---------- */
+  .cta-block{
+    position:relative;overflow:hidden;color:#fff;text-align:center;
+    background:linear-gradient(160deg,#050506,#151517 50%,#050506);
+    padding:90px 24px;
   }
-  footer .foot-logo{font-weight:800;color:var(--text);letter-spacing:.08em;margin-bottom:10px;}
+  .cta-block h2{font-size:clamp(1.8rem,4.4vw,2.8rem);font-weight:900;margin-bottom:18px;letter-spacing:-.02em;}
+  .cta-block p{color:#c9cbce;max-width:520px;margin:0 auto 34px;}
 
-  @media (max-width:720px){
-    nav.links{display:none;}
+  /* ---------- footer, NASA style ---------- */
+  footer{background:var(--black);color:#9a9ea4;font-size:.82rem;}
+  .foot-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:32px;padding:56px 24px 40px;}
+  .foot-top h5{color:#fff;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
+  .foot-top a{display:block;color:#9a9ea4;margin-bottom:10px;}
+  .foot-top a:hover{color:#fff;}
+  .foot-bottom{
+    border-top:1px solid #1c1c1e;padding:22px 24px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:.75rem;color:#6a6d72;
   }
 </style>
 </head>
 <body>
-<div class="stars"></div>
+
+<div class="utility"><div class="wrap">
+  <a href="#">ES</a><a href="#">EN</a><a href="#contacto">Contacto</a>
+</div></div>
 
 <header>
-  <div class="nav">
-    <div class="logo"><span class="dot"></span> SOLOGINT</div>
+  <div class="nav wrap">
+    <div class="wordmark"><span class="o1">SOL</span>OGINT</div>
     <nav class="links">
       <a href="#mision">Misión</a>
       <a href="#soluciones">Soluciones</a>
       <a href="#numeros">Resultados</a>
       <a href="#contacto">Contacto</a>
     </nav>
-    <a class="cta" href="#contacto">Iniciar misión</a>
+    <div class="nav-right">
+      <div class="icon-btn">☰</div>
+    </div>
   </div>
 </header>
 
 <main>
   <section class="hero">
-    <div class="eyebrow">● Arsenal IA — Estudio Oro</div>
-    <h1>Inteligencia Artificial en <span>órbita</span> para tu negocio</h1>
-    <p class="lead">Sologint diseña, entrena y despliega agentes de IA que automatizan ventas, soporte y operaciones — con la misma disciplina con la que se planea una misión espacial: control, precisión y cero improvisación.</p>
-    <div class="hero-actions">
-      <a class="btn-primary" href="#contacto">Agendar diagnóstico gratis</a>
-      <a class="btn-ghost" href="#soluciones">Ver soluciones</a>
+    <div class="stars"></div>
+    <div class="scanline"></div>
+    <div class="hero-inner wrap">
+      <span class="tag-red">● Misión activa — Arsenal IA</span>
+      <h1 class="metallic-text">Inteligencia Artificial<br>en órbita para tu negocio</h1>
+      <p class="lead">Sologint diseña, entrena y despliega agentes de IA que automatizan ventas, soporte y operaciones — con la disciplina de una misión espacial: control, precisión y cero improvisación.</p>
+      <div class="hero-actions">
+        <a class="btn-red" href="#contacto">Agendar diagnóstico</a>
+        <a class="btn-metal" href="#soluciones">Ver soluciones ↓</a>
+      </div>
     </div>
   </section>
 
-  <section id="soluciones">
-    <div class="section-head">
-      <div class="kicker">Programa de misiones</div>
-      <h2>Cada agente, una misión con objetivo claro</h2>
-      <p>No vendemos "IA" en abstracto: cada despliegue tiene un objetivo de negocio medible.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="icon">🤖</div>
-        <h3>Agentes de WhatsApp</h3>
-        <p>Bots entrenados para atención, ventas y seguimiento 24/7, con memoria de conversación y escalado a humano cuando hace falta.</p>
-      </div>
-      <div class="card">
-        <div class="icon">⚙️</div>
-        <h3>Automatización de procesos</h3>
-        <p>Integraciones sobre Make, Supabase y tu stack actual para eliminar tareas repetitivas sin romper lo que ya funciona.</p>
-      </div>
-      <div class="card">
-        <div class="icon">📊</div>
-        <h3>Paneles de control</h3>
-        <p>Dashboards claros para ver qué hace cada agente, cuánto ahorra y dónde conviene ajustar el rumbo.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🛰️</div>
-        <h3>Integración multicanal</h3>
-        <p>Un mismo cerebro de IA conectado a WhatsApp, web y CRM, hablando siempre con la misma voz de marca.</p>
+  <section class="white" id="soluciones">
+    <div class="wrap">
+      <div class="section-title"><span class="bar"></span><h2>Programa de misiones</h2></div>
+      <div class="grid">
+        <div class="card">
+          <div class="cat">Comunicación</div>
+          <h3>Agentes de WhatsApp</h3>
+          <p>Bots entrenados para atención, ventas y seguimiento 24/7, con memoria de conversación y escalado a humano cuando hace falta.</p>
+        </div>
+        <div class="card">
+          <div class="cat">Operaciones</div>
+          <h3>Automatización de procesos</h3>
+          <p>Integraciones sobre Make, Supabase y tu stack actual para eliminar tareas repetitivas sin romper lo que ya funciona.</p>
+        </div>
+        <div class="card">
+          <div class="cat">Control de misión</div>
+          <h3>Paneles de control</h3>
+          <p>Dashboards claros para ver qué hace cada agente, cuánto ahorra y dónde conviene ajustar el rumbo.</p>
+        </div>
+        <div class="card">
+          <div class="cat">Integración</div>
+          <h3>Multicanal</h3>
+          <p>Un mismo cerebro de IA conectado a WhatsApp, web y CRM, hablando siempre con la misma voz de marca.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="stats" id="numeros">
-    <div class="section-head" style="margin:0 auto 40px;text-align:center;">
-      <div class="kicker" style="text-align:center;">Telemetría</div>
-      <h2>Resultados que se pueden auditar</h2>
-    </div>
-    <div class="grid">
-      <div class="stat"><h3>24/7</h3><p>Atención sin pausas</p></div>
-      <div class="stat"><h3>-70%</h3><p>Tareas manuales repetitivas</p></div>
-      <div class="stat"><h3>+3x</h3><p>Velocidad de respuesta</p></div>
-      <div class="stat"><h3>100%</h3><p>Trazabilidad de cada bot</p></div>
-    </div>
-  </section>
-
-  <section id="mision">
-    <div class="mission">
-      <div>
-        <div class="kicker">Control de misión</div>
-        <h2>Así llevamos tu proyecto de IA a producción</h2>
-        <p style="color:var(--muted);margin-top:16px;">Sin cajas negras. Cada etapa queda documentada y es reversible.</p>
-      </div>
-      <div class="mission-panel">
-        <ul>
-          <li><span class="badge">1</span><span><b>Diagnóstico.</b> Mapeamos procesos y detectamos dónde la IA suma más.</span></li>
-          <li><span class="badge">2</span><span><b>Diseño del agente.</b> Definimos alcance, tono y límites de decisión.</span></li>
-          <li><span class="badge">3</span><span><b>Despliegue controlado.</b> Salida gradual, con monitoreo activo.</span></li>
-          <li><span class="badge">4</span><span><b>Optimización continua.</b> Ajustes con datos reales de uso.</span></li>
-        </ul>
+    <div class="stars"></div>
+    <div class="wrap">
+      <div class="section-title"><span class="bar"></span><h2 style="color:#fff;">Telemetría</h2></div>
+      <div class="stats-grid">
+        <div class="stat"><h3 class="metallic-text">24/7</h3><p>Atención sin pausas</p></div>
+        <div class="stat"><h3 class="metallic-text">-70%</h3><p>Tareas manuales repetitivas</p></div>
+        <div class="stat"><h3 class="metallic-text">+3x</h3><p>Velocidad de respuesta</p></div>
+        <div class="stat"><h3 class="metallic-text">100%</h3><p>Trazabilidad de cada bot</p></div>
       </div>
     </div>
   </section>
 
-  <section id="contacto">
-    <div class="mission-panel" style="text-align:center;">
-      <h2 style="margin-bottom:16px;">¿Listo para lanzar tu misión de IA?</h2>
-      <p style="color:var(--muted);max-width:520px;margin:0 auto 28px;">Contanos tu proceso y te mostramos, sin compromiso, cómo se vería automatizado.</p>
-      <a class="btn-primary" href="https://wa.me/5491100000000" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+  <section class="grey" id="mision">
+    <div class="wrap">
+      <div class="section-title"><span class="bar"></span><h2>Control de misión</h2></div>
+      <div class="mission">
+        <div class="timeline">
+          <div class="tstep"><div class="tnum">01</div><div><h4>Diagnóstico</h4><p>Mapeamos procesos y detectamos dónde la IA suma más.</p></div></div>
+          <div class="tstep"><div class="tnum">02</div><div><h4>Diseño del agente</h4><p>Definimos alcance, tono y límites de decisión.</p></div></div>
+          <div class="tstep"><div class="tnum">03</div><div><h4>Despliegue controlado</h4><p>Salida gradual, con monitoreo activo.</p></div></div>
+          <div class="tstep"><div class="tnum">04</div><div><h4>Optimización continua</h4><p>Ajustes con datos reales de uso.</p></div></div>
+        </div>
+        <div class="panel-visual">
+          <div class="stars"></div>
+          <div class="orbit"><div class="core"></div><div class="sat"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-block" id="contacto">
+    <div class="stars"></div>
+    <div class="wrap" style="position:relative;z-index:1;">
+      <h2 class="metallic-text">¿Listo para lanzar tu misión de IA?</h2>
+      <p>Contanos tu proceso y te mostramos, sin compromiso, cómo se vería automatizado.</p>
+      <a class="btn-red" href="https://wa.me/5491100000000" target="_blank" rel="noopener">Hablar por WhatsApp</a>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="foot-logo">SOLOGINT · Arsenal IA</div>
-  <div>Una división de Estudio Oro S.A.S. — CUIT 30-71933033-5</div>
-  <div style="margin-top:8px;">Salguero 2835 4°B, CABA, Argentina</div>
+  <div class="wrap foot-top">
+    <div>
+      <h5>Sologint</h5>
+      <a href="#soluciones">Soluciones</a>
+      <a href="#mision">Misión</a>
+      <a href="#numeros">Resultados</a>
+    </div>
+    <div>
+      <h5>Estudio Oro</h5>
+      <a href="#">Estudio Oro</a>
+      <a href="#">OroInmob</a>
+      <a href="#">NARAKIA</a>
+    </div>
+    <div>
+      <h5>Contacto</h5>
+      <a href="https://wa.me/5491100000000" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="#">Salguero 2835 4°B, CABA</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© 2026 Sologint · Estudio Oro S.A.S. — CUIT 30-71933033-5</span>
+    <span>Arsenal IA</span>
+  </div>
 </footer>
 
 </body>
