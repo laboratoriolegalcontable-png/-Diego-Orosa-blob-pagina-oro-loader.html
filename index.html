@@ -554,13 +554,16 @@
     background:var(--nasa-red); color:#fff;
     display:flex; align-items:center; justify-content:center; font-size:13px;
   }
-  .tab-media{
+  .tab-media, .case-media{
     aspect-ratio:8/5;
     border-radius:12px;
     overflow:hidden;
-    background:var(--gradient-panel);
+    background:var(--bg-light-alt);
     border:1px solid var(--line-light);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
   }
+  .tab-media svg, .case-media svg{ width:100%; height:100%; max-width:340px; }
 
   /* lista numerada editorial (protocolo) */
   .num-list{ display:flex; flex-direction:column; }
@@ -595,13 +598,6 @@
   }
   .case-row:last-child{ border-bottom:1px solid var(--line-light); }
   .case-row.reverse .case-media{ order:2; }
-  .case-media{
-    aspect-ratio:8/5;
-    border-radius:12px;
-    overflow:hidden;
-    background:var(--gradient-panel);
-    border:1px solid var(--line-light);
-  }
   @media (max-width: 900px){
     .num-item{ grid-template-columns:1fr; }
     .case-row{ grid-template-columns:1fr; }
@@ -1156,7 +1152,21 @@
         <p>El agente responde cada consulta en segundos, califica al cliente y agenda la reunión — sin que nadie de tu equipo escriba una palabra. Funciona en WhatsApp, web y redes.</p>
         <a href="#bot" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
       </div>
-      <div class="tab-media"><!-- [IMG-TAB-1] 800x500, bot atendiendo en pantalla --></div>
+      <div class="tab-media">
+        <!-- [IMG-TAB-1] Ilustración propia — reemplazar por foto real 800x500 cuando esté disponible -->
+        <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="10" width="200" height="130" rx="12" fill="#fff" stroke="#dcdee3" stroke-width="2"/>
+          <rect x="20" y="10" width="200" height="26" rx="12" fill="#f1f2f5"/>
+          <circle cx="34" cy="23" r="4" fill="#fc3d21"/>
+          <circle cx="46" cy="23" r="4" fill="#e2e4ea"/>
+          <circle cx="58" cy="23" r="4" fill="#e2e4ea"/>
+          <rect x="34" y="48" width="110" height="16" rx="8" fill="#eceef3"/>
+          <rect x="34" y="70" width="150" height="16" rx="8" fill="#eceef3"/>
+          <rect x="96" y="94" width="90" height="16" rx="8" fill="#b6a2e8"/>
+          <circle cx="196" cy="102" r="14" fill="#fc3d21"/>
+          <path d="M191 102 l4 4 l8 -8" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
     <div class="tab-panel" data-panel="auto" hidden>
       <div class="tab-copy">
@@ -1165,7 +1175,24 @@
         <p>Conectamos tu CRM, calendario y planillas para que los procesos corran solos, de punta a punta, sin intervención manual diaria.</p>
         <a href="#proceso" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
       </div>
-      <div class="tab-media"><!-- [IMG-TAB-2] 800x500, flujo de automatización --></div>
+      <div class="tab-media">
+        <!-- [IMG-TAB-2] Ilustración propia — reemplazar por foto real 800x500 cuando esté disponible -->
+        <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="36" cy="30" r="16" fill="#eceef3" stroke="#dcdee3" stroke-width="2"/>
+          <circle cx="36" cy="120" r="16" fill="#eceef3" stroke="#dcdee3" stroke-width="2"/>
+          <circle cx="120" cy="75" r="20" fill="#b6a2e8"/>
+          <circle cx="204" cy="30" r="16" fill="#eceef3" stroke="#dcdee3" stroke-width="2"/>
+          <circle cx="204" cy="120" r="16" fill="#fc3d21"/>
+          <path d="M50 34 L104 68" stroke="#c3c6d0" stroke-width="3" fill="none"/>
+          <path d="M50 114 L104 82" stroke="#c3c6d0" stroke-width="3" fill="none"/>
+          <path d="M138 68 L190 36" stroke="#c3c6d0" stroke-width="3" fill="none"/>
+          <path d="M138 82 L190 114" stroke="#c3c6d0" stroke-width="3" fill="none"/>
+          <circle cx="36" cy="30" r="5" fill="#9198a6"/>
+          <circle cx="36" cy="120" r="5" fill="#9198a6"/>
+          <circle cx="204" cy="30" r="5" fill="#9198a6"/>
+          <path d="M199 116 l4 4 l7 -8" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
     <div class="tab-panel" data-panel="infra" hidden>
       <div class="tab-copy">
@@ -1174,7 +1201,18 @@
         <p>Datos alojados en infraestructura cloud propia, con trazabilidad completa de cada acción que toma cada agente.</p>
         <a href="#resultados" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
       </div>
-      <div class="tab-media"><!-- [IMG-TAB-3] 800x500, panel de control --></div>
+      <div class="tab-media">
+        <!-- [IMG-TAB-3] Ilustración propia — reemplazar por foto real 800x500 cuando esté disponible -->
+        <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="16" width="200" height="118" rx="10" fill="#fff" stroke="#dcdee3" stroke-width="2"/>
+          <rect x="36" y="80" width="24" height="40" rx="4" fill="#eceef3"/>
+          <rect x="70" y="60" width="24" height="60" rx="4" fill="#b6a2e8"/>
+          <rect x="104" y="40" width="24" height="80" rx="4" fill="#9198a6"/>
+          <rect x="138" y="70" width="24" height="50" rx="4" fill="#eceef3"/>
+          <rect x="172" y="30" width="24" height="90" rx="4" fill="#fc3d21"/>
+          <path d="M36 32 h168" stroke="#e2e4ea" stroke-width="2"/>
+        </svg>
+      </div>
     </div>
   </div>
 </section>
@@ -1325,7 +1363,19 @@
         <p>Un agente que responde consultas, agenda reuniones y hace seguimiento de cada lead sin intervención humana.</p>
         <a href="#bot" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
       </div>
-      <div class="case-media"><!-- [IMG-CASO-1] 800x500, atención comercial --></div>
+      <div class="case-media">
+        <!-- [IMG-CASO-1] Ilustración propia — reemplazar por foto real 800x500 cuando esté disponible -->
+        <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="120" cy="75" r="58" fill="#f1f2f5"/>
+          <rect x="70" y="52" width="100" height="60" rx="16" fill="#fff" stroke="#dcdee3" stroke-width="2"/>
+          <path d="M96 112 l-14 16 v-16 z" fill="#fff" stroke="#dcdee3" stroke-width="2"/>
+          <circle cx="96" cy="82" r="7" fill="#b6a2e8"/>
+          <circle cx="120" cy="82" r="7" fill="#9198a6"/>
+          <circle cx="144" cy="82" r="7" fill="#fc3d21"/>
+          <circle cx="176" cy="46" r="16" fill="#fc3d21"/>
+          <path d="M169 46 l5 5 l9 -10" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
     <div class="case-row reverse">
       <div class="tab-copy">
@@ -1333,7 +1383,30 @@
         <p>Procesos administrativos, reportes y flujos de trabajo ejecutados automáticamente entre tus plataformas.</p>
         <a href="#proceso" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
       </div>
-      <div class="case-media"><!-- [IMG-CASO-2] 800x500, operaciones internas --></div>
+      <div class="case-media">
+        <!-- [IMG-CASO-2] Ilustración propia — reemplazar por foto real 800x500 cuando esté disponible -->
+        <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="120" cy="75" r="58" fill="#f1f2f5"/>
+          <g fill="none" stroke="#9198a6" stroke-width="8">
+            <circle cx="92" cy="68" r="22"/>
+          </g>
+          <g fill="#9198a6">
+            <rect x="88" y="34" width="8" height="12" rx="2"/>
+            <rect x="88" y="90" width="8" height="12" rx="2"/>
+            <rect x="60" y="62" width="12" height="8" rx="2"/>
+            <rect x="112" y="62" width="12" height="8" rx="2"/>
+          </g>
+          <g fill="none" stroke="#fc3d21" stroke-width="7">
+            <circle cx="150" cy="98" r="16"/>
+          </g>
+          <g fill="#fc3d21">
+            <rect x="147" y="76" width="6" height="9" rx="2"/>
+            <rect x="147" y="111" width="6" height="9" rx="2"/>
+            <rect x="128" y="95" width="9" height="6" rx="2"/>
+            <rect x="163" y="95" width="9" height="6" rx="2"/>
+          </g>
+        </svg>
+      </div>
     </div>
   </div>
 </section>
