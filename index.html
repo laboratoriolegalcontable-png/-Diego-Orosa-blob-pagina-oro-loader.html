@@ -68,16 +68,7 @@
   html{scroll-behavior:smooth;}
 
   body{
-    background:
-      radial-gradient(ellipse 70% 55% at 18% 8%, #3a4f9e 0%, transparent 55%),
-      radial-gradient(ellipse 60% 55% at 55% 30%, #6b4fae 0%, transparent 58%),
-      radial-gradient(ellipse 65% 60% at 78% 12%, #9e4f8f 0%, transparent 55%),
-      radial-gradient(ellipse 70% 60% at 30% 60%, #c9917f 0%, transparent 52%),
-      radial-gradient(ellipse 60% 55% at 85% 70%, #3a6a9e 0%, transparent 55%),
-      radial-gradient(ellipse 80% 70% at 50% 95%, #2a2050 0%, transparent 60%),
-      var(--bg-void);
-    background-attachment:fixed;
-    background-size:100% 100%;
+    background:var(--bg-void);
     color:var(--text-primary);
     font-family:var(--font-sans);
     line-height:1.55;
@@ -218,37 +209,17 @@
   }
 
   /* ---------- BACKGROUND FX ---------- */
-  #stars{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.7; }
+  #nebulaCanvas{ position:fixed; inset:0; z-index:0; pointer-events:none; width:100%; height:100%; }
+  #stars{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.85; }
 
   .hull-lines{
     position:fixed;
     inset:0;
     z-index:0;
     pointer-events:none;
-    opacity:.35;
+    opacity:.25;
     background-image:
-      repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 90px);
-  }
-
-  /* fondo galáctico: capa extra de nebulosa animada, encima de la base fija del body */
-  .nebula{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-    opacity:.55;
-    background:
-      radial-gradient(ellipse 50% 45% at 20% 15%, var(--neb-blue), transparent 65%),
-      radial-gradient(ellipse 45% 40% at 60% 40%, var(--neb-violet), transparent 62%),
-      radial-gradient(ellipse 55% 50% at 35% 70%, var(--neb-rose), transparent 60%),
-      radial-gradient(ellipse 45% 40% at 82% 30%, var(--neb-magenta), transparent 62%),
-      radial-gradient(ellipse 50% 50% at 88% 82%, var(--neb-cyan), transparent 62%);
-    filter:blur(70px) saturate(1.6);
-    animation:nebulaDrift 50s ease-in-out infinite alternate;
-  }
-  @keyframes nebulaDrift{
-    0%{ transform:translate(0,0) scale(1); }
-    100%{ transform:translate(3%,-3%) scale(1.08); }
+      repeating-linear-gradient(180deg, rgba(255,255,255,.02) 0px, rgba(255,255,255,.02) 1px, transparent 1px, transparent 90px);
   }
 
   /* ---------- PORTHOLE (portal circular con estrellas) ---------- */
@@ -926,7 +897,7 @@
 </head>
 <body>
 
-<div class="nebula"></div>
+<canvas id="nebulaCanvas"></canvas>
 <canvas id="stars"></canvas>
 <div class="hull-lines"></div>
 
@@ -1223,6 +1194,93 @@
     }
   });
 
+  // ---- Nebulosa galáctica pintada a mano en canvas (look orgánico, no manchas de CSS) ----
+  (function(){
+    const canvas = document.getElementById('nebulaCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function rand(min, max){ return min + Math.random() * (max - min); }
+
+    function paintNebula(){
+      const w = canvas.width = window.innerWidth;
+      const h = canvas.height = Math.max(window.innerHeight, 900);
+
+      // base: degradado oscuro tipo cielo profundo
+      const base = ctx.createLinearGradient(0, 0, w * 0.3, h);
+      base.addColorStop(0, '#050512');
+      base.addColorStop(0.5, '#0a0a1a');
+      base.addColorStop(1, '#020204');
+      ctx.fillStyle = base;
+      ctx.fillRect(0, 0, w, h);
+
+      const palette = [
+        'rgba(58,79,158,PLACEHOLDER)',   // azul
+        'rgba(107,79,174,PLACEHOLDER)',  // violeta
+        'rgba(158,79,143,PLACEHOLDER)',  // magenta
+        'rgba(201,145,127,PLACEHOLDER)', // rosa polvoriento
+        'rgba(74,134,168,PLACEHOLDER)',  // cyan apagado
+      ];
+
+      ctx.globalCompositeOperation = 'lighter';
+
+      // capa 1: nubes grandes y difusas — muchas manchas chicas superpuestas
+      // en vez de pocos círculos grandes, para que se vea como polvo, no como bolas
+      const seed = [
+        {x:.15,y:.12,c:0}, {x:.22,y:.20,c:0}, {x:.30,y:.08,c:1},
+        {x:.45,y:.30,c:1}, {x:.55,y:.42,c:1}, {x:.62,y:.22,c:2},
+        {x:.72,y:.15,c:2}, {x:.80,y:.30,c:2}, {x:.35,y:.60,c:3},
+        {x:.28,y:.72,c:3}, {x:.45,y:.68,c:3}, {x:.18,y:.55,c:0},
+        {x:.85,y:.65,c:4}, {x:.90,y:.80,c:4}, {x:.75,y:.75,c:1},
+        {x:.10,y:.85,c:3}, {x:.55,y:.85,c:0}, {x:.65,y:.55,c:2},
+      ];
+
+      seed.forEach((s, i) => {
+        const cx = s.x * w + rand(-40, 40);
+        const cy = s.y * h + rand(-40, 40);
+        const r = Math.min(w, h) * rand(0.22, 0.42);
+        const alpha = rand(0.10, 0.20);
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        g.addColorStop(0, palette[s.c].replace('PLACEHOLDER', alpha.toFixed(2)));
+        g.addColorStop(0.55, palette[s.c].replace('PLACEHOLDER', (alpha * 0.4).toFixed(2)));
+        g.addColorStop(1, palette[s.c].replace('PLACEHOLDER', '0'));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // capa 2: polvo fino — cientos de puntos pequeños de color para romper
+      // el aspecto "manchas lisas" y dar textura granular real de nebulosa
+      ctx.globalCompositeOperation = 'lighter';
+      for(let i = 0; i < 900; i++){
+        const cx = rand(0, w);
+        const cy = rand(0, h);
+        const r = rand(1, 3.5);
+        const c = palette[Math.floor(rand(0, palette.length))];
+        const alpha = rand(0.03, 0.09);
+        ctx.fillStyle = c.replace('PLACEHOLDER', alpha.toFixed(2));
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // vignette: oscurece bordes para que el centro respire y el texto se lea
+      ctx.globalCompositeOperation = 'source-over';
+      const vignette = ctx.createRadialGradient(w*0.5, h*0.35, Math.min(w,h)*0.2, w*0.5, h*0.35, Math.max(w,h)*0.8);
+      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      vignette.addColorStop(1, 'rgba(2,2,6,.55)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    paintNebula();
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(paintNebula, 200);
+    });
+  })();
+
   // ---- Starfield de fondo ----
   (function(){
     const canvas = document.getElementById('stars');
@@ -1230,7 +1288,7 @@
     let stars = [];
     function resize(){
       canvas.width = window.innerWidth;
-      canvas.height = document.body.scrollHeight;
+      canvas.height = window.innerHeight;
     }
     function initStars(){
       stars = [];
