@@ -3,51 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sologint | Inteligencia Artificial Aplicada</title>
-<meta name="description" content="Sologint - Arsenal de Inteligencia Artificial. Automatización, agentes IA y soluciones tecnológicas de vanguardia.">
+<title>Sologint | Automatización e IA para Negocios</title>
+<meta name="description" content="Sologint — Sistema de inteligencia artificial y automatización para vender, atender y escalar tu negocio 24/7.">
 
 <!--
   ============================================================
   GUÍA DE IMÁGENES DE FONDO — reemplazar los placeholders
-  marcados con [IMG-1] ... [IMG-6] por tus imágenes reales.
-  Cada bloque indica el selector CSS donde va la imagen y el
-  tamaño recomendado.
+  marcados con [IMG-1] ... [IMG-5] por tus imágenes reales.
   ============================================================
-  [IMG-1] .hero          -> 1920x1080 o más (fondo full-bleed, oscuro/espacial)
-  [IMG-2] .mission-1      -> 800x600 (IA / redes neuronales)
-  [IMG-3] .mission-2      -> 800x600 (automatización / bots)
-  [IMG-4] .mission-3      -> 800x600 (data / servidores)
-  [IMG-5] .feature-banner -> 1600x500 (banda ancha, tecnología)
-  [IMG-6] .cta-section    -> 1920x800 (cierre, oscuro)
+  [IMG-1] .hero            -> 1920x1080+ (fondo tecnológico oscuro: circuitos, red neuronal, data center)
+  [IMG-2] .bot-section      -> 1600x900 (interfaz IA, holograma, robot/bot)
+  [IMG-3] .workflow-section -> 1920x700 (banda ancha, flujo de datos/automatización)
+  [IMG-4] .proof-section    -> 800x800 (textura tech, circuito, partículas)
+  [IMG-5] .cta-section      -> 1920x800 (cierre, oscuro futurista)
 -->
 
 <style>
   :root{
-    --bg-deep:#0b0d17;
-    --bg-panel:#11141f;
-    --bg-panel-alt:#161a29;
-    --line:#242a3d;
-    --text-primary:#f5f6fa;
-    --text-secondary:#aab0c4;
-    --accent:#0b3d91; /* azul NASA */
-    --accent-bright:#3d7dff;
-    --accent-red:#fc3d21; /* rojo NASA */
+    --bg-deep:#05060d;
+    --bg-panel:#0a0d1a;
+    --bg-panel-alt:#0e1226;
+    --line:#1c2340;
+    --line-bright:#2f3d70;
+    --text-primary:#eef1ff;
+    --text-secondary:#8b93b8;
+    --accent:#00e5ff;      /* cyan */
+    --accent-2:#7b5cff;    /* violeta */
+    --accent-3:#00ffa3;    /* verde IA */
+    --gradient: linear-gradient(120deg, var(--accent), var(--accent-2));
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   }
 
   *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
 
   body{
     background:var(--bg-deep);
     color:var(--text-primary);
     font-family:var(--font-sans);
-    line-height:1.5;
+    line-height:1.55;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
 
   img{max-width:100%; display:block;}
-
   a{color:inherit; text-decoration:none;}
+  ::selection{background:var(--accent-2); color:#fff;}
 
   .wrap{
     max-width:1240px;
@@ -55,37 +58,85 @@
     padding-inline:20px;
   }
 
-  /* ---------- TOP BAR ---------- */
-  .topbar{
-    background:#000;
-    font-size:12px;
-    color:var(--text-secondary);
-    border-bottom:1px solid var(--line);
+  /* background grid effect used across dark sections */
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(0,229,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,.05) 1px, transparent 1px);
+    background-size:42px 42px;
   }
-  .topbar .wrap{
-    display:flex;
-    justify-content:space-between;
+
+  .glow-text{
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .pill{
+    display:inline-flex;
     align-items:center;
-    padding-block:6px;
-    flex-wrap:wrap;
-    gap:6px;
+    gap:8px;
+    background:rgba(0,229,255,.08);
+    border:1px solid rgba(0,229,255,.35);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    padding:7px 14px;
+    border-radius:999px;
   }
-  .topbar a{opacity:.85}
-  .topbar a:hover{opacity:1; color:var(--accent-bright);}
+  .pill .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--accent-3);
+    box-shadow:0 0 8px var(--accent-3);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:.4; transform:scale(.7);}
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:13px 26px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.3px;
+    transition:.2s;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .btn-primary{
+    background:var(--gradient);
+    color:#03040a;
+  }
+  .btn-primary:hover{filter:brightness(1.1); transform:translateY(-2px);}
+  .btn-ghost{
+    border:1px solid var(--line-bright);
+    color:var(--text-primary);
+    background:rgba(255,255,255,.02);
+  }
+  .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
 
   /* ---------- HEADER ---------- */
   header.main{
-    background:var(--bg-panel);
-    border-bottom:1px solid var(--line);
     position:sticky;
     top:0;
-    z-index:100;
+    z-index:200;
+    background:rgba(5,6,13,.75);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
   }
   .nav-row{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding-block:14px;
+    padding-block:16px;
     gap:16px;
   }
   .brand{
@@ -93,307 +144,439 @@
     align-items:center;
     gap:10px;
     font-weight:800;
-    font-size:22px;
+    font-size:21px;
     letter-spacing:.5px;
   }
   .brand .mark{
-    width:38px;height:38px;border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, var(--accent-bright), var(--accent) 60%, #061534 100%);
-    box-shadow:0 0 0 3px rgba(61,125,255,.15);
+    width:34px;height:34px;border-radius:9px;
+    background:var(--gradient);
+    box-shadow:0 0 22px rgba(0,229,255,.45);
     flex-shrink:0;
+    position:relative;
   }
-  .brand span.accent{color:var(--accent-bright);}
+  .brand .mark::after{
+    content:"";
+    position:absolute; inset:8px;
+    border-radius:3px;
+    background:var(--bg-deep);
+  }
 
-  nav.primary{
-    display:flex;
-    gap:28px;
-  }
+  nav.primary{display:flex; gap:30px;}
   nav.primary a{
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
     text-transform:uppercase;
-    letter-spacing:.5px;
+    letter-spacing:.6px;
     color:var(--text-secondary);
-    padding:6px 2px;
-    border-bottom:2px solid transparent;
     transition:.2s;
   }
-  nav.primary a:hover{color:var(--text-primary); border-color:var(--accent-bright);}
+  nav.primary a:hover{color:var(--accent);}
 
   .nav-actions{display:flex; align-items:center; gap:14px;}
-  .btn{
-    display:inline-block;
-    padding:10px 20px;
-    border-radius:4px;
-    font-weight:700;
-    font-size:13px;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    transition:.2s;
-  }
-  .btn-primary{background:var(--accent-red); color:#fff;}
-  .btn-primary:hover{background:#d9310f;}
-  .btn-ghost{border:1px solid var(--line); color:var(--text-primary);}
-  .btn-ghost:hover{border-color:var(--accent-bright);}
-
   .burger{display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none;}
-  .burger span{width:24px; height:2px; background:#fff;}
+  .burger span{width:22px; height:2px; background:#fff;}
 
   /* ---------- HERO ---------- */
   .hero{
     position:relative;
-    min-height:640px;
+    min-height:88vh;
     display:flex;
-    align-items:flex-end;
+    align-items:center;
     /* [IMG-1] Reemplazar por: background-image:url('tu-imagen.jpg'); */
     background:
-      linear-gradient(180deg, rgba(6,8,16,.15) 0%, rgba(6,8,16,.55) 55%, var(--bg-deep) 100%),
-      radial-gradient(ellipse at 70% 20%, #14224a 0%, #0b0d17 60%),
-      repeating-radial-gradient(circle at 20% 80%, rgba(255,255,255,.04) 0 1px, transparent 1px 3px);
-    background-size:cover;
-    background-position:center;
-    border-bottom:1px solid var(--line);
+      radial-gradient(ellipse 60% 50% at 80% 10%, rgba(123,92,255,.25), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, rgba(0,229,255,.18), transparent 60%),
+      var(--bg-deep);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(0,229,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,.06) 1px, transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 90%);
   }
   .hero-content{
-    padding-block:60px 56px;
-    max-width:760px;
-  }
-  .eyebrow{
-    display:inline-block;
-    background:var(--accent-red);
-    color:#fff;
-    font-size:12px;
-    font-weight:800;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    padding:5px 12px;
-    border-radius:3px;
-    margin-bottom:18px;
+    position:relative;
+    z-index:2;
+    padding-block:70px;
+    max-width:780px;
   }
   .hero h1{
-    font-size:clamp(32px, 5vw, 56px);
+    font-size:clamp(34px, 5.2vw, 62px);
     font-weight:800;
-    line-height:1.08;
-    margin-bottom:18px;
-    letter-spacing:-.5px;
+    line-height:1.06;
+    letter-spacing:-1px;
+    margin-block:22px 20px;
   }
-  .hero p{
+  .hero p.lead{
     font-size:18px;
     color:var(--text-secondary);
     max-width:600px;
-    margin-bottom:28px;
+    margin-bottom:32px;
   }
-  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:44px;}
 
-  /* ---------- TICKER / STATS STRIP ---------- */
-  .stats-strip{
-    background:var(--bg-panel);
-    border-bottom:1px solid var(--line);
-  }
-  .stats-grid{
-    display:grid;
-    grid-template-columns:repeat(4, 1fr);
-    gap:0;
-  }
-  .stat{
-    padding:22px 20px;
-    border-right:1px solid var(--line);
-    text-align:center;
-  }
-  .stat:last-child{border-right:none;}
-  .stat b{
-    display:block;
-    font-size:28px;
-    font-weight:800;
-    color:var(--accent-bright);
-  }
-  .stat span{
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    color:var(--text-secondary);
-  }
-
-  /* ---------- SECTION HEADINGS ---------- */
-  .section{padding-block:72px;}
-  .section-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    margin-bottom:36px;
-    gap:20px;
-    flex-wrap:wrap;
-  }
-  .section-head h2{
-    font-size:clamp(24px, 3vw, 34px);
-    font-weight:800;
-    letter-spacing:-.5px;
-  }
-  .section-head p{color:var(--text-secondary); max-width:520px;}
-  .link-more{
-    font-weight:700;
-    font-size:13px;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    color:var(--accent-bright);
-    white-space:nowrap;
-  }
-  .link-more:hover{text-decoration:underline;}
-
-  /* ---------- MISSIONS / SERVICES GRID ---------- */
-  .missions-grid{
-    display:grid;
-    grid-template-columns:1.2fr 1fr 1fr;
-    gap:24px;
-  }
-  .mission-card{
-    background:var(--bg-panel);
-    border:1px solid var(--line);
-    border-radius:8px;
-    overflow:hidden;
-    transition:.25s;
-  }
-  .mission-card:hover{
-    transform:translateY(-4px);
-    border-color:var(--accent-bright);
-    box-shadow:0 12px 32px rgba(0,0,0,.4);
-  }
-  .mission-media{
-    height:210px;
-    background-size:cover;
-    background-position:center;
-    position:relative;
-  }
-  /* [IMG-2] */
-  .mission-1 .mission-media{background:linear-gradient(135deg,#132146,#0b0d17);}
-  /* [IMG-3] */
-  .mission-2 .mission-media{background:linear-gradient(135deg,#3a0d1f,#0b0d17);}
-  /* [IMG-4] */
-  .mission-3 .mission-media{background:linear-gradient(135deg,#0d3a2f,#0b0d17);}
-  .mission-tag{
-    position:absolute; top:14px; left:14px;
-    background:rgba(0,0,0,.55);
-    backdrop-filter:blur(4px);
-    padding:4px 10px;
-    font-size:11px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    border-radius:3px;
-    color:var(--accent-bright);
-  }
-  .mission-body{padding:22px;}
-  .mission-body h3{font-size:19px; font-weight:700; margin-bottom:10px;}
-  .mission-body p{font-size:14px; color:var(--text-secondary); margin-bottom:14px;}
-  .mission-body a{
-    font-size:13px; font-weight:700; text-transform:uppercase;
-    letter-spacing:.5px; color:var(--accent-red);
-  }
-
-  /* ---------- FEATURE BANNER ---------- */
-  .feature-banner{
-    /* [IMG-5] Reemplazar por: background-image:url('tu-imagen.jpg'); */
-    background:
-      linear-gradient(90deg, rgba(11,13,23,.92) 30%, rgba(11,13,23,.55) 100%),
-      linear-gradient(135deg,#0b3d91,#061027 70%);
-    background-size:cover;
-    background-position:center;
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-  }
-  .feature-inner{
-    padding-block:64px;
-    max-width:620px;
-  }
-  .feature-inner .eyebrow{background:var(--accent-bright);}
-  .feature-inner h2{font-size:clamp(26px,3.4vw,38px); font-weight:800; margin-bottom:16px;}
-  .feature-inner p{color:var(--text-secondary); margin-bottom:26px; font-size:16px;}
-
-  /* ---------- NEWS / UPDATES GRID ---------- */
-  .news-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:24px;
-  }
-  .news-card{
-    border-bottom:1px solid var(--line);
-    padding-bottom:20px;
-  }
-  .news-date{
-    font-size:12px;
-    color:var(--accent-bright);
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    margin-bottom:8px;
-    display:block;
-  }
-  .news-card h3{font-size:18px; font-weight:700; margin-bottom:10px; line-height:1.3;}
-  .news-card p{font-size:14px; color:var(--text-secondary);}
-
-  /* ---------- LOGOS / TRUST STRIP ---------- */
-  .trust{
-    background:var(--bg-panel);
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-    padding-block:36px;
-  }
-  .trust-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:20px;
-  }
-  .trust-row p{
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    color:var(--text-secondary);
-    font-weight:700;
-  }
-  .trust-logos{
+  .hero-metrics{
     display:flex;
     gap:36px;
     flex-wrap:wrap;
-    align-items:center;
   }
-  .trust-logos span{
+  .hero-metrics div b{
+    display:block;
+    font-size:26px;
     font-weight:800;
-    font-size:15px;
-    color:var(--text-secondary);
-    opacity:.7;
+    font-family:var(--font-mono);
+    color:var(--accent);
+  }
+  .hero-metrics div span{
+    font-size:12px;
+    text-transform:uppercase;
     letter-spacing:.5px;
+    color:var(--text-secondary);
   }
 
-  /* ---------- CTA SECTION ---------- */
-  .cta-section{
-    position:relative;
-    /* [IMG-6] Reemplazar por: background-image:url('tu-imagen.jpg'); */
-    background:
-      linear-gradient(180deg, rgba(6,8,16,.5), var(--bg-deep) 90%),
-      radial-gradient(ellipse at 30% 40%, #14224a 0%, #0b0d17 65%);
-    background-size:cover;
-    background-position:center;
-    text-align:center;
-    padding-block:90px;
+  /* floating orbs decoration */
+  .orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(2px);
+    opacity:.6;
+    animation:float 8s ease-in-out infinite;
   }
-  .cta-section h2{
-    font-size:clamp(26px,4vw,42px);
+  @keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-24px);}
+  }
+
+  /* ---------- LOGO STRIP ---------- */
+  .logos-strip{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+    padding-block:26px;
+  }
+  .logos-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:18px;
+  }
+  .logos-row p{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--text-secondary);
+    font-weight:700;
+  }
+  .logos-tags{display:flex; gap:30px; flex-wrap:wrap;}
+  .logos-tags span{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--text-secondary);
+    opacity:.75;
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:6px;
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  .section{padding-block:96px;}
+  .section-head{
+    max-width:640px;
+    margin-bottom:52px;
+  }
+  .section-head .pill{margin-bottom:18px;}
+  .section-head h2{
+    font-size:clamp(26px, 3.4vw, 40px);
+    font-weight:800;
+    letter-spacing:-.5px;
+    margin-bottom:14px;
+  }
+  .section-head p{color:var(--text-secondary); font-size:16px;}
+
+  /* ---------- FEATURES GRID ---------- */
+  .features-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  .feature-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px;
+    transition:.25s;
+    position:relative;
+    overflow:hidden;
+  }
+  .feature-card::before{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--gradient);
+    opacity:0;
+    transition:.25s;
+  }
+  .feature-card:hover{
+    border-color:var(--accent);
+    transform:translateY(-4px);
+    box-shadow:0 18px 40px rgba(0,229,255,.08);
+  }
+  .feature-icon{
+    width:46px; height:46px;
+    border-radius:10px;
+    background:var(--gradient);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    margin-bottom:20px;
+    color:#03040a;
+  }
+  .feature-card h3{font-size:18px; font-weight:700; margin-bottom:10px;}
+  .feature-card p{font-size:14px; color:var(--text-secondary);}
+
+  /* ---------- BOT / DEMO SECTION ---------- */
+  .bot-section{
+    background:
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-panel-alt) 100%);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  .bot-layout{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:56px;
+    align-items:center;
+  }
+  .bot-copy .pill{margin-bottom:20px;}
+  .bot-copy h2{
+    font-size:clamp(26px,3.6vw,40px);
     font-weight:800;
     margin-bottom:18px;
+    letter-spacing:-.5px;
+  }
+  .bot-copy p{color:var(--text-secondary); margin-bottom:24px; font-size:16px;}
+  .bot-copy ul{list-style:none; margin-bottom:28px;}
+  .bot-copy li{
+    display:flex; align-items:center; gap:10px;
+    font-size:14px;
+    color:var(--text-primary);
+    margin-bottom:12px;
+  }
+  .bot-copy li::before{
+    content:"";
+    width:8px; height:8px;
+    border-radius:2px;
+    background:var(--gradient);
+    flex-shrink:0;
+  }
+
+  /* --- chat widget mock (embedded demo) --- */
+  .chat-demo{
+    background:var(--bg-panel);
+    border:1px solid var(--line-bright);
+    border-radius:18px;
+    box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(0,229,255,.08);
+    overflow:hidden;
+    max-width:420px;
+    margin-inline:auto;
+  }
+  .chat-head{
+    display:flex; align-items:center; gap:10px;
+    padding:16px 18px;
+    background:var(--bg-panel-alt);
+    border-bottom:1px solid var(--line);
+  }
+  .chat-head .avatar{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--gradient);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px;
+  }
+  .chat-head b{font-size:14px;}
+  .chat-head small{display:block; font-size:11px; color:var(--accent-3);}
+  .chat-body{
+    padding:20px;
+    min-height:320px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .msg{
+    max-width:80%;
+    padding:11px 14px;
+    border-radius:14px;
+    font-size:13.5px;
+    line-height:1.4;
+    opacity:0;
+    transform:translateY(8px);
+    animation:msgIn .4s ease forwards;
+  }
+  @keyframes msgIn{ to{opacity:1; transform:translateY(0);} }
+  .msg.bot{
+    background:var(--bg-panel-alt);
+    border:1px solid var(--line);
+    align-self:flex-start;
+    border-bottom-left-radius:4px;
+  }
+  .msg.user{
+    background:var(--gradient);
+    color:#03040a;
+    font-weight:600;
+    align-self:flex-end;
+    border-bottom-right-radius:4px;
+  }
+  .typing-dots{
+    align-self:flex-start;
+    display:flex; gap:4px;
+    padding:12px 14px;
+    background:var(--bg-panel-alt);
+    border:1px solid var(--line);
+    border-radius:14px;
+    border-bottom-left-radius:4px;
+  }
+  .typing-dots span{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--accent);
+    animation:blink 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2){animation-delay:.2s;}
+  .typing-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.2;} 40%{opacity:1;}}
+  .chat-foot{
+    display:flex; gap:10px;
+    padding:14px 16px;
+    border-top:1px solid var(--line);
+    background:var(--bg-panel-alt);
+  }
+  .chat-foot input{
+    flex:1;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    color:var(--text-secondary);
+    font-size:13px;
+  }
+  .chat-foot button{
+    background:var(--gradient);
+    border:none;
+    border-radius:8px;
+    padding:0 16px;
+    font-weight:700;
+    color:#03040a;
+    cursor:pointer;
+  }
+
+  /* ---------- WORKFLOW / PROCESS ---------- */
+  .workflow-section{
+    /* [IMG-3] Reemplazar por: background-image:url('tu-imagen.jpg'); */
+    background:
+      linear-gradient(180deg, rgba(5,6,13,.9), rgba(5,6,13,.7)),
+      linear-gradient(120deg, #0e1226, #05060d 70%);
+    background-size:cover;
+    background-position:center;
+  }
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:20px;
+    position:relative;
+  }
+  .step{
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px 22px;
+    position:relative;
+  }
+  .step .num{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:14px;
+    display:block;
+  }
+  .step h3{font-size:16px; font-weight:700; margin-bottom:8px;}
+  .step p{font-size:13.5px; color:var(--text-secondary);}
+
+  /* ---------- PROOF / STATS ---------- */
+  .proof-section{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:56px;
+    align-items:center;
+  }
+  .proof-visual{
+    /* [IMG-4] Reemplazar por: background-image:url('tu-imagen.jpg'); */
+    aspect-ratio:1/1;
+    border-radius:20px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(0,229,255,.18), transparent 60%),
+      radial-gradient(circle at 70% 70%, rgba(123,92,255,.18), transparent 60%),
+      var(--bg-panel);
+    border:1px solid var(--line);
+  }
+  .proof-stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-top:30px;
+  }
+  .proof-stat b{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:32px;
+    font-weight:800;
+    color:var(--accent);
+  }
+  .proof-stat span{font-size:13px; color:var(--text-secondary);}
+
+  /* ---------- TESTIMONIAL ---------- */
+  .testimonial{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:36px;
+    max-width:760px;
+    margin-inline:auto;
+    text-align:center;
+  }
+  .testimonial p{font-size:19px; font-weight:600; margin-bottom:20px; line-height:1.5;}
+  .testimonial .who{font-size:13px; color:var(--text-secondary);}
+
+  /* ---------- CTA ---------- */
+  .cta-section{
+    position:relative;
+    text-align:center;
+    padding-block:110px;
+    /* [IMG-5] Reemplazar por: background-image:url('tu-imagen.jpg'); */
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 30%, rgba(0,229,255,.16), transparent 65%),
+      var(--bg-deep);
+    border-top:1px solid var(--line);
+  }
+  .cta-section h2{
+    font-size:clamp(28px,4.2vw,46px);
+    font-weight:800;
+    margin-bottom:18px;
+    letter-spacing:-.5px;
   }
   .cta-section p{
     color:var(--text-secondary);
     max-width:520px;
-    margin:0 auto 30px;
+    margin:0 auto 32px;
     font-size:16px;
   }
   .cta-buttons{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
 
   /* ---------- FOOTER ---------- */
   footer{
-    background:#000;
+    background:#020207;
     padding-block:56px 24px;
     border-top:1px solid var(--line);
   }
@@ -404,16 +587,16 @@
     margin-bottom:40px;
   }
   .footer-col h4{
-    font-size:13px;
+    font-size:12px;
     text-transform:uppercase;
-    letter-spacing:1px;
+    letter-spacing:1.2px;
     color:var(--text-secondary);
     margin-bottom:16px;
   }
   .footer-col ul{list-style:none;}
   .footer-col li{margin-bottom:10px;}
   .footer-col a{font-size:14px; color:var(--text-secondary);}
-  .footer-col a:hover{color:var(--accent-bright);}
+  .footer-col a:hover{color:var(--accent);}
   .footer-brand p{
     font-size:13px;
     color:var(--text-secondary);
@@ -433,163 +616,100 @@
   }
   .footer-bottom .legal-links{display:flex; gap:20px; flex-wrap:wrap;}
 
+  /* ---------- FLOATING BOT WIDGET ---------- */
+  .float-bot-btn{
+    position:fixed;
+    bottom:24px; right:24px;
+    width:60px; height:60px;
+    border-radius:50%;
+    background:var(--gradient);
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px;
+    cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,229,255,.35);
+    z-index:300;
+    border:none;
+    animation:float 4s ease-in-out infinite;
+  }
+  .float-bot-panel{
+    position:fixed;
+    bottom:96px; right:24px;
+    width:340px;
+    max-width:calc(100vw - 40px);
+    background:var(--bg-panel);
+    border:1px solid var(--line-bright);
+    border-radius:16px;
+    box-shadow:0 24px 60px rgba(0,0,0,.6);
+    z-index:300;
+    overflow:hidden;
+    display:none;
+  }
+  .float-bot-panel.open{display:block;}
+  .float-bot-panel .chat-body{min-height:220px; max-height:320px; overflow-y:auto;}
+
   /* ---------- RESPONSIVE ---------- */
-  @media (max-width: 900px){
+  @media (max-width: 980px){
     nav.primary{display:none;}
     .burger{display:flex;}
-    .missions-grid{grid-template-columns:1fr;}
-    .news-grid{grid-template-columns:1fr;}
-    .stats-grid{grid-template-columns:repeat(2,1fr);}
-    .stat{border-right:none; border-bottom:1px solid var(--line);}
+    .features-grid{grid-template-columns:1fr;}
+    .bot-layout{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr 1fr;}
+    .proof-section{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr 1fr;}
   }
-  @media (max-width: 480px){
+  @media (max-width: 520px){
+    .steps{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr;}
-    .stats-grid{grid-template-columns:1fr 1fr;}
+    .float-bot-panel{right:12px; left:12px; width:auto;}
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="wrap">
-    <div><a href="#">Ecosistema Estudio Oro</a></div>
-    <div style="display:flex; gap:18px;">
-      <a href="#">Español</a>
-      <a href="#contacto">Contacto</a>
-      <a href="#">Acceso Clientes</a>
-    </div>
-  </div>
-</div>
-
 <header class="main">
   <div class="wrap nav-row">
     <a href="#" class="brand">
       <span class="mark"></span>
-      SOLOG<span class="accent">INT</span>
+      SOLOG<span class="glow-text">INT</span>
     </a>
     <nav class="primary">
       <a href="#soluciones">Soluciones</a>
-      <a href="#tecnologia">Tecnología</a>
-      <a href="#casos">Casos de Éxito</a>
-      <a href="#noticias">Noticias</a>
-      <a href="#nosotros">Nosotros</a>
+      <a href="#bot">IA Conversacional</a>
+      <a href="#proceso">Cómo Funciona</a>
+      <a href="#resultados">Resultados</a>
     </nav>
     <div class="nav-actions">
-      <a href="#contacto" class="btn btn-ghost">Contacto</a>
-      <a href="#demo" class="btn btn-primary">Solicitar Demo</a>
+      <a href="#demo" class="btn btn-ghost">Ver Demo</a>
+      <a href="#contacto" class="btn btn-primary">Activar Sistema</a>
       <button class="burger" aria-label="Menú"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
 
 <section class="hero">
+  <div class="orb" style="width:260px;height:260px;background:radial-gradient(circle,var(--accent-2),transparent 70%); top:10%; right:8%;"></div>
+  <div class="orb" style="width:180px;height:180px;background:radial-gradient(circle,var(--accent),transparent 70%); bottom:12%; left:6%; animation-delay:2s;"></div>
   <div class="wrap hero-content">
-    <span class="eyebrow">Arsenal IA · Sologint</span>
-    <h1>Inteligencia artificial que ejecuta, no que promete.</h1>
-    <p>Diseñamos y desplegamos agentes de IA, automatización y sistemas inteligentes para negocios que necesitan escalar operaciones sin escalar costos.</p>
+    <span class="pill"><span class="dot"></span> Sistema operando 24/7</span>
+    <h1>El futuro de tu negocio ya <span class="glow-text">vende, atiende y escala</span> solo.</h1>
+    <p class="lead">Sologint diseña sistemas de inteligencia artificial que automatizan ventas, atención y operaciones — sin descansos, sin errores humanos, sin límites de horario.</p>
     <div class="hero-ctas">
-      <a href="#soluciones" class="btn btn-primary">Explorar Soluciones</a>
-      <a href="#demo" class="btn btn-ghost">Ver Demo en Vivo</a>
+      <a href="#demo" class="btn btn-primary">🚀 Quiero mi Sistema IA</a>
+      <a href="#bot" class="btn btn-ghost">💬 Hablar con el Bot</a>
+    </div>
+    <div class="hero-metrics">
+      <div><b>+40</b><span>Agentes IA Activos</span></div>
+      <div><b>24/7</b><span>Operación Continua</span></div>
+      <div><b>0seg</b><span>Tiempo de Espera</span></div>
+      <div><b>99.9%</b><span>Uptime del Sistema</span></div>
     </div>
   </div>
 </section>
 
-<div class="stats-strip">
-  <div class="wrap">
-    <div class="stats-grid">
-      <div class="stat"><b>+40</b><span>Agentes IA Desplegados</span></div>
-      <div class="stat"><b>24/7</b><span>Operación Autónoma</span></div>
-      <div class="stat"><b>6</b><span>Verticales de Negocio</span></div>
-      <div class="stat"><b>99.9%</b><span>Disponibilidad</span></div>
-    </div>
-  </div>
-</div>
-
-<section class="section" id="soluciones">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <h2>Soluciones de misión crítica</h2>
-        <p>Cada solución está construida para integrarse directamente en la operación diaria del negocio, sin fricción.</p>
-      </div>
-      <a href="#" class="link-more">Ver todas las soluciones →</a>
-    </div>
-
-    <div class="missions-grid">
-      <article class="mission-card mission-1">
-        <div class="mission-media"><span class="mission-tag">Agentes IA</span></div>
-        <div class="mission-body">
-          <h3>Bots Inteligentes para WhatsApp</h3>
-          <p>Atención, ventas y seguimiento automatizado con memoria de contexto y escalamiento humano cuando es necesario.</p>
-          <a href="#">Conocer más</a>
-        </div>
-      </article>
-      <article class="mission-card mission-2">
-        <div class="mission-media"><span class="mission-tag">Automatización</span></div>
-        <div class="mission-body">
-          <h3>Orquestación de Procesos</h3>
-          <p>Integraciones entre CRM, bases de datos y plataformas externas, ejecutadas sin intervención manual.</p>
-          <a href="#">Conocer más</a>
-        </div>
-      </article>
-      <article class="mission-card mission-3">
-        <div class="mission-media"><span class="mission-tag">Infraestructura</span></div>
-        <div class="mission-body">
-          <h3>Arquitectura de Datos</h3>
-          <p>Bases de datos y funciones en la nube diseñadas para escalar de forma segura y auditable.</p>
-          <a href="#">Conocer más</a>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="feature-banner" id="tecnologia">
-  <div class="wrap">
-    <div class="feature-inner">
-      <span class="eyebrow">Tecnología Propia</span>
-      <h2>Un motor de IA construido para negocios reales.</h2>
-      <p>Combinamos modelos de lenguaje de última generación con memoria persistente y automatización, para que cada agente aprenda, recuerde y mejore con el tiempo.</p>
-      <a href="#demo" class="btn btn-primary">Solicitar una Demostración</a>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="noticias">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <h2>Últimas actualizaciones</h2>
-        <p>Novedades del desarrollo, lanzamientos y mejoras del ecosistema.</p>
-      </div>
-      <a href="#" class="link-more">Ver todas las noticias →</a>
-    </div>
-
-    <div class="news-grid">
-      <article class="news-card">
-        <span class="news-date">Sologint · 2026</span>
-        <h3>Nueva generación de agentes con memoria persistente</h3>
-        <p>Los bots ahora conservan contexto entre sesiones, mejorando la calidad de cada interacción.</p>
-      </article>
-      <article class="news-card">
-        <span class="news-date">Infraestructura · 2026</span>
-        <h3>Migración a arquitectura distribuida</h3>
-        <p>Mejoras de estabilidad y escalabilidad en la capa de datos y funciones en la nube.</p>
-      </article>
-      <article class="news-card">
-        <span class="news-date">Producto · 2026</span>
-        <h3>Panel de control unificado</h3>
-        <p>Supervisión centralizada de todos los agentes activos en un solo lugar.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<div class="trust">
-  <div class="wrap trust-row">
-    <p>Parte del ecosistema Estudio Oro</p>
-    <div class="trust-logos">
+<div class="logos-strip">
+  <div class="wrap logos-row">
+    <p>Ecosistema conectado</p>
+    <div class="logos-tags">
       <span>Estudio Oro</span>
       <span>OroInmob</span>
       <span>NARAKIA</span>
@@ -599,13 +719,148 @@
   </div>
 </div>
 
+<section class="section" id="soluciones">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="pill">Módulos del sistema</span>
+      <h2>Cada función, un agente. Cada agente, sin descanso.</h2>
+      <p>Sologint no es un software más: es una arquitectura de agentes de IA que trabajan en conjunto para vender y operar tu negocio de punta a punta.</p>
+    </div>
+
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Bot de Ventas 24/7</h3>
+        <p>Responde, califica y cierra leads por WhatsApp o web en segundos, con memoria de cada conversación.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3>Automatización Total</h3>
+        <p>Conecta tu CRM, base de datos y herramientas externas sin una sola tarea manual repetitiva.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Panel en Tiempo Real</h3>
+        <p>Visualizá cada conversación, cada conversión y cada agente operando desde un solo dashboard.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Memoria Persistente</h3>
+        <p>Los agentes recuerdan el contexto del cliente entre sesiones para una atención sin fricciones.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Infraestructura Segura</h3>
+        <p>Datos alojados en infraestructura cloud auditable, con control total sobre cada proceso.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Escalable sin Límites</h3>
+        <p>De un bot a cientos de agentes trabajando en simultáneo, sin aumentar tu equipo humano.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="bot-section" id="bot">
+  <div class="wrap section">
+    <div class="bot-layout">
+      <div class="bot-copy">
+        <span class="pill"><span class="dot"></span> En vivo ahora</span>
+        <h2>Mirá al bot vendiendo en tiempo real.</h2>
+        <p>Esta es una conversación real de cómo un agente Sologint atiende, resuelve objeciones y agenda una demo — sin que nadie de tu equipo escriba una sola palabra.</p>
+        <ul>
+          <li>Responde en menos de 2 segundos, siempre.</li>
+          <li>Detecta intención de compra y prioriza el lead.</li>
+          <li>Agenda reuniones directo en tu calendario.</li>
+        </ul>
+        <a href="#contacto" class="btn btn-primary">Quiero este bot en mi negocio</a>
+      </div>
+
+      <div class="chat-demo">
+        <div class="chat-head">
+          <div class="avatar">🤖</div>
+          <div>
+            <b>Asistente Sologint</b>
+            <small>● en línea</small>
+          </div>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-foot">
+          <input type="text" placeholder="Escribí tu mensaje..." disabled>
+          <button type="button" disabled>Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section workflow-section" id="proceso">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="pill">Implementación</span>
+      <h2>De cero a sistema operando en 4 pasos.</h2>
+      <p>Sin desarrollos eternos. Sin curva de aprendizaje. Tu sistema queda operativo en días, no meses.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Diagnóstico</h3>
+        <p>Mapeamos tu operación actual y detectamos qué procesos automatizar primero.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Diseño del Agente</h3>
+        <p>Configuramos el bot con tu tono de marca, tu información y tus reglas de negocio.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Conexión de Datos</h3>
+        <p>Integramos CRM, WhatsApp, calendario y las herramientas que ya usás.</p>
+      </div>
+      <div class="step">
+        <span class="num">04</span>
+        <h3>Sistema en Vivo</h3>
+        <p>El agente empieza a operar 24/7, con monitoreo y mejora continua.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="resultados">
+  <div class="wrap proof-section">
+    <div class="proof-visual"></div>
+    <div>
+      <span class="pill">Resultados</span>
+      <h2 style="font-size:clamp(24px,3vw,32px); font-weight:800; margin-block:16px 12px;">Menos tareas manuales. Más negocio cerrado.</h2>
+      <p style="color:var(--text-secondary); font-size:15px;">Los negocios que sistematizan su atención con IA reducen tiempos de respuesta y liberan a su equipo para lo que realmente importa: crecer.</p>
+      <div class="proof-stats">
+        <div class="proof-stat"><b>-80%</b><span>Tiempo de respuesta</span></div>
+        <div class="proof-stat"><b>+3x</b><span>Leads atendidos</span></div>
+        <div class="proof-stat"><b>24/7</b><span>Disponibilidad real</span></div>
+        <div class="proof-stat"><b>0</b><span>Tareas manuales repetitivas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="testimonial">
+      <p>"Desde que activamos el sistema, el bot atiende el primer contacto y nuestro equipo solo cierra. Es como tener un vendedor que nunca duerme."</p>
+      <div class="who">— Cliente del ecosistema Sologint</div>
+    </div>
+  </div>
+</section>
+
 <section class="cta-section" id="demo">
   <div class="wrap">
-    <h2>Llevá tu operación al siguiente nivel.</h2>
-    <p>Agendá una demostración y descubrí cómo la inteligencia artificial puede ejecutar por vos.</p>
+    <span class="pill" style="margin-bottom:20px;"><span class="dot"></span> Cupos limitados este mes</span>
+    <h2>Tu negocio puede operar así de rápido.</h2>
+    <p>Agendá una demo y mirá al sistema trabajando en vivo, con tu propio caso de uso.</p>
     <div class="cta-buttons">
-      <a href="#contacto" class="btn btn-primary">Solicitar Demo</a>
-      <a href="#nosotros" class="btn btn-ghost">Conocer el Equipo</a>
+      <a href="#contacto" class="btn btn-primary">🚀 Activar mi Sistema IA</a>
+      <a href="#bot" class="btn btn-ghost">💬 Probar el Bot</a>
     </div>
   </div>
 </section>
@@ -614,18 +869,18 @@
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-col footer-brand">
-        <a href="#" class="brand" style="font-size:20px;">
-          <span class="mark" style="width:30px;height:30px;"></span>
-          SOLOG<span class="accent">INT</span>
+        <a href="#" class="brand" style="font-size:19px;">
+          <span class="mark" style="width:28px;height:28px;"></span>
+          SOLOG<span class="glow-text">INT</span>
         </a>
-        <p>Arsenal de Inteligencia Artificial del ecosistema Estudio Oro S.A.S. Automatización, agentes IA y soluciones tecnológicas de vanguardia.</p>
+        <p>Arsenal de Inteligencia Artificial del ecosistema Estudio Oro S.A.S. Sistemas de automatización y agentes IA para negocios que quieren escalar.</p>
       </div>
       <div class="footer-col">
-        <h4>Soluciones</h4>
+        <h4>Sistema</h4>
         <ul>
-          <li><a href="#">Bots de WhatsApp</a></li>
-          <li><a href="#">Automatización</a></li>
-          <li><a href="#">Infraestructura Cloud</a></li>
+          <li><a href="#soluciones">Módulos</a></li>
+          <li><a href="#bot">IA Conversacional</a></li>
+          <li><a href="#proceso">Implementación</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -633,7 +888,7 @@
         <ul>
           <li><a href="#">Sobre Sologint</a></li>
           <li><a href="#">Ecosistema Estudio Oro</a></li>
-          <li><a href="#">Casos de Éxito</a></li>
+          <li><a href="#resultados">Resultados</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -650,11 +905,115 @@
       <div class="legal-links">
         <a href="#">Privacidad</a>
         <a href="#">Términos</a>
-        <a href="#">Accesibilidad</a>
       </div>
     </div>
   </div>
 </footer>
+
+<!-- Widget flotante del bot -->
+<button class="float-bot-btn" id="floatBotBtn" aria-label="Abrir chat">🤖</button>
+<div class="float-bot-panel" id="floatBotPanel">
+  <div class="chat-head">
+    <div class="avatar">🤖</div>
+    <div>
+      <b>Asistente Sologint</b>
+      <small>● en línea</small>
+    </div>
+  </div>
+  <div class="chat-body" id="floatChatBody"></div>
+  <div class="chat-foot">
+    <input type="text" placeholder="Escribí tu mensaje..." id="floatInput">
+    <button type="button" id="floatSend">Enviar</button>
+  </div>
+</div>
+
+<script>
+  // ---- Conversación demo autoplay en la sección "bot" ----
+  const demoScript = [
+    {who:'bot', text:'Hola 👋 Soy el asistente de Sologint. ¿Querés automatizar la atención de tu negocio?'},
+    {who:'user', text:'Sí, tengo muchos mensajes sin responder por WhatsApp.'},
+    {who:'bot', text:'Perfecto. Puedo configurar un agente que responda al instante, califique al cliente y agende reuniones automáticamente.'},
+    {who:'user', text:'¿Cuánto tarda en estar funcionando?'},
+    {who:'bot', text:'En días, no meses. ¿Te agendo una demo en vivo con tu propio caso de uso? 🚀'},
+  ];
+
+  function typeSequence(containerId, script, loop){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    let i = 0;
+    function step(){
+      if(i >= script.length){
+        if(loop){ i = 0; container.innerHTML=''; setTimeout(step, 1400); }
+        return;
+      }
+      const typing = document.createElement('div');
+      typing.className = 'typing-dots';
+      typing.innerHTML = '<span></span><span></span><span></span>';
+      container.appendChild(typing);
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        typing.remove();
+        const msg = document.createElement('div');
+        msg.className = 'msg ' + (script[i].who === 'bot' ? 'bot' : 'user');
+        msg.textContent = script[i].text;
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+        i++;
+        setTimeout(step, 900);
+      }, 900);
+    }
+    step();
+  }
+
+  typeSequence('chatBody', demoScript, true);
+
+  // ---- Widget flotante ----
+  const floatBotBtn = document.getElementById('floatBotBtn');
+  const floatBotPanel = document.getElementById('floatBotPanel');
+  let floatStarted = false;
+
+  floatBotBtn.addEventListener('click', () => {
+    floatBotPanel.classList.toggle('open');
+    if(!floatStarted && floatBotPanel.classList.contains('open')){
+      floatStarted = true;
+      typeSequence('floatChatBody', demoScript, false);
+    }
+  });
+
+  const floatInput = document.getElementById('floatInput');
+  const floatSend = document.getElementById('floatSend');
+  const floatChatBody = document.getElementById('floatChatBody');
+
+  function sendFloatMessage(){
+    const val = floatInput.value.trim();
+    if(!val) return;
+    const userMsg = document.createElement('div');
+    userMsg.className = 'msg user';
+    userMsg.textContent = val;
+    floatChatBody.appendChild(userMsg);
+    floatInput.value = '';
+    floatChatBody.scrollTop = floatChatBody.scrollHeight;
+
+    const typing = document.createElement('div');
+    typing.className = 'typing-dots';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    floatChatBody.appendChild(typing);
+    floatChatBody.scrollTop = floatChatBody.scrollHeight;
+
+    setTimeout(() => {
+      typing.remove();
+      const botMsg = document.createElement('div');
+      botMsg.className = 'msg bot';
+      botMsg.textContent = 'Gracias por tu mensaje 🙌 Un agente humano o automatizado va a darte una respuesta personalizada. Mientras tanto, ¿querés agendar una demo?';
+      floatChatBody.appendChild(botMsg);
+      floatChatBody.scrollTop = floatChatBody.scrollHeight;
+    }, 1100);
+  }
+
+  floatSend.addEventListener('click', sendFloatMessage);
+  floatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendFloatMessage(); });
+</script>
 
 </body>
 </html>
