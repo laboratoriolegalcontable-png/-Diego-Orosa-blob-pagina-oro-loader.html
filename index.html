@@ -376,10 +376,10 @@
     justify-content:flex-end;
     /* [IMG-1] Reemplazar por: background-image:url('tu-imagen.jpg'); (foto real: curvatura planetaria / interior nave) */
     background:
-      linear-gradient(180deg, transparent 35%, rgba(3,4,10,.9) 100%),
-      radial-gradient(ellipse 70% 55% at 50% -5%, rgba(182,162,232,.18), transparent 60%),
-      radial-gradient(ellipse 60% 45% at 85% 95%, rgba(143,179,201,.18), transparent 60%),
-      rgba(10,11,13,.4);
+      linear-gradient(180deg, transparent 45%, rgba(3,4,10,.75) 100%),
+      radial-gradient(ellipse 70% 55% at 50% -5%, rgba(182,162,232,.12), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 85% 95%, rgba(143,179,201,.12), transparent 60%),
+      rgba(10,11,13,.12);
     border-bottom:1px solid var(--line);
     overflow:hidden;
   }
@@ -1421,9 +1421,9 @@
       // núcleo brillante blanco-cálido, tipo centro de nebulosa iluminado
       const coreX = w * 0.58, coreY = h * 0.55;
       const core = ctx.createRadialGradient(coreX, coreY, 0, coreX, coreY, Math.min(w,h) * 0.35);
-      core.addColorStop(0, 'rgba(255,250,240,0.55)');
-      core.addColorStop(0.3, 'rgba(255,225,210,0.28)');
-      core.addColorStop(0.6, 'rgba(200,120,150,0.12)');
+      core.addColorStop(0, 'rgba(255,250,240,0.85)');
+      core.addColorStop(0.3, 'rgba(255,225,210,0.5)');
+      core.addColorStop(0.6, 'rgba(200,120,150,0.22)');
       core.addColorStop(1, 'rgba(200,120,150,0)');
       ctx.fillStyle = core;
       ctx.beginPath();
@@ -1448,7 +1448,7 @@
         const cx = s.x * w + rand(-40, 40);
         const cy = s.y * h + rand(-40, 40);
         const r = Math.min(w, h) * rand(0.20, 0.38);
-        const alpha = rand(0.10, 0.22);
+        const alpha = rand(0.22, 0.4);
         const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
         g.addColorStop(0, palette[s.c].replace('PLACEHOLDER', alpha.toFixed(2)));
         g.addColorStop(0.55, palette[s.c].replace('PLACEHOLDER', (alpha * 0.4).toFixed(2)));
@@ -1491,7 +1491,7 @@
         const cy = rand(0, h);
         const r = rand(1, 3.5);
         const c = palette[Math.floor(rand(0, palette.length))];
-        const alpha = rand(0.03, 0.09);
+        const alpha = rand(0.05, 0.14);
         ctx.fillStyle = c.replace('PLACEHOLDER', alpha.toFixed(2));
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
