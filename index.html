@@ -49,9 +49,15 @@
     --steel-blue:#8fb3c9;
     --cold-white:#eef3f7;
 
+    --neb-violet:#5a3d9e;
+    --neb-magenta:#9e3d8f;
+    --neb-blue:#2f4f9e;
+    --neb-cyan:#2fa7c9;
+
     --gradient-metal: linear-gradient(115deg, var(--metal-1) 0%, var(--metal-2) 45%, var(--metal-3) 100%);
     --gradient-amber: linear-gradient(115deg, var(--amber-soft), var(--amber));
     --gradient-panel: linear-gradient(180deg, #34373e 0%, #202226 60%, #16171a 100%);
+    --gradient-chrome-ring: conic-gradient(from 180deg, #cfd3d9, #6b6f78, #cfd3d9, #8a8e97, #cfd3d9);
 
     --font-display: "Orbitron", "Sora", sans-serif;
     --font-sans: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -128,9 +134,9 @@
   .btn{
     display:inline-flex;
     align-items:center;
-    gap:10px;
-    padding:17px 34px;
-    border-radius:8px;
+    gap:12px;
+    padding:16px 32px 16px 22px;
+    border-radius:999px;
     font-family:var(--font-display);
     font-weight:700;
     font-size:13px;
@@ -141,6 +147,19 @@
     border:1px solid transparent;
     position:relative;
   }
+  /* LED indicator — botón de consola espacial */
+  .btn::before{
+    content:"";
+    width:12px; height:12px;
+    border-radius:50%;
+    flex-shrink:0;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--amber) 55%, #a15c1a 100%);
+    box-shadow:0 0 10px rgba(255,179,92,.9), inset 0 1px 1px rgba(255,255,255,.8);
+  }
+  .btn-ghost::before{
+    background:radial-gradient(circle at 35% 30%, #fff, var(--steel-blue) 55%, #3d5b6c 100%);
+    box-shadow:0 0 8px rgba(143,179,201,.8), inset 0 1px 1px rgba(255,255,255,.8);
+  }
   .btn-primary{
     background:var(--gradient-metal);
     color:#15161a;
@@ -150,13 +169,46 @@
   .btn-ghost{
     border:1px solid var(--glass-border);
     color:var(--text-primary);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
     backdrop-filter:blur(6px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 8px 20px rgba(0,0,0,.35);
   }
-  .btn-ghost:hover{border-color:var(--amber); color:var(--amber); box-shadow:0 0 24px rgba(255,179,92,.15);}
+  .btn-ghost:hover{border-color:var(--steel-blue); color:var(--cold-white); box-shadow:0 0 24px rgba(143,179,201,.2), inset 0 1px 0 rgba(255,255,255,.2);}
+
+  /* ---------- CHROME PUSH BUTTON (control de nave, grande) ---------- */
+  .push-btn{
+    width:96px; height:96px;
+    border-radius:50%;
+    margin-inline:auto;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--gradient-chrome-ring);
+    box-shadow:0 10px 24px rgba(0,0,0,.6), inset 0 0 0 2px rgba(0,0,0,.4);
+    cursor:pointer;
+    border:none;
+    position:relative;
+  }
+  .push-btn::before{
+    content:"";
+    position:absolute; inset:8px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 25%, #3a3d44, #101114 75%);
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.7);
+  }
+  .push-btn::after{
+    content:"";
+    position:absolute; inset:26px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--amber) 45%, #8a4d18 100%);
+    box-shadow:0 0 24px rgba(255,179,92,.7), inset 0 1px 2px rgba(255,255,255,.8);
+    animation:pushGlow 2.4s ease-in-out infinite;
+  }
+  @keyframes pushGlow{
+    0%,100%{ box-shadow:0 0 18px rgba(255,179,92,.55), inset 0 1px 2px rgba(255,255,255,.8); }
+    50%{ box-shadow:0 0 34px rgba(255,179,92,.9), inset 0 1px 2px rgba(255,255,255,.9); }
+  }
 
   /* ---------- BACKGROUND FX ---------- */
-  #stars{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.65; }
+  #stars{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.7; }
 
   .hull-lines{
     position:fixed;
@@ -166,6 +218,27 @@
     opacity:.35;
     background-image:
       repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 90px);
+  }
+
+  /* fondo galáctico: nebulosa de color detrás de todo */
+  .nebula{
+    position:fixed;
+    inset:-25%;
+    z-index:0;
+    pointer-events:none;
+    opacity:.55;
+    background:
+      radial-gradient(ellipse 45% 35% at 12% 15%, var(--neb-violet), transparent 60%),
+      radial-gradient(ellipse 40% 40% at 85% 10%, var(--neb-magenta), transparent 58%),
+      radial-gradient(ellipse 50% 45% at 75% 85%, var(--neb-blue), transparent 60%),
+      radial-gradient(ellipse 35% 35% at 20% 90%, var(--neb-cyan), transparent 55%);
+    filter:blur(90px) saturate(1.3);
+    animation:nebulaDrift 34s ease-in-out infinite alternate;
+    mix-blend-mode:screen;
+  }
+  @keyframes nebulaDrift{
+    0%{ transform:translate(0,0) scale(1); }
+    100%{ transform:translate(2%,-3%) scale(1.06); }
   }
 
   /* ---------- PORTHOLE (portal circular con estrellas) ---------- */
@@ -465,6 +538,20 @@
   }
   .feature-card:hover{transform:translateY(-6px); border-color:rgba(255,179,92,.35);}
   .feature-card:hover::after{opacity:1;}
+
+  /* esquinas cromadas tipo HUD de nave */
+  .hud-corners{position:relative;}
+  .hud-corners::before,
+  .hud-corners .corner{
+    position:absolute;
+    width:18px; height:18px;
+    pointer-events:none;
+  }
+  .hud-corners .corner{ border-color:var(--metal-2); }
+  .hud-corners .corner.tl{ top:10px; left:10px; border-top:2px solid var(--metal-2); border-left:2px solid var(--metal-2); }
+  .hud-corners .corner.tr{ top:10px; right:10px; border-top:2px solid var(--metal-2); border-right:2px solid var(--metal-2); }
+  .hud-corners .corner.bl{ bottom:10px; left:10px; border-bottom:2px solid var(--metal-2); border-left:2px solid var(--metal-2); }
+  .hud-corners .corner.br{ bottom:10px; right:10px; border-bottom:2px solid var(--metal-2); border-right:2px solid var(--metal-2); }
   .feature-card .idx{
     font-family:var(--font-display);
     font-size:12px;
@@ -829,6 +916,7 @@
 </head>
 <body>
 
+<div class="nebula"></div>
 <canvas id="stars"></canvas>
 <div class="hull-lines"></div>
 
@@ -866,6 +954,10 @@
       <a href="#demo" class="btn btn-primary">Activar mi Sistema IA</a>
       <a href="#bot" class="btn btn-ghost">Hablar con el Bot</a>
     </div>
+    <a href="#demo" aria-label="Activar sistema" style="display:inline-flex; flex-direction:column; align-items:center; gap:12px; margin-top:20px;">
+      <span class="push-btn"></span>
+      <span class="label" style="letter-spacing:2px;">Presionar para iniciar</span>
+    </a>
   </div>
   <div class="hero-metrics">
     <div><b>+40</b><span>Agentes Desplegados</span></div>
@@ -902,32 +994,32 @@
   </div>
   <div class="wrap-wide">
     <div class="features-grid">
-      <article class="feature-card">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
         <span class="idx">01 · VENTAS</span>
         <h3>Bot de Ventas 24/7</h3>
         <p>Responde, califica y cierra leads por WhatsApp o web en segundos, con memoria de cada conversación.</p>
       </article>
-      <article class="feature-card">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
         <span class="idx">02 · AUTOMATIZACIÓN</span>
         <h3>Orquestación Total</h3>
         <p>Conecta CRM, base de datos y herramientas externas sin una sola tarea manual repetitiva.</p>
       </article>
-      <article class="feature-card">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
         <span class="idx">03 · CONTROL</span>
         <h3>Panel en Tiempo Real</h3>
         <p>Visualizá cada conversación, conversión y agente operando desde un solo centro de comando.</p>
       </article>
-      <article class="feature-card">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
         <span class="idx">04 · MEMORIA</span>
         <h3>Contexto Persistente</h3>
         <p>Los agentes recuerdan cada interacción del cliente entre sesiones, sin fricciones.</p>
       </article>
-      <article class="feature-card">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
         <span class="idx">05 · SEGURIDAD</span>
         <h3>Infraestructura Blindada</h3>
         <p>Datos alojados en infraestructura cloud auditable, con control total sobre cada proceso.</p>
       </article>
-      <article class="feature-card">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
         <span class="idx">06 · ESCALA</span>
         <h3>Sin Límite de Crecimiento</h3>
         <p>De un agente a cientos operando en simultáneo, sin aumentar tu equipo humano.</p>
@@ -955,7 +1047,7 @@
       <p>Esta terminal reproduce una conversación real de cómo un agente Sologint atiende, resuelve objeciones y agenda una demo — en tiempo real.</p>
     </div>
 
-    <div class="console-frame">
+    <div class="console-frame hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
       <div class="console-bar">
         <div class="console-dots"><span></span><span></span><span></span></div>
         <span class="label">SOLOGINT_AGENT.exe</span>
@@ -1003,12 +1095,12 @@
 </section>
 
 <div class="modules-grid">
-  <div class="module-card module-1">
+  <div class="module-card module-1 hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
     <span class="label">// CASO DE USO</span>
     <h3>Atención Comercial Autónoma</h3>
     <p>Un agente que responde consultas, agenda reuniones y hace seguimiento de cada lead sin intervención humana.</p>
   </div>
-  <div class="module-card module-2">
+  <div class="module-card module-2 hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
     <span class="label">// CASO DE USO</span>
     <h3>Operaciones Internas Automatizadas</h3>
     <p>Procesos administrativos, reportes y flujos de trabajo ejecutados automáticamente entre tus plataformas.</p>
