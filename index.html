@@ -953,49 +953,90 @@
 
 <section class="hero">
   <div class="astronaut-wrap" aria-hidden="true">
-    <svg class="astronaut" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+    <svg class="astronaut" viewBox="0 0 340 400" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="astroGlow" cx="50%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#b6a2e8" stop-opacity=".35"/>
+          <stop offset="0%" stop-color="#b6a2e8" stop-opacity=".4"/>
           <stop offset="100%" stop-color="#b6a2e8" stop-opacity="0"/>
         </radialGradient>
-        <linearGradient id="suitMetal" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#eef1f5"/>
-          <stop offset="45%" stop-color="#a6acb8"/>
-          <stop offset="100%" stop-color="#4d525c"/>
+        <radialGradient id="suitGloss" cx="38%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="55%" stop-color="#e7e9ee"/>
+          <stop offset="100%" stop-color="#b7bbc6"/>
+        </radialGradient>
+        <radialGradient id="helmetGloss" cx="35%" cy="28%" r="70%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="60%" stop-color="#eceef2"/>
+          <stop offset="100%" stop-color="#c2c6d0"/>
+        </radialGradient>
+        <radialGradient id="visorGrad" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#4a4f9e"/>
+          <stop offset="35%" stop-color="#181b3a"/>
+          <stop offset="100%" stop-color="#020208"/>
+        </radialGradient>
+        <linearGradient id="padGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f4f5f8"/>
+          <stop offset="100%" stop-color="#c7cad3"/>
         </linearGradient>
-        <linearGradient id="visorGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#3a3d80"/>
-          <stop offset="55%" stop-color="#151830"/>
-          <stop offset="100%" stop-color="#05060d"/>
+        <linearGradient id="ringGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#dcdfe6"/>
+          <stop offset="100%" stop-color="#9a9eaa"/>
         </linearGradient>
       </defs>
-      <circle cx="150" cy="180" r="170" fill="url(#astroGlow)"/>
-      <!-- mochila -->
-      <rect x="110" y="150" width="80" height="110" rx="18" fill="url(#suitMetal)" opacity=".9"/>
+
+      <circle cx="165" cy="185" r="185" fill="url(#astroGlow)"/>
+
+      <!-- mochila (leve, detrás del torso) -->
+      <rect x="125" y="150" width="86" height="120" rx="26" fill="#d7dae1"/>
+
+      <!-- piernas flotando, flexionadas -->
+      <path d="M150 268 Q118 305 128 345 Q132 362 155 362" stroke="url(#suitGloss)" stroke-width="42" fill="none" stroke-linecap="round"/>
+      <path d="M188 268 Q220 300 214 340 Q211 360 188 362" stroke="url(#suitGloss)" stroke-width="42" fill="none" stroke-linecap="round"/>
+      <ellipse cx="152" cy="366" rx="26" ry="15" fill="#e2e4ea"/>
+      <ellipse cx="190" cy="366" rx="26" ry="15" fill="#e2e4ea"/>
+      <ellipse cx="152" cy="368" rx="26" ry="6" fill="#aeb2bd"/>
+      <ellipse cx="190" cy="368" rx="26" ry="6" fill="#aeb2bd"/>
+
+      <!-- brazo trasero (izq., cae relajado) -->
+      <path d="M128 205 Q92 225 90 268 Q90 292 112 300" stroke="url(#suitGloss)" stroke-width="38" fill="none" stroke-linecap="round"/>
+      <circle cx="128" cy="205" r="24" fill="url(#padGrad)"/>
+
       <!-- torso -->
-      <ellipse cx="150" cy="200" rx="62" ry="78" fill="url(#suitMetal)"/>
-      <rect x="120" y="185" width="60" height="34" rx="8" fill="#20232b" opacity=".85"/>
-      <circle cx="150" cy="202" r="9" fill="#b6a2e8"/>
-      <!-- brazos -->
-      <path d="M92 165 Q55 190 60 245 Q62 268 90 272" stroke="url(#suitMetal)" stroke-width="26" fill="none" stroke-linecap="round"/>
-      <path d="M208 165 Q245 195 236 248 Q232 270 205 268" stroke="url(#suitMetal)" stroke-width="26" fill="none" stroke-linecap="round"/>
-      <!-- piernas -->
-      <path d="M128 265 Q120 320 132 360" stroke="url(#suitMetal)" stroke-width="30" fill="none" stroke-linecap="round"/>
-      <path d="M172 265 Q182 322 168 362" stroke="url(#suitMetal)" stroke-width="30" fill="none" stroke-linecap="round"/>
-      <!-- botas -->
-      <ellipse cx="132" cy="368" rx="20" ry="12" fill="#2a2d34"/>
-      <ellipse cx="168" cy="370" rx="20" ry="12" fill="#2a2d34"/>
+      <ellipse cx="169" cy="225" rx="78" ry="92" fill="url(#suitGloss)"/>
+      <!-- panel de pecho -->
+      <rect x="138" y="205" width="62" height="40" rx="12" fill="#e9ebf0" stroke="#c3c6d0" stroke-width="2"/>
+      <circle cx="153" cy="225" r="7" fill="#b6a2e8"/>
+      <rect x="167" y="219" width="24" height="6" rx="3" fill="#9aa0ac"/>
+      <rect x="167" y="230" width="16" height="6" rx="3" fill="#9aa0ac"/>
+
+      <!-- brazo delantero derecho, sostiene la laptop -->
+      <path d="M222 205 Q252 218 250 250 Q248 268 222 272" stroke="url(#suitGloss)" stroke-width="38" fill="none" stroke-linecap="round"/>
+      <circle cx="222" cy="205" r="24" fill="url(#padGrad)"/>
+      <rect x="198" y="264" width="34" height="26" rx="8" fill="url(#padGrad)"/>
+
+      <!-- laptop -->
+      <g transform="translate(150,255) rotate(-8)">
+        <rect x="0" y="30" width="92" height="8" rx="3" fill="#cfd2da"/>
+        <rect x="4" y="-38" width="84" height="62" rx="6" fill="#2a2d34"/>
+        <rect x="9" y="-33" width="74" height="50" rx="3" fill="#b6a2e8" opacity=".85"/>
+        <rect x="9" y="-33" width="74" height="50" rx="3" fill="url(#helmetGloss)" opacity=".12"/>
+      </g>
+
       <!-- casco -->
-      <circle cx="150" cy="105" r="66" fill="url(#suitMetal)"/>
-      <circle cx="150" cy="108" r="52" fill="url(#visorGrad)"/>
-      <circle cx="132" cy="92" r="4" fill="#fff" opacity=".9"/>
-      <circle cx="160" cy="118" r="2" fill="#fff" opacity=".6"/>
-      <circle cx="172" cy="98" r="2.5" fill="#fff" opacity=".7"/>
-      <path d="M108 96 Q150 78 192 96" stroke="rgba(255,255,255,.35)" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <!-- antena -->
-      <line x1="150" y1="40" x2="150" y2="20" stroke="#8a8f99" stroke-width="4"/>
-      <circle cx="150" cy="16" r="6" fill="#b6a2e8"/>
+      <circle cx="169" cy="112" r="78" fill="url(#helmetGloss)"/>
+      <circle cx="169" cy="115" r="60" fill="url(#visorGrad)"/>
+      <ellipse cx="146" cy="94" rx="16" ry="10" fill="#fff" opacity=".55"/>
+      <circle cx="188" cy="132" r="4" fill="#fff" opacity=".5"/>
+      <!-- auriculares del casco -->
+      <circle cx="98" cy="118" r="16" fill="url(#ringGrad)"/>
+      <circle cx="98" cy="118" r="8" fill="#d9dbe1"/>
+      <circle cx="240" cy="118" r="16" fill="url(#ringGrad)"/>
+      <circle cx="240" cy="118" r="8" fill="#d9dbe1"/>
+      <!-- cámara/luz frontal -->
+      <circle cx="198" cy="150" r="9" fill="url(#padGrad)" stroke="#aeb2bd" stroke-width="2"/>
+      <circle cx="198" cy="150" r="3.5" fill="#b6a2e8"/>
+      <!-- costuras del casco -->
+      <path d="M110 100 Q169 78 228 100" stroke="rgba(255,255,255,.5)" stroke-width="3" fill="none" stroke-linecap="round"/>
     </svg>
   </div>
   <div class="hero-inner">
