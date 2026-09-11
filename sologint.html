@@ -7,307 +7,313 @@
 <meta name="description" content="Sologint, la división de Inteligencia Artificial de Estudio Oro. Automatización, bots y agentes IA para negocios.">
 <style>
   :root{
-    --black:#000000;
-    --near-black:#0b0b0c;
-    --panel:#141416;
-    --line:#2a2a2d;
-    --white:#ffffff;
-    --ink:#0d0d0e;
-    --grey:#5b5f66;
-    --nasa-red:#fc3d21;
-    --nasa-red-dark:#d6300f;
-    --metal-1:#8e9299;
-    --metal-2:#e7e9ec;
-    --metal-3:#5b5e64;
-    --accent:#7dd3fc;
+    --bg:#06060b;
+    --bg-2:#0b0b14;
+    --panel:#0e0f1a;
+    --panel-2:#111224;
+    --line:rgba(255,255,255,.09);
+    --line-strong:rgba(255,255,255,.18);
+    --text:#f3f4f8;
+    --muted:#9296a8;
+    --muted-2:#6b6f82;
+    --pink:#f472b6;
+    --violet:#a78bfa;
+    --blue:#60a5fa;
+    --cyan:#7dd3fc;
+    --mono:"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--white);
-    color:var(--ink);
-    font-family:"Public Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     line-height:1.5;
     overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none;}
   img{max-width:100%;display:block;}
-  ul{list-style:none;}
-  .wrap{max-width:1280px;margin:0 auto;padding:0 24px;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px;}
 
-  /* ---------- metallic + galactic helpers ---------- */
-  .metallic-text{
-    background:linear-gradient(180deg,#fff 0%,#d9dce1 28%,#8e9299 55%,#f2f3f5 70%,#9a9ea4 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    text-shadow:0 1px 0 rgba(255,255,255,.15);
+  /* ---------------- galaxy backdrop ---------------- */
+  .galaxy{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .galaxy .nebula{
+    position:absolute;inset:-20%;
+    background:
+      radial-gradient(38% 30% at 18% 20%, rgba(244,114,182,.20), transparent 60%),
+      radial-gradient(42% 34% at 82% 12%, rgba(96,165,250,.20), transparent 60%),
+      radial-gradient(46% 38% at 70% 78%, rgba(167,139,250,.22), transparent 60%),
+      radial-gradient(36% 30% at 12% 82%, rgba(125,211,252,.16), transparent 60%),
+      radial-gradient(60% 50% at 50% 45%, rgba(20,10,35,.4), transparent 70%);
+    filter:blur(10px);
   }
-  .btn-metal{
+  .galaxy .stars{
+    position:absolute;inset:0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 10% 15%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 25% 45%, #fff 100%, transparent),
+      radial-gradient(1.6px 1.6px at 40% 8%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 55% 60%, #fff 100%, transparent),
+      radial-gradient(1.4px 1.4px at 68% 22%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 78% 70%, #fff 100%, transparent),
+      radial-gradient(1.6px 1.6px at 88% 35%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 95% 85%, #fff 100%, transparent),
+      radial-gradient(1.2px 1.2px at 5% 70%, #fff 100%, transparent),
+      radial-gradient(1.2px 1.2px at 33% 90%, #fff 100%, transparent);
+    background-repeat:repeat;background-size:560px 560px;
+    opacity:.55;animation:drift 140s linear infinite;
+  }
+  @keyframes drift{from{background-position:0 0;}to{background-position:-1400px 700px;}}
+
+  /* ---------------- metallic helpers ---------------- */
+  .metal-text{
+    background:linear-gradient(180deg,#ffffff 0%,#dfe3ee 30%,#9aa0b8 55%,#f2f4fa 72%,#a5abc4 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .orb{
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 28%, #fff, rgba(255,255,255,0) 45%),
+      radial-gradient(circle at 65% 70%, var(--violet), var(--blue) 55%, #1a1440 100%);
+    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 10px 26px rgba(96,101,250,.35);
+  }
+  .btn{
     display:inline-flex;align-items:center;gap:10px;
-    padding:14px 30px;border-radius:999px;font-weight:800;font-size:.9rem;
-    letter-spacing:.02em;
-    background:linear-gradient(180deg,#f4f5f7 0%,#c7cad0 45%,#9a9ea4 55%,#e9ebee 100%);
-    color:#111;border:1px solid #fff;
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 10px 24px rgba(0,0,0,.35);
+    padding:14px 28px;border-radius:999px;font-weight:800;font-size:.88rem;letter-spacing:.01em;
     transition:transform .15s, box-shadow .15s;
   }
-  .btn-metal:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 14px 30px rgba(0,0,0,.45);}
-  .btn-red{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:14px 30px;border-radius:999px;font-weight:800;font-size:.9rem;letter-spacing:.02em;
-    background:linear-gradient(180deg,var(--nasa-red),var(--nasa-red-dark));
-    color:#fff;box-shadow:0 10px 24px rgba(252,61,33,.4);
-    transition:transform .15s;
+  .btn-metal{
+    color:#0c0c14;
+    background:linear-gradient(180deg,#ffffff 0%,#cfd3e2 45%,#9599b3 55%,#eef0f7 100%);
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 12px 28px rgba(0,0,0,.5);
   }
-  .btn-red:hover{transform:translateY(-1px);}
-
-  .stars{
-    position:absolute;inset:0;z-index:0;pointer-events:none;
-    background:
-      radial-gradient(1.5px 1.5px at 12% 22%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 78% 12%, #fff 100%, transparent),
-      radial-gradient(2px 2px at 55% 65%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 90% 45%, #fff 100%, transparent),
-      radial-gradient(1.5px 1.5px at 33% 82%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 8% 58%, #fff 100%, transparent),
-      radial-gradient(2px 2px at 47% 18%, #fff 100%, transparent),
-      radial-gradient(1px 1px at 68% 88%, #fff 100%, transparent);
-    background-repeat:repeat;background-size:620px 620px;
-    opacity:.55;animation:drift 120s linear infinite;
+  .btn-metal:hover{transform:translateY(-1px);}
+  .btn-glow{
+    color:#fff;
+    background:linear-gradient(115deg,var(--violet),var(--blue) 55%,var(--cyan));
+    box-shadow:0 12px 30px rgba(125,150,255,.35);
   }
-  @keyframes drift{from{background-position:0 0;}to{background-position:-1200px 600px;}}
+  .btn-glow:hover{transform:translateY(-1px);}
 
-  /* ---------- top utility bar ---------- */
-  .utility{background:var(--black);color:#c9cbce;font-size:.72rem;letter-spacing:.03em;}
-  .utility .wrap{display:flex;justify-content:flex-end;gap:22px;padding:7px 24px;}
-  .utility a{color:#c9cbce;text-transform:uppercase;font-weight:600;}
-  .utility a:hover{color:#fff;}
-
-  /* ---------- header ---------- */
-  header{background:var(--black);border-bottom:1px solid #1c1c1e;position:sticky;top:0;z-index:60;}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;gap:20px;}
-  .wordmark{
-    font-family:Arial,Helvetica,sans-serif;font-weight:900;font-size:1.6rem;letter-spacing:-.02em;
-    display:flex;align-items:center;gap:2px;
-  }
-  .wordmark .o1{color:var(--nasa-red);}
+  /* ---------------- header ---------------- */
+  header{position:sticky;top:0;z-index:60;background:rgba(6,6,11,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;gap:20px;}
+  .wordmark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.05em;font-size:1.05rem;}
+  .wordmark .orb-sm{width:14px;height:14px;}
   nav.links{display:flex;gap:30px;flex-wrap:wrap;}
-  nav.links a{font-size:.78rem;color:#e8e9eb;letter-spacing:.06em;text-transform:uppercase;font-weight:700;}
-  nav.links a:hover{color:var(--nasa-red);}
-  .nav-right{display:flex;align-items:center;gap:18px;}
-  .icon-btn{
-    width:38px;height:38px;border-radius:50%;border:1px solid #333;
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;
-  }
+  nav.links a{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.02em;}
+  nav.links a:hover{color:var(--text);}
   @media (max-width:860px){nav.links{display:none;}}
 
-  /* ---------- hero (galactic + metallic) ---------- */
-  .hero{
-    position:relative;overflow:hidden;color:#fff;
-    min-height:78vh;display:flex;align-items:flex-end;
-    background:
-      radial-gradient(ellipse 90% 70% at 70% 0%, rgba(252,61,33,.18), transparent 60%),
-      radial-gradient(ellipse 70% 50% at 15% 100%, rgba(125,211,252,.12), transparent 60%),
-      linear-gradient(160deg,#050506 0%,#0e0e10 45%,#1a1a1d 70%,#050506 100%);
-  }
-  .hero .stars{opacity:.7;}
-  .hero-inner{position:relative;z-index:2;padding:60px 24px 64px;width:100%;}
-  .tag-red{
+  /* ---------------- hero ---------------- */
+  .hero{position:relative;min-height:82vh;display:flex;align-items:center;padding:120px 0 80px;}
+  .hero-inner{position:relative;z-index:2;text-align:center;max-width:880px;margin:0 auto;}
+  .kicker{
     display:inline-flex;align-items:center;gap:8px;
-    background:var(--nasa-red);color:#fff;font-weight:800;font-size:.7rem;
-    letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;margin-bottom:20px;
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;color:var(--cyan);
+    border:1px solid var(--line-strong);padding:6px 16px;border-radius:999px;
+    background:rgba(125,211,252,.06);margin-bottom:26px;
   }
-  .hero h1{
-    font-size:clamp(2.4rem,7vw,5.4rem);font-weight:900;letter-spacing:-.03em;line-height:.98;
-    max-width:900px;margin-bottom:20px;
-  }
-  .hero p.lead{max-width:560px;color:#cfd1d5;font-size:1.05rem;margin-bottom:34px;}
-  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;}
-  .scanline{
-    position:absolute;left:0;right:0;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(125,211,252,.6),transparent);
-    animation:scan 6s linear infinite;opacity:.6;
-  }
-  @keyframes scan{0%{top:0%;}100%{top:100%;}}
+  .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+  .hero h1{font-size:clamp(2.3rem,6vw,4.6rem);font-weight:800;letter-spacing:-.02em;line-height:1.06;margin-bottom:22px;}
+  .hero p.lead{color:var(--muted);font-size:clamp(1rem,2vw,1.15rem);max-width:620px;margin:0 auto 38px;}
+  .hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
 
-  /* ---------- red rule + section headers, NASA style ---------- */
-  .section-title{
-    display:flex;align-items:center;gap:14px;margin-bottom:36px;
-  }
-  .section-title .bar{width:38px;height:6px;background:var(--nasa-red);}
-  .section-title h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:900;letter-spacing:-.01em;text-transform:uppercase;}
+  /* ---------------- sections ---------------- */
+  section{position:relative;z-index:1;padding:90px 0;}
+  .section-head{max-width:640px;margin:0 auto 48px;text-align:center;}
+  .section-head .kicker{margin-bottom:16px;}
+  h2{font-size:clamp(1.7rem,3.6vw,2.4rem);font-weight:800;letter-spacing:-.01em;}
+  .section-head p{color:var(--muted);margin-top:12px;}
 
-  section{padding:70px 0;}
-  .white{background:#fff;}
-  .grey{background:#f4f5f6;}
-
-  /* ---------- card grid, NASA "latest" style ---------- */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0;}
+  /* ---------------- card grid (estilo de referencia) ---------------- */
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
   .card{
-    border-top:4px solid var(--nasa-red);background:#fff;
-    padding:26px 22px 30px;border-right:1px solid #e7e7e8;
+    position:relative;border-radius:20px;padding:32px 28px;
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);
+    box-shadow:0 20px 50px rgba(0,0,0,.35);
+    overflow:hidden;
   }
-  .card:last-child{border-right:none;}
-  .card .cat{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--nasa-red);margin-bottom:12px;}
-  .card h3{font-size:1.15rem;font-weight:800;margin-bottom:10px;letter-spacing:-.01em;}
-  .card p{color:var(--grey);font-size:.9rem;}
-  @media (max-width:900px){.card{border-right:none;border-bottom:1px solid #e7e7e8;}}
-
-  /* ---------- metallic stat strip ---------- */
-  .stats{
-    position:relative;color:#fff;overflow:hidden;
-    background:linear-gradient(120deg,#0a0a0b,#1b1b1e 40%,#0a0a0b 100%);
+  .card::before{
+    content:"";position:absolute;top:-40%;right:-30%;width:60%;height:60%;
+    background:radial-gradient(circle, rgba(167,139,250,.18), transparent 65%);
+    pointer-events:none;
   }
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;text-align:center;position:relative;z-index:1;}
-  .stat h3{font-size:clamp(2.1rem,4.4vw,3rem);font-weight:900;}
-  .stat p{color:#9a9ea4;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-top:8px;}
+  .card .num{font-family:var(--mono);font-size:.85rem;color:var(--muted-2);margin-bottom:26px;}
+  .card h3{font-size:1.3rem;font-weight:800;margin-bottom:10px;letter-spacing:-.01em;}
+  .card .sub{font-family:var(--mono);font-size:.78rem;color:var(--cyan);margin-bottom:22px;}
+  .card ul{display:flex;flex-direction:column;}
+  .card li{
+    display:flex;gap:10px;align-items:flex-start;
+    padding:14px 0;border-top:1px solid var(--line);
+    color:var(--muted);font-size:.92rem;
+  }
+  .card li:first-child{border-top:none;}
+  .card li .arrow{color:var(--cyan);font-family:var(--mono);flex:0 0 auto;margin-top:1px;}
 
-  /* ---------- mission control timeline ---------- */
-  .mission{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+  /* ---------------- metallic stat strip ---------------- */
+  .stats-panel{
+    border-radius:24px;border:1px solid var(--line);
+    background:linear-gradient(135deg,var(--panel-2),var(--panel));
+    padding:48px 32px;box-shadow:0 20px 50px rgba(0,0,0,.35);
+  }
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:28px;text-align:center;}
+  .stat h3{font-size:clamp(2rem,4vw,2.7rem);font-weight:800;}
+  .stat p{font-family:var(--mono);color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;margin-top:8px;}
+
+  /* ---------------- mission timeline + orbit visual ---------------- */
+  .mission{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
   @media (max-width:900px){.mission{grid-template-columns:1fr;}}
-  .timeline{display:flex;flex-direction:column;gap:0;}
-  .tstep{display:flex;gap:18px;padding:20px 0;border-bottom:1px solid #e2e2e3;}
-  .tstep:last-child{border-bottom:none;}
-  .tnum{
-    font-weight:900;font-size:1.4rem;width:46px;flex:0 0 46px;
-    background:linear-gradient(180deg,#f4f5f7,#9a9ea4);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .tstep h4{font-size:1rem;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em;}
-  .tstep p{color:var(--grey);font-size:.9rem;}
+  .timeline{display:flex;flex-direction:column;}
+  .tstep{display:flex;gap:18px;padding:20px 0;border-top:1px solid var(--line);}
+  .tstep:first-child{border-top:none;}
+  .tnum{font-family:var(--mono);font-weight:800;font-size:1.1rem;width:40px;flex:0 0 40px;color:var(--muted-2);}
+  .tstep h4{font-size:1rem;font-weight:800;margin-bottom:4px;}
+  .tstep p{color:var(--muted);font-size:.9rem;}
   .panel-visual{
-    position:relative;border-radius:8px;overflow:hidden;min-height:360px;
-    background:
-      radial-gradient(circle at 30% 30%, rgba(252,61,33,.25), transparent 55%),
-      radial-gradient(circle at 75% 70%, rgba(125,211,252,.2), transparent 55%),
-      linear-gradient(160deg,#0a0a0b,#1c1c1f 60%,#0a0a0b);
+    position:relative;border-radius:24px;overflow:hidden;min-height:380px;
+    border:1px solid var(--line);
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
     display:flex;align-items:center;justify-content:center;
   }
-  .panel-visual .stars{opacity:.7;}
-  .orbit{
-    position:relative;width:220px;height:220px;border-radius:50%;
-    border:1px solid rgba(255,255,255,.18);z-index:1;
-  }
-  .orbit::before,.orbit::after{
-    content:"";position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.1);
-  }
-  .orbit::before{inset:-40px;}
-  .orbit::after{inset:-80px;}
+  .panel-visual .nebula{opacity:.9;}
+  .orbit-wrap{position:relative;width:240px;height:240px;z-index:1;}
+  .orbit{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line-strong);}
+  .orbit.o2{inset:-42px;border-color:rgba(255,255,255,.1);}
+  .orbit.o3{inset:-84px;border-color:rgba(255,255,255,.06);}
   .core{
-    position:absolute;top:50%;left:50%;width:64px;height:64px;margin:-32px;border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #fff, var(--nasa-red) 55%, #7a1608 100%);
-    box-shadow:0 0 50px rgba(252,61,33,.7);
+    position:absolute;top:50%;left:50%;width:70px;height:70px;margin:-35px;
   }
   .sat{
-    position:absolute;width:10px;height:10px;border-radius:50%;
-    background:linear-gradient(180deg,#fff,#9a9ea4);
-    top:50%;left:50%;margin:-5px;
-    animation:orbit 9s linear infinite;
-    transform-origin:5px 115px;
+    position:absolute;width:14px;height:14px;top:50%;left:50%;margin:-7px;
+    animation:orbit 10s linear infinite;transform-origin:7px 120px;
   }
-  @keyframes orbit{from{transform:rotate(0deg) translateY(-115px);}to{transform:rotate(360deg) translateY(-115px);}}
+  .sat.s2{animation-duration:16s;animation-direction:reverse;transform-origin:7px 162px;width:10px;height:10px;margin:-5px;}
+  @keyframes orbit{from{transform:rotate(0deg) translateY(-120px);}to{transform:rotate(360deg) translateY(-120px);}}
 
-  /* ---------- CTA / contacto ---------- */
-  .cta-block{
-    position:relative;overflow:hidden;color:#fff;text-align:center;
-    background:linear-gradient(160deg,#050506,#151517 50%,#050506);
-    padding:90px 24px;
+  /* ---------------- CTA ---------------- */
+  .cta-panel{
+    position:relative;overflow:hidden;text-align:center;border-radius:28px;
+    border:1px solid var(--line);
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    padding:80px 24px;box-shadow:0 30px 70px rgba(0,0,0,.4);
   }
-  .cta-block h2{font-size:clamp(1.8rem,4.4vw,2.8rem);font-weight:900;margin-bottom:18px;letter-spacing:-.02em;}
-  .cta-block p{color:#c9cbce;max-width:520px;margin:0 auto 34px;}
+  .cta-panel h2{margin-bottom:16px;}
+  .cta-panel p{color:var(--muted);max-width:520px;margin:0 auto 32px;}
 
-  /* ---------- footer, NASA style ---------- */
-  footer{background:var(--black);color:#9a9ea4;font-size:.82rem;}
-  .foot-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:32px;padding:56px 24px 40px;}
-  .foot-top h5{color:#fff;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
-  .foot-top a{display:block;color:#9a9ea4;margin-bottom:10px;}
-  .foot-top a:hover{color:#fff;}
+  /* ---------------- footer ---------------- */
+  footer{border-top:1px solid var(--line);padding:56px 0 30px;position:relative;z-index:1;}
+  .foot-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:32px;margin-bottom:40px;}
+  .foot-top h5{font-family:var(--mono);color:var(--muted-2);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;}
+  .foot-top a{display:block;color:var(--muted);margin-bottom:10px;font-size:.9rem;}
+  .foot-top a:hover{color:var(--text);}
   .foot-bottom{
-    border-top:1px solid #1c1c1e;padding:22px 24px;
+    border-top:1px solid var(--line);padding-top:22px;
     display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
-    font-size:.75rem;color:#6a6d72;
+    font-family:var(--mono);font-size:.72rem;color:var(--muted-2);
   }
 </style>
 </head>
 <body>
 
-<div class="utility"><div class="wrap">
-  <a href="#">ES</a><a href="#">EN</a><a href="#contacto">Contacto</a>
-</div></div>
+<div class="galaxy"><div class="nebula"></div><div class="stars"></div></div>
 
 <header>
   <div class="nav wrap">
-    <div class="wordmark"><span class="o1">SOL</span>OGINT</div>
+    <div class="wordmark"><span class="orb orb-sm"></span> SOLOGINT</div>
     <nav class="links">
-      <a href="#mision">Misión</a>
-      <a href="#soluciones">Soluciones</a>
-      <a href="#numeros">Resultados</a>
-      <a href="#contacto">Contacto</a>
+      <a href="#soluciones">// soluciones</a>
+      <a href="#mision">// misión</a>
+      <a href="#numeros">// resultados</a>
+      <a href="#contacto">// contacto</a>
     </nav>
-    <div class="nav-right">
-      <div class="icon-btn">☰</div>
-    </div>
+    <a class="btn btn-glow" href="#contacto" style="padding:10px 20px;font-size:.8rem;">Iniciar misión</a>
   </div>
 </header>
 
 <main>
   <section class="hero">
-    <div class="stars"></div>
-    <div class="scanline"></div>
     <div class="hero-inner wrap">
-      <span class="tag-red">● Misión activa — Arsenal IA</span>
-      <h1 class="metallic-text">Inteligencia Artificial<br>en órbita para tu negocio</h1>
+      <span class="kicker"><span class="dot"></span> ARSENAL IA — ESTUDIO ORO</span>
+      <h1 class="metal-text">Inteligencia Artificial<br>en órbita para tu negocio</h1>
       <p class="lead">Sologint diseña, entrena y despliega agentes de IA que automatizan ventas, soporte y operaciones — con la disciplina de una misión espacial: control, precisión y cero improvisación.</p>
       <div class="hero-actions">
-        <a class="btn-red" href="#contacto">Agendar diagnóstico</a>
-        <a class="btn-metal" href="#soluciones">Ver soluciones ↓</a>
+        <a class="btn btn-glow" href="#contacto">Agendar diagnóstico</a>
+        <a class="btn btn-metal" href="#soluciones">Ver soluciones ↓</a>
       </div>
     </div>
   </section>
 
-  <section class="white" id="soluciones">
+  <section id="soluciones">
     <div class="wrap">
-      <div class="section-title"><span class="bar"></span><h2>Programa de misiones</h2></div>
-      <div class="grid">
+      <div class="section-head">
+        <span class="kicker"><span class="dot"></span> PROGRAMA DE MISIONES</span>
+        <h2>Cada agente, una misión con objetivo claro</h2>
+        <p>No vendemos "IA" en abstracto: cada despliegue tiene un objetivo de negocio medible.</p>
+      </div>
+      <div class="grid3">
         <div class="card">
-          <div class="cat">Comunicación</div>
-          <h3>Agentes de WhatsApp</h3>
-          <p>Bots entrenados para atención, ventas y seguimiento 24/7, con memoria de conversación y escalado a humano cuando hace falta.</p>
+          <div class="num">01</div>
+          <h3>Arsenal IA Profesional</h3>
+          <div class="sub">130+ prompts listos para producción</div>
+          <ul>
+            <li><span class="arrow">▸</span> Prompts maestros por vertical (legal, inmobiliario, marketing, negocios)</li>
+            <li><span class="arrow">▸</span> Frameworks de prompting probados en operaciones reales</li>
+            <li><span class="arrow">▸</span> Actualizaciones continuas del pack</li>
+            <li><span class="arrow">▸</span> Acceso inmediato vía link de pago</li>
+          </ul>
         </div>
         <div class="card">
-          <div class="cat">Operaciones</div>
-          <h3>Automatización de procesos</h3>
-          <p>Integraciones sobre Make, Supabase y tu stack actual para eliminar tareas repetitivas sin romper lo que ya funciona.</p>
+          <div class="num">02</div>
+          <h3>Agentes de IA a Medida</h3>
+          <div class="sub">Automatización end-to-end</div>
+          <ul>
+            <li><span class="arrow">▸</span> Orquestadores multi-agente para operaciones complejas</li>
+            <li><span class="arrow">▸</span> Subagentes especializados (legal, técnico, inmobiliario)</li>
+            <li><span class="arrow">▸</span> Integración con Supabase, Make y Netlify</li>
+            <li><span class="arrow">▸</span> Reemplazo de herramientas SaaS por infraestructura propia</li>
+          </ul>
         </div>
         <div class="card">
-          <div class="cat">Control de misión</div>
-          <h3>Paneles de control</h3>
-          <p>Dashboards claros para ver qué hace cada agente, cuánto ahorra y dónde conviene ajustar el rumbo.</p>
-        </div>
-        <div class="card">
-          <div class="cat">Integración</div>
-          <h3>Multicanal</h3>
-          <p>Un mismo cerebro de IA conectado a WhatsApp, web y CRM, hablando siempre con la misma voz de marca.</p>
+          <div class="num">03</div>
+          <h3>NARAKIA — Bots WhatsApp</h3>
+          <div class="sub">Ecosistema conversacional autónomo</div>
+          <ul>
+            <li><span class="arrow">▸</span> Bots con memoria persistente y contexto de negocio</li>
+            <li><span class="arrow">▸</span> Enrutamiento inteligente por dominio de consulta</li>
+            <li><span class="arrow">▸</span> Ciclo de auto-mejora ("dreaming") sobre conversaciones</li>
+            <li><span class="arrow">▸</span> Escalable a múltiples líneas de atención</li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="stats" id="numeros">
-    <div class="stars"></div>
+  <section id="numeros">
     <div class="wrap">
-      <div class="section-title"><span class="bar"></span><h2 style="color:#fff;">Telemetría</h2></div>
-      <div class="stats-grid">
-        <div class="stat"><h3 class="metallic-text">24/7</h3><p>Atención sin pausas</p></div>
-        <div class="stat"><h3 class="metallic-text">-70%</h3><p>Tareas manuales repetitivas</p></div>
-        <div class="stat"><h3 class="metallic-text">+3x</h3><p>Velocidad de respuesta</p></div>
-        <div class="stat"><h3 class="metallic-text">100%</h3><p>Trazabilidad de cada bot</p></div>
+      <div class="stats-panel">
+        <div class="section-head" style="margin-bottom:36px;">
+          <span class="kicker"><span class="dot"></span> TELEMETRÍA</span>
+          <h2>Resultados que se pueden auditar</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><h3 class="metal-text">24/7</h3><p>Atención sin pausas</p></div>
+          <div class="stat"><h3 class="metal-text">-70%</h3><p>Tareas manuales repetitivas</p></div>
+          <div class="stat"><h3 class="metal-text">+3x</h3><p>Velocidad de respuesta</p></div>
+          <div class="stat"><h3 class="metal-text">100%</h3><p>Trazabilidad de cada bot</p></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="grey" id="mision">
+  <section id="mision">
     <div class="wrap">
-      <div class="section-title"><span class="bar"></span><h2>Control de misión</h2></div>
+      <div class="section-head" style="margin:0 0 48px;text-align:left;">
+        <span class="kicker"><span class="dot"></span> CONTROL DE MISIÓN</span>
+        <h2>Así llevamos tu proyecto de IA a producción</h2>
+        <p>Sin cajas negras. Cada etapa queda documentada y es reversible.</p>
+      </div>
       <div class="mission">
         <div class="timeline">
           <div class="tstep"><div class="tnum">01</div><div><h4>Diagnóstico</h4><p>Mapeamos procesos y detectamos dónde la IA suma más.</p></div></div>
@@ -316,46 +322,55 @@
           <div class="tstep"><div class="tnum">04</div><div><h4>Optimización continua</h4><p>Ajustes con datos reales de uso.</p></div></div>
         </div>
         <div class="panel-visual">
-          <div class="stars"></div>
-          <div class="orbit"><div class="core"></div><div class="sat"></div></div>
+          <div class="nebula" style="position:absolute;inset:0;"></div>
+          <div class="orbit-wrap">
+            <div class="orbit"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+            <div class="core orb"></div>
+            <div class="sat orb"></div>
+            <div class="sat s2 orb"></div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="cta-block" id="contacto">
-    <div class="stars"></div>
-    <div class="wrap" style="position:relative;z-index:1;">
-      <h2 class="metallic-text">¿Listo para lanzar tu misión de IA?</h2>
-      <p>Contanos tu proceso y te mostramos, sin compromiso, cómo se vería automatizado.</p>
-      <a class="btn-red" href="https://wa.me/5491100000000" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+  <section id="contacto">
+    <div class="wrap">
+      <div class="cta-panel">
+        <span class="kicker"><span class="dot"></span> PRÓXIMO LANZAMIENTO</span>
+        <h2 class="metal-text">¿Listo para lanzar tu misión de IA?</h2>
+        <p>Contanos tu proceso y te mostramos, sin compromiso, cómo se vería automatizado.</p>
+        <a class="btn btn-glow" href="https://wa.me/5491100000000" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+      </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap foot-top">
-    <div>
-      <h5>Sologint</h5>
-      <a href="#soluciones">Soluciones</a>
-      <a href="#mision">Misión</a>
-      <a href="#numeros">Resultados</a>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <h5>Sologint</h5>
+        <a href="#soluciones">Soluciones</a>
+        <a href="#mision">Misión</a>
+        <a href="#numeros">Resultados</a>
+      </div>
+      <div>
+        <h5>Estudio Oro</h5>
+        <a href="#">Estudio Oro</a>
+        <a href="#">OroInmob</a>
+        <a href="#">NARAKIA</a>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <a href="https://wa.me/5491100000000" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="#">Salguero 2835 4°B, CABA</a>
+      </div>
     </div>
-    <div>
-      <h5>Estudio Oro</h5>
-      <a href="#">Estudio Oro</a>
-      <a href="#">OroInmob</a>
-      <a href="#">NARAKIA</a>
+    <div class="foot-bottom">
+      <span>© 2026 SOLOGINT · ESTUDIO ORO S.A.S. — CUIT 30-71933033-5</span>
+      <span>ARSENAL IA</span>
     </div>
-    <div>
-      <h5>Contacto</h5>
-      <a href="https://wa.me/5491100000000" target="_blank" rel="noopener">WhatsApp</a>
-      <a href="#">Salguero 2835 4°B, CABA</a>
-    </div>
-  </div>
-  <div class="wrap foot-bottom">
-    <span>© 2026 Sologint · Estudio Oro S.A.S. — CUIT 30-71933033-5</span>
-    <span>Arsenal IA</span>
   </div>
 </footer>
 
