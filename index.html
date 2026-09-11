@@ -562,6 +562,52 @@
     border:1px solid var(--line-light);
   }
 
+  /* lista numerada editorial (protocolo) */
+  .num-list{ display:flex; flex-direction:column; }
+  .num-item{
+    display:grid;
+    grid-template-columns:56px 1fr;
+    gap:24px;
+    padding-block:28px;
+    border-top:1px solid var(--line-light);
+  }
+  .num-list .num-item:last-child{ border-bottom:1px solid var(--line-light); }
+  .num-circle{
+    width:40px; height:40px;
+    border-radius:50%;
+    background:var(--nasa-red);
+    color:#fff;
+    font-weight:800;
+    font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .num-item h3{ font-size:19px; font-weight:800; margin-bottom:6px; color:var(--text-dark); }
+  .num-item p{ font-size:14.5px; color:var(--text-dark-secondary); }
+
+  /* caso de uso editorial (reemplaza modules-grid oscuro) */
+  .case-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:48px;
+    align-items:center;
+    padding-block:44px;
+    border-top:1px solid var(--line-light);
+  }
+  .case-row:last-child{ border-bottom:1px solid var(--line-light); }
+  .case-row.reverse .case-media{ order:2; }
+  .case-media{
+    aspect-ratio:8/5;
+    border-radius:12px;
+    overflow:hidden;
+    background:var(--gradient-panel);
+    border:1px solid var(--line-light);
+  }
+  @media (max-width: 900px){
+    .num-item{ grid-template-columns:1fr; }
+    .case-row{ grid-template-columns:1fr; }
+    .case-row.reverse .case-media{ order:0; }
+  }
+
   /* noticias claras */
   .news-light-grid{
     display:grid;
@@ -1238,50 +1284,59 @@
   </div>
 </section>
 
-<section class="section" id="proceso">
+<section class="light-section" id="proceso">
   <div class="wrap">
-    <div class="section-head">
-      <span class="label">// PROTOCOLO DE IMPLEMENTACIÓN</span>
+    <article class="featured-story" style="padding-bottom:36px;">
+      <div class="featured-thumb" aria-hidden="true"></div>
       <h2>De cero a sistema operando</h2>
-      <p>Sin desarrollos eternos. Sin curva de aprendizaje. Tu sistema queda operativo en días.</p>
-    </div>
-    <div class="process-list">
-      <div class="process-item">
-        <span class="process-num">01</span>
-        <h3>Diagnóstico</h3>
-        <p>Mapeamos tu operación actual y detectamos qué procesos automatizar primero.</p>
+      <a href="#demo" class="arrow-btn" aria-label="Activar sistema">→</a>
+    </article>
+    <p style="color:var(--text-dark-secondary); font-size:15px; margin-bottom:28px;">Sin desarrollos eternos. Sin curva de aprendizaje. Tu sistema queda operativo en días.</p>
+    <div class="num-list">
+      <div class="num-item">
+        <span class="num-circle">01</span>
+        <div><h3>Diagnóstico</h3><p>Mapeamos tu operación actual y detectamos qué procesos automatizar primero.</p></div>
       </div>
-      <div class="process-item">
-        <span class="process-num">02</span>
-        <h3>Diseño del Agente</h3>
-        <p>Configuramos el bot con tu tono de marca, tu información y tus reglas de negocio.</p>
+      <div class="num-item">
+        <span class="num-circle">02</span>
+        <div><h3>Diseño del Agente</h3><p>Configuramos el bot con tu tono de marca, tu información y tus reglas de negocio.</p></div>
       </div>
-      <div class="process-item">
-        <span class="process-num">03</span>
-        <h3>Conexión de Datos</h3>
-        <p>Integramos CRM, WhatsApp, calendario y las herramientas que ya usás.</p>
+      <div class="num-item">
+        <span class="num-circle">03</span>
+        <div><h3>Conexión de Datos</h3><p>Integramos CRM, WhatsApp, calendario y las herramientas que ya usás.</p></div>
       </div>
-      <div class="process-item">
-        <span class="process-num">04</span>
-        <h3>Sistema en Vivo</h3>
-        <p>El agente empieza a operar 24/7, con monitoreo y mejora continua.</p>
+      <div class="num-item">
+        <span class="num-circle">04</span>
+        <div><h3>Sistema en Vivo</h3><p>El agente empieza a operar 24/7, con monitoreo y mejora continua.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="modules-grid">
-  <div class="module-card module-1 hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-    <span class="label">// CASO DE USO</span>
-    <h3>Atención Comercial Autónoma</h3>
-    <p>Un agente que responde consultas, agenda reuniones y hace seguimiento de cada lead sin intervención humana.</p>
+<section class="light-section">
+  <div class="wrap">
+    <div class="section-head" style="margin-bottom:8px;">
+      <span class="eyebrow-dark" style="display:block; margin-bottom:10px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-dark-secondary);">Casos de uso</span>
+      <h2 style="color:var(--text-dark); font-family:var(--font-sans); text-transform:none; letter-spacing:-.5px; font-size:clamp(24px,3vw,32px);">Un sistema, distintas misiones</h2>
+    </div>
+    <div class="case-row">
+      <div class="tab-copy">
+        <h3>Atención Comercial Autónoma</h3>
+        <p>Un agente que responde consultas, agenda reuniones y hace seguimiento de cada lead sin intervención humana.</p>
+        <a href="#bot" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
+      </div>
+      <div class="case-media"><!-- [IMG-CASO-1] 800x500, atención comercial --></div>
+    </div>
+    <div class="case-row reverse">
+      <div class="tab-copy">
+        <h3>Operaciones Internas Automatizadas</h3>
+        <p>Procesos administrativos, reportes y flujos de trabajo ejecutados automáticamente entre tus plataformas.</p>
+        <a href="#proceso" class="link-arrow"><span class="dot-arrow">→</span> Lee más</a>
+      </div>
+      <div class="case-media"><!-- [IMG-CASO-2] 800x500, operaciones internas --></div>
+    </div>
   </div>
-  <div class="module-card module-2 hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-    <span class="label">// CASO DE USO</span>
-    <h3>Operaciones Internas Automatizadas</h3>
-    <p>Procesos administrativos, reportes y flujos de trabajo ejecutados automáticamente entre tus plataformas.</p>
-  </div>
-</div>
+</section>
 
 <section class="section" id="resultados">
   <div class="wrap">
