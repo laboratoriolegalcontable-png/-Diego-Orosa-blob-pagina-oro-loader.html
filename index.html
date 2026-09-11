@@ -1411,29 +1411,44 @@
       const palette = [
         'rgba(58,79,158,PLACEHOLDER)',   // azul
         'rgba(107,79,174,PLACEHOLDER)',  // violeta
-        'rgba(158,79,143,PLACEHOLDER)',  // magenta
+        'rgba(178,69,140,PLACEHOLDER)',  // magenta/rosa intenso
         'rgba(201,145,127,PLACEHOLDER)', // rosa polvoriento
-        'rgba(74,134,168,PLACEHOLDER)',  // cyan apagado
+        'rgba(74,150,158,PLACEHOLDER)',  // cyan/verdoso (brazo azul de la referencia)
       ];
 
       ctx.globalCompositeOperation = 'lighter';
 
+      // núcleo brillante blanco-cálido, tipo centro de nebulosa iluminado
+      const coreX = w * 0.58, coreY = h * 0.55;
+      const core = ctx.createRadialGradient(coreX, coreY, 0, coreX, coreY, Math.min(w,h) * 0.35);
+      core.addColorStop(0, 'rgba(255,250,240,0.55)');
+      core.addColorStop(0.3, 'rgba(255,225,210,0.28)');
+      core.addColorStop(0.6, 'rgba(200,120,150,0.12)');
+      core.addColorStop(1, 'rgba(200,120,150,0)');
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(coreX, coreY, Math.min(w,h) * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+
       // capa 1: nubes grandes y difusas — muchas manchas chicas superpuestas
       // en vez de pocos círculos grandes, para que se vea como polvo, no como bolas
       const seed = [
-        {x:.15,y:.12,c:0}, {x:.22,y:.20,c:0}, {x:.30,y:.08,c:1},
-        {x:.45,y:.30,c:1}, {x:.55,y:.42,c:1}, {x:.62,y:.22,c:2},
-        {x:.72,y:.15,c:2}, {x:.80,y:.30,c:2}, {x:.35,y:.60,c:3},
-        {x:.28,y:.72,c:3}, {x:.45,y:.68,c:3}, {x:.18,y:.55,c:0},
-        {x:.85,y:.65,c:4}, {x:.90,y:.80,c:4}, {x:.75,y:.75,c:1},
-        {x:.10,y:.85,c:3}, {x:.55,y:.85,c:0}, {x:.65,y:.55,c:2},
+        // brazo azul/verdoso arriba-izquierda (como en la referencia)
+        {x:.10,y:.10,c:4}, {x:.16,y:.16,c:4}, {x:.22,y:.20,c:4}, {x:.20,y:.10,c:0},
+        // gran nube rosa/magenta central-inferior, alrededor del núcleo
+        {x:.50,y:.58,c:2}, {x:.60,y:.62,c:3}, {x:.66,y:.50,c:2}, {x:.45,y:.68,c:3},
+        {x:.55,y:.75,c:2}, {x:.70,y:.68,c:3}, {x:.40,y:.50,c:1}, {x:.62,y:.40,c:1},
+        // violeta difuso en los bordes
+        {x:.78,y:.30,c:1}, {x:.85,y:.55,c:1}, {x:.30,y:.35,c:1}, {x:.15,y:.60,c:1},
+        // detalle extra
+        {x:.35,y:.15,c:0}, {x:.88,y:.20,c:0},
       ];
 
       seed.forEach((s, i) => {
         const cx = s.x * w + rand(-40, 40);
         const cy = s.y * h + rand(-40, 40);
-        const r = Math.min(w, h) * rand(0.22, 0.42);
-        const alpha = rand(0.10, 0.20);
+        const r = Math.min(w, h) * rand(0.20, 0.38);
+        const alpha = rand(0.10, 0.22);
         const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
         g.addColorStop(0, palette[s.c].replace('PLACEHOLDER', alpha.toFixed(2)));
         g.addColorStop(0.55, palette[s.c].replace('PLACEHOLDER', (alpha * 0.4).toFixed(2)));
@@ -1443,6 +1458,30 @@
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.fill();
       });
+
+      // vetas oscuras (dust lanes) para dar contraste, como los canales negros de la referencia
+      ctx.globalCompositeOperation = 'multiply';
+      const lanes = [
+        {x:.45,y:.35,rx:.18,ry:.30,rot:-.4},
+        {x:.72,y:.45,rx:.14,ry:.28,rot:.3},
+        {x:.30,y:.55,rx:.12,ry:.22,rot:.6},
+      ];
+      lanes.forEach(l => {
+        const g = ctx.createRadialGradient(l.x*w, l.y*h, 0, l.x*w, l.y*h, Math.max(w,h)*l.rx);
+        g.addColorStop(0, 'rgba(5,5,10,.5)');
+        g.addColorStop(1, 'rgba(5,5,10,0)');
+        ctx.save();
+        ctx.translate(l.x*w, l.y*h);
+        ctx.rotate(l.rot);
+        ctx.scale(1, l.ry/l.rx);
+        ctx.translate(-l.x*w, -l.y*h);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(l.x*w, l.y*h, Math.max(w,h)*l.rx, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      });
+      ctx.globalCompositeOperation = 'lighter';
 
       // capa 2: polvo fino — cientos de puntos pequeños de color para romper
       // el aspecto "manchas lisas" y dar textura granular real de nebulosa
