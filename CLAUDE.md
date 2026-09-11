@@ -40,3 +40,13 @@ deberia seguir funcionando sin tocar nada — pero si `.mcp.json` vuelve a falla
 revisar primero que el `command`/`args` sigan apuntando al wrapper (a veces un
 entorno headless resuelve `args` relativos contra un cwd distinto al root del
 repo; en ese caso, usar una ruta absoluta explicita en `args` como fallback).
+
+**Contexto de industria (2026-09-11):** los 3 bugs de `MEMORY_FILE_PATH` de
+arriba no son un caso aislado — son el mismo patron que describe el reporte
+"The State of Agentic AI" de Docker (2026): MCP se adopta rapido pero la
+mayoria de los equipos opera "en modo salto de fe" (85% conoce MCP, pero 42%
+sufre sobrecarga operativa y 41% problemas de instalacion/configuracion). Ver
+analisis completo y recomendaciones aplicadas a NARAKIA/Estudio Oro en
+`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md` —
+incluye propuesta de contenerizar `run-memory-mcp.sh` para eliminar de raiz
+esta clase de bug de rutas.
