@@ -107,10 +107,19 @@ Docker disponible al arrancar la sesion.
   bind mount, COPY resuelve contra el build context no contra la carpeta del
   Dockerfile, volumen anonimo silencioso si falta el `-v`. Activarlo cuando
   se pida dockerizar/contenedorizar otro MCP.
-- Auditoria de sandboxing (2026-09-12, ver seccion 4.1.2 y 4.3 del informe
-  de Docker): este repo solo controla el MCP `memory` — los ~40 conectores
-  de terceros de la cuenta se gestionan en Claude.ai, no en archivos de este
-  repo. Hallazgo real: los 4 bots NARAKIA se exponen como MCP tools
-  side-effecting ("EXECUTES the Make scenario immediately") — cualquier
-  sesion con el conector de Make activo puede disparar un mensaje real sin
-  confirmacion extra mas alla del permiso general de la herramienta.
+- Auditoria de sandboxing y de conectores (2026-09-12, ver
+  `informes/2026-09-12-auditoria-conectores-mcp.md` y seccion 4.1.2/4.3 del
+  informe de Docker): este repo solo controla el MCP `memory` — las **53
+  conexiones de terceros** de la cuenta (52 vía `ListConnectors` + GitHub,
+  numero verificado con script, no la estimacion "~40" que se uso antes acá)
+  se gestionan en Claude.ai, no en archivos de este repo. 5 hallazgos
+  concretos, candidatos a revisar (NO todos son solapamiento a resolver: ver
+  el informe antes de desconectar nada) en ese informe — Neon/Supabase
+  cumplen roles distintos, produccion vs. preview/CI, pendiente confirmar si
+  el workflow de preview sigue vigente; 10 plataformas de hosting; 5 canales
+  de email; 5 herramientas de ads/SEO; 4 conectores sin proposito
+  documentado. Hallazgo real aparte: los 4 bots NARAKIA se
+  exponen como MCP tools side-effecting ("EXECUTES the Make scenario
+  immediately") — cualquier sesion con el conector de Make activo puede
+  disparar un mensaje real sin confirmacion extra mas alla del permiso
+  general de la herramienta.
