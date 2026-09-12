@@ -27,10 +27,10 @@ STAMP_FILE="$SCRIPT_DIR/.claude/docker/.image.stamp"
 
 mkdir -p "$MEMORY_DIR"
 
-# Rebuild solo si el Dockerfile o el entrypoint cambiaron desde el ultimo
-# build (evita reconstruir en cada arranque de sesion, que seria lento) o si
-# la imagen todavia no existe.
-CURRENT_HASH="$(cat "$DOCKERFILE" "$SCRIPT_DIR/.claude/docker/entrypoint.sh" | sha256sum | cut -d' ' -f1)"
+# Rebuild solo si el Dockerfile cambio desde el ultimo build (evita
+# reconstruir en cada arranque de sesion, que seria lento) o si la imagen
+# todavia no existe.
+CURRENT_HASH="$(sha256sum "$DOCKERFILE" | cut -d' ' -f1)"
 NEEDS_BUILD=1
 if docker image inspect "$IMAGE_TAG" >/dev/null 2>&1 \
   && [ -f "$STAMP_FILE" ] \
@@ -43,8 +43,18 @@ if [ "$NEEDS_BUILD" = "1" ]; then
   echo "$CURRENT_HASH" > "$STAMP_FILE"
 fi
 
+# --user "$(id -u):$(id -g)": el contenedor corre con el UID/GID de quien
+# invoca este script, no con un usuario fijo de la imagen. Esto es
+# deliberado (ver "POR QUE --user" en memory-mcp.Dockerfile, hallazgo real
+# de cubic en PR #13): un entrypoint que hace chown del bind mount muta la
+# ownership real de .claude/memory/ en el host, rompiendo run-memory-mcp.sh
+# (el wrapper sin Docker) la proxima vez que se use sin --user. Pasando el
+# UID/GID del host, el proceso dentro del contenedor tiene exactamente los
+# mismos permisos que quien lo corrio — sin tocar la ownership de nada.
+#
 # -i (stdin interactivo, obligatorio para hablar MCP por stdio) sin -t (no es
 # una TTY). --rm: no dejar contenedores muertos acumulandose entre sesiones.
 exec docker run -i --rm \
+  --user "$(id -u):$(id -g)" \
   -v "$MEMORY_DIR:/data" \
   "$IMAGE_TAG"
