@@ -4,7 +4,7 @@
 
 ## Número real
 
-**51 conectores conectados y habilitados en esta sesión** (`connected: true`, `enabledInChat: true`), más el MCP `memory` propio de este repo y GitHub. La cifra "~40" que usé en el informe anterior era una estimación a ojo — el número real es más alto. Esto confirma en la práctica el hallazgo #1 del reporte de Docker: "operational complexity from orchestrating multiple components is the #1 challenge" (48% de las orgs).
+**51 conectores conectados y habilitados en esta sesión** (`connected: true`, `enabledInChat: true` en `ListConnectors`), GitHub incluido — GitHub llega a esta sesión por un mecanismo separado y no aparece en esa lista, pero cuenta igual como credencial de terceros conectada. El MCP `memory` de este repo NO se suma a esa cifra: es configuración local del repo (`.mcp.json`), no un conector de cuenta. La cifra "~40"/"30+" que usé en el informe anterior era una estimación a ojo — el número real y verificado es 51. Esto confirma en la práctica el hallazgo #1 del reporte de Docker: "operational complexity from orchestrating multiple components is the #1 challenge" (48% de las orgs).
 
 **Limitación importante:** esta auditoría es de **relevancia** (¿tiene sentido que este conector esté prendido para un estudio jurídico/inmobiliario?), no de **uso real** — no tengo acceso a estadísticas de "última vez usado" por conector. Esa información solo la tiene el Doctor desde `claude.ai` → configuración de conectores. Lo que sigue son candidatos a revisar, no un veredicto.
 
@@ -23,11 +23,13 @@ CourtListener, Descrybe Legal Engine, Legal Data Hunter, Lawve AI — los 4 se s
 
 ## Hallazgo concreto #1 — dos backends de Postgres compitiendo
 
-**Supabase** (el real, con proyecto ID conocido) **y Neon** (otro Postgres-as-a-service) están conectados simultáneamente. No hay evidencia en ningún informe o preferencia de que Neon se use para algo de Estudio Oro. Riesgo: que en algún momento una sesión cree una base en Neon "por probar" y quede huérfana, o que se generen dos fuentes de verdad para el mismo tipo de dato. **Recomendación: desconectar Neon salvo que el Doctor confirme un uso activo.**
+**Corregido tras hallazgo de `cubic`:** mi primera versión decía "no hay evidencia de uso de Neon" — es falso. `informes/2026-08-22-auditoria-costos-infraestructura.md` documenta que el repo `Diego-Orosa` corre un workflow de GitHub Actions llamado `neon-branch-preview.yml` ("Create/Delete Branch for Pull Request") en cada push/PR — un uso real de Neon para bases de datos de preview por pull request, no una prueba huérfana.
+
+**Supabase** (el real, con proyecto ID conocido, para producción) **y Neon** (branches de preview por PR, según ese workflow) están conectados simultáneamente — y a diferencia de lo que dije antes, sí hay evidencia de que Neon cumple una función real, aunque distinta a la de Supabase (preview/CI vs. producción). **Recomendación: antes de tocar nada, confirmar si `neon-branch-preview.yml` sigue activo y en uso — si sí, Neon se queda conectado por esa razón puntual, no como redundancia; si el workflow ya no corre o quedó obsoleto, ahí sí desconectar.**
 
 ## Hallazgo concreto #2 — diez plataformas de hosting/apps conectadas a la vez
 
-La arquitectura real declarada es **Netlify + Supabase + Make + React 18.3.1 CDN** (preferencias del usuario). Sin embargo, están conectados simultáneamente: Cloudflare Developer Platform, Railway, Replit, Vercel, Base44, Lovable, Wix, WordPress.com, WP Agent — **9 plataformas más**, además de Netlify. Esto es exactamente el patrón "multi-cloud, multi-plataforma no por decisión sino por acumulación" que el reporte de Docker describe como el precio de la flexibilidad sin gobierno. Ninguna de las nuevas experimentaciones mencionadas en `informes/2026-08-22-arquitectura-memoria-distribuida-wsl.md` (Oro Nexus 360, RealEstate360Ultra, Voicebox) menciona usar ninguna de estas 9 — corren en OVH. **Recomendación: si ninguna de las 9 se está usando activamente para un proyecto concreto, desconectarlas reduce superficie de ataque sin perder nada.**
+La arquitectura real declarada es **Netlify + Supabase + Make + React 18.3.1 CDN** (preferencias del usuario). Sin embargo, están conectados simultáneamente: Cloudflare Developer Platform, Railway, Replit, Vercel, Base44, Lovable, Wix, WordPress.com, WP Agent — **9 plataformas más**, además de Netlify. Esto es exactamente el patrón "multi-cloud, multi-plataforma no por decisión sino por acumulación" que el reporte de Docker describe como el precio de la flexibilidad sin gobierno. El informe de costos (`informes/2026-08-22-auditoria-costos-infraestructura.md`) ubica las experimentaciones nuevas del ecosistema en OVH, no en estas 9 — pero con matices que no había reflejado bien: **Oro Nexus 360** está confirmado operativo ahí; **RealEstate360Ultra** y **Voicebox** están *aprobados*, no confirmados operativos todavía. Ninguno de los tres depende de estas 9 plataformas según ese informe. **Recomendación: si ninguna de las 9 se está usando activamente para un proyecto concreto, desconectarlas reduce superficie de ataque sin perder nada.**
 
 ## Hallazgo concreto #3 — cinco canales de email conectados a la vez
 
@@ -48,7 +50,7 @@ Ninguno de estos 4 es necesariamente un problema de seguridad por sí solo, pero
 
 ## Lo que NO hace falta tocar
 
-Todo lo que aparece como `connected: false` / `installState: unknown` o `needs_reconnect` (Affinity, Aha!, Attention, BasicOps, Booking.com, Box, CoCounsel Legal, Egnyte, FactSet, Harness.io, Harvey, HyperFrames by HeyGen, LegalZoom, Linear, Mailercloud, Midpage Legal Research, ms365, Ryze AI, S&P Global, Strava, Superhuman Mail, Ticket Tailor, Trellis, Xero) ya está apagado o requiere reautorización — no representan riesgo activo ahora mismo.
+Todo lo que aparece como `connected: false` o `needs_reconnect` (LegalZoom, Linear) no está disponible para esta sesión — no representa riesgo activo. Los que muestran `installState: unknown` (Affinity, Aha!, Attention, BasicOps, Booking.com, Box, CoCounsel Legal, Egnyte, FactSet, Harness.io, Harvey, HyperFrames by HeyGen, Mailercloud, Midpage Legal Research, ms365, Ryze AI, S&P Global, Strava, Superhuman Mail, Ticket Tailor, Trellis, Xero) son un caso distinto — `unknown` significa que no se pudo chequear el estado, **no** que estén desactivados. No los traté como riesgo activo en esta auditoría, pero tampoco están confirmados como inofensivos; si alguno de estos nombres te suena familiar como algo que sí usás, avisame para verificarlo en `claude.ai` antes de asumir que está apagado.
 
 ## Próximo paso
 
