@@ -177,3 +177,22 @@ gateway de por medio: identico resultado. Es una condicion de carrera del
 paquete upstream (no serializa sus propias lecturas/escrituras), no algo
 introducido por el gateway ni algo que el gateway deba "arreglar" cambiando
 la semantica del backend — documentado en `.claude/gateway/README.md`.
+
+## Limpieza de credenciales huerfanas en Make — ejecutada (2026-09-12)
+
+Remediacion del hallazgo de la seccion "Credenciales en Make sin scope por
+escenario" de arriba. Se re-verifico `mcp__Make__keys_list` (team 2012148)
+inmediatamente antes de actuar (mismas 5 credenciales sin uso, sin cambios
+desde la auditoria original) y, con confirmacion explicita del Doctor sobre
+el alcance exacto, se borraron las 5 vía `mcp__Make__keys_delete`: Natalia
+OpenAI API Key (x2, ids 151756/151768), Natalia WhatsApp API Key (151773),
+Whapi Bearer Token (198695) y **Supabase Service Role** (198692) — el Doctor
+opto por borrarla directamente en vez de solo evaluar un reemplazo por
+`anon key` + RLS, dado que no tenia uso real. `keys_list` post-borrado
+confirma que queda una sola credencial en la cuenta: "Anthropic Claude API
+Key" (198696), en uso activo en el escenario "Narakia — Claude API +
+web_fetch Legal". Si en el futuro algun escenario de Make necesita acceso
+administrativo a Supabase, recrear la credencial en ese momento con el
+scope minimo que corresponda a ese uso concreto — no un service role
+guardado "por si acaso" sin escenario que lo use. Checklist actualizado en
+`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md`.
