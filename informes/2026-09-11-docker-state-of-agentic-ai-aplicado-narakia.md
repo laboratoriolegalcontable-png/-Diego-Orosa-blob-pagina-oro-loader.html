@@ -37,7 +37,7 @@ Este CLAUDE.md ya tiene tres "bugs confirmados" sobre el servidor MCP de memoria
 ## 4. Recomendaciones concretas para Estudio Oro / NARAKIA
 
 ### 4.1 Memoria persistente y MCP propios (prioridad alta)
-1. **Contenerizar el wrapper de memoria.** Hoy `run-memory-mcp.sh` resuelve su ruta vía `BASH_SOURCE` porque el harness reubica el repo. Empaquetarlo en una imagen Docker con la ruta fija adentro (`/app/.claude/memory/knowledge-graph.jsonl` como volumen montado) elimina esa clase entera de bug — es exactamente el patrón "containers como sustrato" que el 94% de las orgs ya usa.
+1. **Contenerizar el wrapper de memoria.** Hoy `run-memory-mcp.sh` resuelve su ruta vía `BASH_SOURCE` porque el harness reubica el repo. Empaquetarlo en una imagen Docker con la ruta fija adentro (`/data/knowledge-graph.jsonl` como volumen montado) elimina esa clase entera de bug — es exactamente el patrón "containers como sustrato" que el 94% de las orgs ya usa.
 2. **Sandboxing explícito** para cualquier MCP nuevo que Diego conecte (especialmente los que tienen `execute_sql`, `run_command`, o acceso a Supabase/Make en producción — Base44, Neon, Supabase MCP). No correrlos con las mismas credenciales que la sesión interactiva.
 3. **Versionar y firmar el knowledge-graph.jsonl** antes de cada commit relevante (ya se hace vía git, que cumple parcialmente el rol de "provenance tracking" que el reporte pide para agentes — pero falta un `CHANGELOG` corto por entidad crítica: causa CCC 28.979/2020, datos fiscales, credenciales de infraestructura).
 

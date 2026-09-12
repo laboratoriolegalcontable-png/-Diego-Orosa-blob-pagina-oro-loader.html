@@ -58,7 +58,7 @@ ENV MEMORY_FILE_PATH=/data/knowledge-graph.jsonl
 RUN mkdir -p /data && chown -R node:node /data
 VOLUME ["/data"]
 
-COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 .claude/docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # El contenedor arranca como root (necesario para el chown en runtime del
 # bind mount dentro de entrypoint.sh — el chown de build de arriba solo
