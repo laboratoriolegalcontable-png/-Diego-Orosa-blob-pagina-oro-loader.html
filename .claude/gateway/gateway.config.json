@@ -1,0 +1,10 @@
+{
+  "_comment": "Backends del gateway MCP único. Cada entry es un servidor MCP command/stdio existente, sin modificar. El gateway los spawnea, agrega sus tools/list con prefijo '<name>__' y reenvia tools/call al backend correcto. Agregar un backend nuevo = un objeto mas en este array, nada de codigo.",
+  "backends": [
+    {
+      "name": "memory",
+      "command": "bash",
+      "args": [".claude/bin/run-memory-mcp.sh"]
+    }
+  ]
+}
