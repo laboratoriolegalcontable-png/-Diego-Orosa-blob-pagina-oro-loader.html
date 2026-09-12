@@ -4,7 +4,7 @@
 
 ## Número real
 
-**51 conectores conectados y habilitados en esta sesión** (`connected: true`, `enabledInChat: true` en `ListConnectors`), GitHub incluido — GitHub llega a esta sesión por un mecanismo separado y no aparece en esa lista, pero cuenta igual como credencial de terceros conectada. El MCP `memory` de este repo NO se suma a esa cifra: es configuración local del repo (`.mcp.json`), no un conector de cuenta. La cifra "~40"/"30+" que usé en el informe anterior era una estimación a ojo — el número real y verificado es 51. Esto confirma en la práctica el hallazgo #1 del reporte de Docker: "operational complexity from orchestrating multiple components is the #1 challenge" (48% de las orgs).
+**52 conectores** con `connected: true` y `enabledInChat: true` en `ListConnectors` — recontado explícitamente (no a ojo) tras un hallazgo real de `cubic`: mi primer conteo decía "51" y no era reproducible contra los propios datos que cito. **GitHub es una conexión de terceros adicional a esos 52** — llega a esta sesión por un mecanismo separado y no aparece en la respuesta de `ListConnectors`, así que el total real de conexiones de terceros activas es **53**, no 51. El MCP `memory` de este repo no se suma a ninguna de las dos cifras: es configuración local (`.mcp.json`), no un conector de cuenta. La cifra "~40"/"30+" que usé en el informe anterior era una estimación a ojo, muy por debajo de la real. Esto confirma en la práctica el hallazgo #1 del reporte de Docker: "operational complexity from orchestrating multiple components is the #1 challenge" (48% de las orgs).
 
 **Limitación importante:** esta auditoría es de **relevancia** (¿tiene sentido que este conector esté prendido para un estudio jurídico/inmobiliario?), no de **uso real** — no tengo acceso a estadísticas de "última vez usado" por conector. Esa información solo la tiene el Doctor desde `claude.ai` → configuración de conectores. Lo que sigue son candidatos a revisar, no un veredicto.
 
@@ -21,7 +21,7 @@
 
 CourtListener, Descrybe Legal Engine, Legal Data Hunter, Lawve AI — los 4 se solapan parcialmente en función (búsqueda de jurisprudencia/doctrina), pero cada uno cubre jurisdicciones o formatos distintos (CourtListener es EE.UU., Legal Data Hunter es multi-jurisdiccional, Lawve AI es un catálogo de skills). No es redundancia clara, es cobertura complementaria — dejar como está salvo que el Doctor confirme que solo usa uno.
 
-## Hallazgo concreto #1 — dos backends de Postgres compitiendo
+## Hallazgo concreto #1 — dos backends de Postgres coexistiendo, uno sin validar
 
 **Corregido tras hallazgo de `cubic`:** mi primera versión decía "no hay evidencia de uso de Neon" — es falso. `informes/2026-08-22-auditoria-costos-infraestructura.md` documenta que el repo `Diego-Orosa` corre un workflow de GitHub Actions llamado `neon-branch-preview.yml` ("Create/Delete Branch for Pull Request") en cada push/PR — un uso real de Neon para bases de datos de preview por pull request, no una prueba huérfana.
 
