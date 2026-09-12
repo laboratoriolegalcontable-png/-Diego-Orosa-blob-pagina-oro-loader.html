@@ -50,10 +50,67 @@ analisis completo y recomendaciones aplicadas a NARAKIA/Estudio Oro en
 `informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md`.
 
 **Dockerfile del memory-mcp (2026-09-12):** `.claude/docker/memory-mcp.Dockerfile`
-contenedoriza el server de memoria (version de npm pinneada, usuario no-root,
+contenedoriza el server de memoria (version de npm pinneada,
 `/data/knowledge-graph.jsonl` como volumen) — build y smoke test (handshake
 MCP `initialize`) validados localmente. `.mcp.json` sigue usando
 `run-memory-mcp.sh` sin cambios: esta imagen es una alternativa para
 entornos que la soporten (local/WSL), no un reemplazo automatico, porque
 falta confirmar si el harness de Claude Code on the web permite correr un
 MCP `command` que a su vez invoque `docker run` dentro de esta sesion remota.
+
+**Ownership del bind mount — 2 rondas de fixes (2026-09-12):** la primera
+version del Dockerfile arrancaba como root, hacia `chown -R node:node /data`
+en cada arranque, y bajaba privilegios via `su-exec` — esto "arreglaba" el
+contenedor pero **mutaba permanentemente** la ownership real de
+`.claude/memory/` en el host al UID fijo de la imagen (hallazgo real de
+`cubic` en PR #13), rompiendo `run-memory-mcp.sh` (el wrapper sin Docker) la
+proxima vez que se usara sin `--user`. Fix definitivo: se elimino
+`entrypoint.sh` entero; el contenedor no fija usuario propio, y quien lo
+corre pasa `docker run --user "$(id -u):$(id -g)"` (lo hace
+`run-memory-mcp-docker.sh` automaticamente) — el proceso corre con los
+mismos permisos que el usuario del host, sin tocar la ownership de nada.
+Validado con un UID de host arbitrario (2500, ni root ni el 1000 original):
+lectura/escritura sin `EACCES`, ownership del host verificada igual antes y
+despues.
+
+**Wrapper Docker para local/WSL (2026-09-12):** `.claude/bin/run-memory-mcp-docker.sh`
+es el equivalente a `run-memory-mcp.sh` pero corriendo la imagen del punto
+anterior en vez de `npx` directo. Auto-resuelve su ubicacion (mismo patron
+`BASH_SOURCE` que `run-memory-mcp.sh`), rebuildea la imagen solo si el
+Dockerfile cambio (hash cacheado en
+`.claude/docker/.image.stamp`, gitignoreado), y monta el `.claude/memory/`
+real del repo como `/data` pasando `--user "$(id -u):$(id -g)"` (ver entrada
+de ownership mas abajo). Probado de punta a punta simulando exactamente
+como lo invocaria `.mcp.json` (`bash .claude/bin/run-memory-mcp-docker.sh`
+desde la raiz, handshake `initialize` + `read_graph` por stdin): cargo
+correctamente una entidad real del `knowledge-graph.jsonl` de este repo sin
+modificarlo, y se confirmo por separado que un cambio de hash SI dispara un
+rebuild (fallo solo por falta de red en el sandbox de prueba, no por logica
+del script). Para usarlo en una maquina local/WSL con Docker corriendo,
+cambiar en `.mcp.json` el `args` de la entry `"memory"` de
+`.claude/bin/run-memory-mcp.sh` a `.claude/bin/run-memory-mcp-docker.sh` —
+no se cambia por defecto porque el harness remoto no garantiza un daemon de
+Docker disponible al arrancar la sesion.
+
+## Manifiesto de bots NARAKIA y skill de dockerizacion (2026-09-12)
+
+- `bots/manifest-narakia.md`: manifiesto versionado de los 4 bots de Make
+  (Lucrecia, Natalia, Megan, Paula), con datos VERIFICADOS contra la API real
+  de Make (`mcp__Make__scenarios_get`) — modelo, prompt de sistema completo,
+  fecha de ultima edicion, estado activo. Incluye riesgos detectados en el
+  blueprint real (sin sandboxing de input, link de pago hardcodeado en el
+  prompt de Paula, reglas de marca duplicadas en 4 lugares).
+- `.claude/skills/mcp-dockerize/SKILL.md`: playbook reutilizable para
+  contenedorizar cualquier MCP `command`/stdio de este repo (o de otro repo
+  de Estudio Oro), extraido de los bugs reales encontrados al dockerizar el
+  server de memoria (PRs #12/#13): chown en build time no sirve contra un
+  bind mount, COPY resuelve contra el build context no contra la carpeta del
+  Dockerfile, volumen anonimo silencioso si falta el `-v`. Activarlo cuando
+  se pida dockerizar/contenedorizar otro MCP.
+- Auditoria de sandboxing (2026-09-12, ver seccion 4.1.2 y 4.3 del informe
+  de Docker): este repo solo controla el MCP `memory` — los ~40 conectores
+  de terceros de la cuenta se gestionan en Claude.ai, no en archivos de este
+  repo. Hallazgo real: los 4 bots NARAKIA se exponen como MCP tools
+  side-effecting ("EXECUTES the Make scenario immediately") — cualquier
+  sesion con el conector de Make activo puede disparar un mensaje real sin
+  confirmacion extra mas alla del permiso general de la herramienta.
