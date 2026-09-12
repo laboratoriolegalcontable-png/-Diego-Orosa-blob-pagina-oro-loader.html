@@ -123,3 +123,16 @@ Docker disponible al arrancar la sesion.
   immediately") — cualquier sesion con el conector de Make activo puede
   disparar un mensaje real sin confirmacion extra mas alla del permiso
   general de la herramienta.
+
+## Credenciales en Make sin scope por escenario (2026-09-13)
+
+`mcp__Make__keys_list` (team 2012148) confirma 6 credenciales guardadas en
+Make, todas con `visibility: "team"` (Make no soporta scope por escenario).
+La mas sensible, **"Supabase Service Role"** (bypassa RLS por completo),
+esta guardada sin ningun escenario activo usandola hoy (`scenarioUsages: []`)
+— queda disponible con un clic para cualquiera que edite un escenario nuevo
+en ese team. Otras 4 credenciales (Natalia OpenAI x2, Natalia WhatsApp,
+Whapi Bearer Token) tambien figuran sin uso activo, candidatas a huerfanas
+de una version anterior de los bots. Detalle completo y recomendacion en
+`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md`
+seccion 4.3 (checklist de gobierno, item de sandboxing/credenciales).
