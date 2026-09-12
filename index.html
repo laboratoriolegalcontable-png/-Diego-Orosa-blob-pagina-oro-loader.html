@@ -18,12 +18,10 @@
   paneles metálicos cepillados, remaches, luz cálida, portales
   circulares con estrellas (como una "space station lounge").
   ============================================================
-  [IMG-1] .hero            -> 2400x1350+ (interior nave espacial, metal cepillado, luces cálidas)
-  [IMG-2] .mission-banner  -> 2400x1200 (pasillo/estación metálica con holograma)
-  [IMG-3] .console-section -> 2400x1000 (sala de control, paneles remachados, monitores)
-  [IMG-4] .module-1        -> 1200x1400 (panel metálico vertical, luces ámbar)
-  [IMG-5] .module-2        -> 1200x1400 (panel metálico vertical, luces frías)
-  [IMG-6] .cta-section     -> 2400x1400 (cierre: portal circular con estrellas)
+  [IMG-1] .hero            -> assets/hero-bg.jpg (generada por IA) ✅ cargada
+  [IMG-2] .mission-banner  -> assets/mission-bg.jpg (generada por IA) ✅ cargada
+  [IMG-3] .console-section -> 2400x1000 (sala de control, paneles remachados, monitores) — PENDIENTE, sin créditos de generación al momento de crear esta versión
+  [IMG-6] .cta-section     -> 2400x1400 (cierre: portal circular con estrellas) — PENDIENTE, sin créditos de generación al momento de crear esta versión
 -->
 
 <style>
@@ -374,12 +372,14 @@
     display:flex;
     flex-direction:column;
     justify-content:flex-end;
-    /* [IMG-1] Reemplazar por: background-image:url('tu-imagen.jpg'); (foto real: curvatura planetaria / interior nave) */
+    /* [IMG-1] imagen generada por IA, acorde al hero */
     background:
-      linear-gradient(180deg, transparent 45%, rgba(3,4,10,.75) 100%),
-      radial-gradient(ellipse 70% 55% at 50% -5%, rgba(182,162,232,.12), transparent 60%),
-      radial-gradient(ellipse 60% 45% at 85% 95%, rgba(143,179,201,.12), transparent 60%),
-      rgba(10,11,13,.12);
+      linear-gradient(180deg, transparent 45%, rgba(3,4,10,.85) 100%),
+      radial-gradient(ellipse 70% 55% at 50% -5%, rgba(182,162,232,.15), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 85% 95%, rgba(143,179,201,.15), transparent 60%),
+      url('assets/hero-bg.jpg');
+    background-size:cover;
+    background-position:center;
     border-bottom:1px solid var(--line);
     overflow:hidden;
   }
@@ -643,12 +643,14 @@
     min-height:78vh;
     display:flex;
     align-items:center;
-    /* [IMG-2] Reemplazar por: background-image:url('tu-imagen.jpg'); */
+    /* [IMG-2] imagen generada por IA, acorde al banner de misión */
     background:
-      linear-gradient(100deg, rgba(10,11,13,.85) 20%, rgba(10,11,13,.45) 78%),
+      linear-gradient(100deg, rgba(10,11,13,.88) 20%, rgba(10,11,13,.5) 78%),
       radial-gradient(circle at 80% 30%, rgba(182,162,232,.18), transparent 55%),
       radial-gradient(circle at 30% 80%, rgba(143,179,201,.18), transparent 55%),
-      rgba(16,18,21,.55);
+      url('assets/mission-bg.jpg');
+    background-size:cover;
+    background-position:center;
     border-top:1px solid var(--line);
     border-bottom:1px solid var(--line);
     z-index:1;
