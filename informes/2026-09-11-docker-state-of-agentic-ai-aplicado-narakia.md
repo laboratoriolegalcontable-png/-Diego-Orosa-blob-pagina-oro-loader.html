@@ -37,7 +37,7 @@ Este CLAUDE.md ya tiene tres "bugs confirmados" sobre el servidor MCP de memoria
 ## 4. Recomendaciones concretas para Estudio Oro / NARAKIA
 
 ### 4.1 Memoria persistente y MCP propios (prioridad alta)
-1. **Contenerizar el wrapper de memoria.** Hoy `run-memory-mcp.sh` resuelve su ruta vía `BASH_SOURCE` porque el harness reubica el repo. Empaquetarlo en una imagen Docker con la ruta fija adentro (`/app/.claude/memory/knowledge-graph.jsonl` como volumen montado) elimina esa clase entera de bug — es exactamente el patrón "containers como sustrato" que el 94% de las orgs ya usa.
+1. **Contenerizar el wrapper de memoria.** Hoy `run-memory-mcp.sh` resuelve su ruta vía `BASH_SOURCE` porque el harness reubica el repo. Empaquetarlo en una imagen Docker con la ruta fija adentro (`/data/knowledge-graph.jsonl` como volumen montado) elimina esa clase entera de bug — es exactamente el patrón "containers como sustrato" que el 94% de las orgs ya usa.
 2. **Sandboxing explícito** para cualquier MCP nuevo que Diego conecte (especialmente los que tienen `execute_sql`, `run_command`, o acceso a Supabase/Make en producción — Base44, Neon, Supabase MCP). No correrlos con las mismas credenciales que la sesión interactiva.
 3. **Versionar y firmar el knowledge-graph.jsonl** antes de cada commit relevante (ya se hace vía git, que cumple parcialmente el rol de "provenance tracking" que el reporte pide para agentes — pero falta un `CHANGELOG` corto por entidad crítica: causa CCC 28.979/2020, datos fiscales, credenciales de infraestructura).
 
@@ -61,9 +61,24 @@ Basado en la sección "Next steps for leading companies" del reporte, checklist 
 - No multiplicar MCPs/bots sin un registro central — es la causa directa de la "orchestration sprawl" que el 48% de las orgs cita como problema #1.
 - No tratar la corrección de bugs de infraestructura (como los 3 fixes de `MEMORY_FILE_PATH` ya documentados) como hechos aislados — son síntoma de un patrón de industria conocido, y la solución de fondo (contenerizar) ya está identificada arriba.
 
-## 6. Próximo paso sugerido
+## 6. Próximo paso sugerido — HECHO (2026-09-12, corregido tras review de `cubic`)
 
-Si Diego da luz verde: abrir un PR separado que contenerice `run-memory-mcp.sh` (Dockerfile mínimo + volumen para `knowledge-graph.jsonl`) como prueba de concepto del punto 4.1. [VERIFICAR CON EQUIPO TÉCNICO] si el harness de Claude Code on the web soporta correr MCP servers `command` dentro de un contenedor propio en este entorno remoto, o si esa migración solo aplica al entorno local/WSL descrito en `informes/2026-08-22-arquitectura-memoria-distribuida-wsl.md`.
+Se agregó `.claude/docker/memory-mcp.Dockerfile`: imagen que fija la versión del paquete npm `@modelcontextprotocol/server-memory` (2026.8.31, verificada contra el registry de npm) y corre el server MCP como usuario no-root (`node`) — elimina de raíz la clase de bug de rutas relativas que motivó los 3 fixes de `MEMORY_FILE_PATH` documentados en `CLAUDE.md`.
+
+**Cómo usarla — el bind mount NO es opcional:**
+
+```
+docker build -f .claude/docker/memory-mcp.Dockerfile -t oro-memory-mcp .
+docker run -i --rm -v "$(pwd)/.claude/memory:/data" oro-memory-mcp
+```
+
+Si se corre `docker run` **sin** el `-v "$(pwd)/.claude/memory:/data"`, Docker crea un volumen anónimo vacío: el `knowledge-graph.jsonl` real de este repo no se carga, y todo lo que el agente escriba durante esa sesión se pierde al borrar el contenedor — exactamente el mismo tipo de pérdida silenciosa de memoria que el Bug #2 de `MEMORY_FILE_PATH` ya causó una vez. `$(pwd)` asume que el comando se corre desde la raíz del repo.
+
+**Corrección de ownership (hallazgo real de `cubic` en PR #12):** la primera versión de este Dockerfile hacía `chown -R node:node /data` solo en build time, lo cual no sirve de nada contra un bind mount — la ownership del directorio del host (`.claude/memory` es del usuario `root`/uid 0 en este entorno, no uid 1000) pisa lo que la imagen haya hecho, y el proceso `node` se hubiera encontrado con `EACCES` al intentar escribir. Se corrigió agregando `.claude/docker/entrypoint.sh`: el contenedor arranca como root, corrige el dueño de `/data` en cada arranque (así funciona sin importar qué UID tenga el directorio del host), y recién ahí baja privilegios a `node` vía `su-exec` antes de ejecutar el server MCP real — el proceso que efectivamente habla el protocolo nunca corre como root.
+
+Validado localmente con `dockerd` + `docker build` + un handshake MCP real (`initialize` por stdin) — respondió correctamente, el server corrió como `uid=1000(node)`, y se confirmó que el bind mount con un directorio de host propiedad de `root` se corrige solo al arrancar.
+
+[VERIFICAR CON EQUIPO TÉCNICO] sigue pendiente: si el harness de Claude Code on the web soporta correr MCP servers `command` invocando `docker run` dentro de este entorno remoto (probablemente no — el entorno remoto ya es efímero y aislado por sesión), o si esta imagen aplica solo al entorno local/WSL descrito en `informes/2026-08-22-arquitectura-memoria-distribuida-wsl.md`. Mientras eso no se confirme, `.mcp.json` sigue apuntando a `run-memory-mcp.sh` sin cambios — este Dockerfile es una alternativa disponible, no un reemplazo forzado.
 
 ---
 *Fuente: Docker, "The State of Agentic AI Report" (PDF adjuntado por el usuario, ~313KB, 27 páginas). Metodología: 805 encuestados, panel global online, IT decision-makers/DevOps/App Devs, Q1-Q2 2026 (ver Apéndice del reporte original para el detalle completo de metodología).*
