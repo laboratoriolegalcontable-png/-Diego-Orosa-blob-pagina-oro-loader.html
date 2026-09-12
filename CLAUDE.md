@@ -57,3 +57,21 @@ MCP `initialize`) validados localmente. `.mcp.json` sigue usando
 entornos que la soporten (local/WSL), no un reemplazo automatico, porque
 falta confirmar si el harness de Claude Code on the web permite correr un
 MCP `command` que a su vez invoque `docker run` dentro de esta sesion remota.
+
+**Wrapper Docker para local/WSL (2026-09-12):** `.claude/bin/run-memory-mcp-docker.sh`
+es el equivalente a `run-memory-mcp.sh` pero corriendo la imagen del punto
+anterior en vez de `npx` directo. Auto-resuelve su ubicacion (mismo patron
+`BASH_SOURCE` que `run-memory-mcp.sh`), rebuildea la imagen solo si el
+Dockerfile/entrypoint cambiaron (hash cacheado en
+`.claude/docker/.image.stamp`, gitignoreado), y monta el `.claude/memory/`
+real del repo como `/data`. Probado de punta a punta simulando exactamente
+como lo invocaria `.mcp.json` (`bash .claude/bin/run-memory-mcp-docker.sh`
+desde la raiz, handshake `initialize` + `read_graph` por stdin): cargo
+correctamente una entidad real del `knowledge-graph.jsonl` de este repo sin
+modificarlo, y se confirmo por separado que un cambio de hash SI dispara un
+rebuild (fallo solo por falta de red en el sandbox de prueba, no por logica
+del script). Para usarlo en una maquina local/WSL con Docker corriendo,
+cambiar en `.mcp.json` el `args` de la entry `"memory"` de
+`.claude/bin/run-memory-mcp.sh` a `.claude/bin/run-memory-mcp-docker.sh` —
+no se cambia por defecto porque el harness remoto no garantiza un daemon de
+Docker disponible al arrancar la sesion.

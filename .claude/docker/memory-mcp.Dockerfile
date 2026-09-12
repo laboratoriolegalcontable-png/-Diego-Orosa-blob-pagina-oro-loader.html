@@ -14,11 +14,22 @@
 #   - una unica ruta de datos (/data/knowledge-graph.jsonl) montada como volumen,
 #     eliminando de raiz la clase de bug de rutas relativas/BASH_SOURCE.
 #
-# IMPORTANTE — persistencia: para que el contenedor lea/escriba el
-# knowledge-graph.jsonl real de este repo (el que CLAUDE.md pide versionar
-# en git), hay que montarlo con un bind mount explicito. Sin el `-v` de abajo,
-# el contenedor usa un volumen anonimo vacio y la memoria existente no se
-# carga ni se persiste al repo:
+# USO RECOMENDADO — .claude/bin/run-memory-mcp-docker.sh: hace el build (solo
+# si el Dockerfile/entrypoint cambiaron, cacheado por hash) y el `docker run`
+# con el bind mount correcto, auto-resolviendo la ruta del repo igual que
+# run-memory-mcp.sh. Probado de punta a punta contra la memoria real de este
+# repo (ver CLAUDE.md, "Wrapper Docker para local/WSL"). Para usarlo desde
+# Claude Code en una maquina local/WSL con Docker corriendo, cambiar en
+# .mcp.json el `args` de la entry "memory" de `.claude/bin/run-memory-mcp.sh`
+# a `.claude/bin/run-memory-mcp-docker.sh` (no es el default: el harness
+# remoto de Claude Code on the web no garantiza un daemon de Docker
+# disponible al arrancar la sesion).
+#
+# IMPORTANTE — persistencia si se invoca `docker` a mano en vez del wrapper:
+# para que el contenedor lea/escriba el knowledge-graph.jsonl real de este
+# repo (el que CLAUDE.md pide versionar en git), hay que montarlo con un bind
+# mount explicito. Sin el `-v` de abajo, el contenedor usa un volumen anonimo
+# vacio y la memoria existente no se carga ni se persiste al repo:
 #
 #   docker build -f .claude/docker/memory-mcp.Dockerfile -t oro-memory-mcp .
 #   docker run -i --rm \
@@ -30,9 +41,7 @@
 # el comando de host todavia depende del directorio de trabajo).
 #
 # El servidor habla MCP por stdio, asi que SIEMPRE se corre con `-i` (stdin
-# interactivo) y sin `-t` (no es una TTY). Para usarlo desde Claude Code,
-# .mcp.json apuntaria a un wrapper que invoque el `docker run` de arriba en vez
-# de `bash .claude/bin/run-memory-mcp.sh` directo — ver nota en CLAUDE.md.
+# interactivo) y sin `-t` (no es una TTY).
 #
 # Version pinneada: 2026.8.31 era la ultima publicada en el registry de npm
 # al momento de escribir este Dockerfile (verificado contra
