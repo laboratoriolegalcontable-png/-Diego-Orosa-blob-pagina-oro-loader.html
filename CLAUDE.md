@@ -113,9 +113,12 @@ Docker disponible al arrancar la sesion.
   conexiones de terceros** de la cuenta (52 vía `ListConnectors` + GitHub,
   numero verificado con script, no la estimacion "~40" que se uso antes acá)
   se gestionan en Claude.ai, no en archivos de este repo. 5 hallazgos
-  concretos de solapamiento en ese informe (Neon/Supabase, 10 plataformas de
-  hosting, 5 canales de email, 5 herramientas de ads/SEO, 4 conectores sin
-  conexion aparente al negocio). Hallazgo real aparte: los 4 bots NARAKIA se
+  concretos, candidatos a revisar (NO todos son solapamiento a resolver: ver
+  el informe antes de desconectar nada) en ese informe — Neon/Supabase
+  cumplen roles distintos, produccion vs. preview/CI, pendiente confirmar si
+  el workflow de preview sigue vigente; 10 plataformas de hosting; 5 canales
+  de email; 5 herramientas de ads/SEO; 4 conectores sin proposito
+  documentado. Hallazgo real aparte: los 4 bots NARAKIA se
   exponen como MCP tools side-effecting ("EXECUTES the Make scenario
   immediately") — cualquier sesion con el conector de Make activo puede
   disparar un mensaje real sin confirmacion extra mas alla del permiso
