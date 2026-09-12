@@ -75,3 +75,26 @@ cambiar en `.mcp.json` el `args` de la entry `"memory"` de
 `.claude/bin/run-memory-mcp.sh` a `.claude/bin/run-memory-mcp-docker.sh` —
 no se cambia por defecto porque el harness remoto no garantiza un daemon de
 Docker disponible al arrancar la sesion.
+
+## Manifiesto de bots NARAKIA y skill de dockerizacion (2026-09-12)
+
+- `bots/manifest-narakia.md`: manifiesto versionado de los 4 bots de Make
+  (Lucrecia, Natalia, Megan, Paula), con datos VERIFICADOS contra la API real
+  de Make (`mcp__Make__scenarios_get`) — modelo, prompt de sistema completo,
+  fecha de ultima edicion, estado activo. Incluye riesgos detectados en el
+  blueprint real (sin sandboxing de input, link de pago hardcodeado en el
+  prompt de Paula, reglas de marca duplicadas en 4 lugares).
+- `.claude/skills/mcp-dockerize/SKILL.md`: playbook reutilizable para
+  contenedorizar cualquier MCP `command`/stdio de este repo (o de otro repo
+  de Estudio Oro), extraido de los bugs reales encontrados al dockerizar el
+  server de memoria (PRs #12/#13): chown en build time no sirve contra un
+  bind mount, COPY resuelve contra el build context no contra la carpeta del
+  Dockerfile, volumen anonimo silencioso si falta el `-v`. Activarlo cuando
+  se pida dockerizar/contenedorizar otro MCP.
+- Auditoria de sandboxing (2026-09-12, ver seccion 4.1.2 y 4.3 del informe
+  de Docker): este repo solo controla el MCP `memory` — los ~40 conectores
+  de terceros de la cuenta se gestionan en Claude.ai, no en archivos de este
+  repo. Hallazgo real: los 4 bots NARAKIA se exponen como MCP tools
+  side-effecting ("EXECUTES the Make scenario immediately") — cualquier
+  sesion con el conector de Make activo puede disparar un mensaje real sin
+  confirmacion extra mas alla del permiso general de la herramienta.
