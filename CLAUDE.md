@@ -136,3 +136,63 @@ Whapi Bearer Token) tambien figuran sin uso activo, candidatas a huerfanas
 de una version anterior de los bots. Detalle completo y recomendacion en
 `informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md`
 seccion 4.3 (checklist de gobierno, item de sandboxing/credenciales).
+
+## Gateway único de MCP — MVP probado, no default todavia (2026-09-12)
+
+`.claude/gateway/mcp-gateway.mjs` es un servidor MCP `command`/stdio propio
+(sin dependencias externas, solo Node) que agrega otros servidores MCP
+`command`/stdio de este repo declarados en `.claude/gateway/gateway.config.json`
+— hoy solo `memory` — bajo una unica entry de `.mcp.json`, con las tools de
+cada backend expuestas como `<backend>__<tool>` (ej. `memory__read_graph`).
+Responde al punto de gobierno pendiente de
+`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md` seccion
+4.3 ("orquestacion estandar / gateway unico... en vez de conectar cada
+servicio suelto") — ver `.claude/gateway/README.md` para el detalle completo
+de diseño, como agregar un backend nuevo, y el checklist de pruebas
+(handshake real via stdin/stdout, backup+diff del `knowledge-graph.jsonl`
+real antes/despues, prueba de escritura solo contra una copia en `/tmp`,
+metodos no soportados, cierre limpio sin dejar procesos huerfanos).
+
+**No reemplaza el `.mcp.json` actual todavia**: con un solo backend agregado
+no aporta nada por si solo (mismo criterio que la version Docker de
+`memory` — ver seccion de arriba); el valor aparece con el segundo backend.
+Queda documentado como infraestructura lista, activable cambiando la entry
+`"memory"` de `.mcp.json` por `"gateway"` cuando haga falta.
+
+**Bug real encontrado y corregido durante la prueba** (condicion de carrera):
+la primera version marcaba "backends inicializados" con un booleano puesto
+en `true` ANTES de esperar la inicializacion real de los backends — un
+mensaje concurrente (`tools/list` llegando justo despues de
+`notifications/initialized`) pasaba de largo contra una lista de tools
+todavia vacia. Se corrigio guardando la `Promise` en curso en vez de un
+booleano.
+
+**Limitacion real encontrada, NO es un bug del gateway**: se detecto que
+pipelinear una escritura (`create_entities`) seguida inmediatamente de una
+lectura (`read_graph`) contra `memory`, sin esperar la respuesta de la
+escritura, puede devolver el estado *anterior* — y las respuestas pueden
+llegar fuera de orden. Se verifico reproduciendo exactamente lo mismo contra
+`@modelcontextprotocol/server-memory` (v0.6.3) directo por stdio, sin el
+gateway de por medio: identico resultado. Es una condicion de carrera del
+paquete upstream (no serializa sus propias lecturas/escrituras), no algo
+introducido por el gateway ni algo que el gateway deba "arreglar" cambiando
+la semantica del backend — documentado en `.claude/gateway/README.md`.
+
+## Limpieza de credenciales huerfanas en Make — ejecutada (2026-09-12)
+
+Remediacion del hallazgo de la seccion "Credenciales en Make sin scope por
+escenario" de arriba. Se re-verifico `mcp__Make__keys_list` (team 2012148)
+inmediatamente antes de actuar (mismas 5 credenciales sin uso, sin cambios
+desde la auditoria original) y, con confirmacion explicita del Doctor sobre
+el alcance exacto, se borraron las 5 vía `mcp__Make__keys_delete`: Natalia
+OpenAI API Key (x2, ids 151756/151768), Natalia WhatsApp API Key (151773),
+Whapi Bearer Token (198695) y **Supabase Service Role** (198692) — el Doctor
+opto por borrarla directamente en vez de solo evaluar un reemplazo por
+`anon key` + RLS, dado que no tenia uso real. `keys_list` post-borrado
+confirma que queda una sola credencial en la cuenta: "Anthropic Claude API
+Key" (198696), en uso activo en el escenario "Narakia — Claude API +
+web_fetch Legal". Si en el futuro algun escenario de Make necesita acceso
+administrativo a Supabase, recrear la credencial en ese momento con el
+scope minimo que corresponda a ese uso concreto — no un service role
+guardado "por si acaso" sin escenario que lo use. Checklist actualizado en
+`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md`.
