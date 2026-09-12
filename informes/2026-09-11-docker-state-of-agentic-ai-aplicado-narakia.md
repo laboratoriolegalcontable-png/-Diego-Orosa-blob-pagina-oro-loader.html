@@ -61,9 +61,13 @@ Basado en la sección "Next steps for leading companies" del reporte, checklist 
 - No multiplicar MCPs/bots sin un registro central — es la causa directa de la "orchestration sprawl" que el 48% de las orgs cita como problema #1.
 - No tratar la corrección de bugs de infraestructura (como los 3 fixes de `MEMORY_FILE_PATH` ya documentados) como hechos aislados — son síntoma de un patrón de industria conocido, y la solución de fondo (contenerizar) ya está identificada arriba.
 
-## 6. Próximo paso sugerido
+## 6. Próximo paso sugerido — HECHO (2026-09-12)
 
-Si Diego da luz verde: abrir un PR separado que contenerice `run-memory-mcp.sh` (Dockerfile mínimo + volumen para `knowledge-graph.jsonl`) como prueba de concepto del punto 4.1. [VERIFICAR CON EQUIPO TÉCNICO] si el harness de Claude Code on the web soporta correr MCP servers `command` dentro de un contenedor propio en este entorno remoto, o si esa migración solo aplica al entorno local/WSL descrito en `informes/2026-08-22-arquitectura-memoria-distribuida-wsl.md`.
+Se agregó `.claude/docker/memory-mcp.Dockerfile`: imagen que fija la versión del paquete npm `@modelcontextprotocol/server-memory` (2026.8.31, verificada contra el registry de npm), corre como usuario no-root (`node`), y monta `/data/knowledge-graph.jsonl` como volumen — elimina de raíz la clase de bug de rutas relativas que motivó los 3 fixes de `MEMORY_FILE_PATH` documentados en `CLAUDE.md`.
+
+Validado localmente con `dockerd` + `docker build` + un handshake MCP real (`initialize` por stdin) — respondió correctamente y el proceso corre con `uid=1000(node)`, no root.
+
+[VERIFICAR CON EQUIPO TÉCNICO] sigue pendiente: si el harness de Claude Code on the web soporta correr MCP servers `command` invocando `docker run` dentro de este entorno remoto (probablemente no — el entorno remoto ya es efímero y aislado por sesión), o si esta imagen aplica solo al entorno local/WSL descrito en `informes/2026-08-22-arquitectura-memoria-distribuida-wsl.md`. Mientras eso no se confirme, `.mcp.json` sigue apuntando a `run-memory-mcp.sh` sin cambios — este Dockerfile es una alternativa disponible, no un reemplazo forzado.
 
 ---
 *Fuente: Docker, "The State of Agentic AI Report" (PDF adjuntado por el usuario, ~313KB, 27 páginas). Metodología: 805 encuestados, panel global online, IT decision-makers/DevOps/App Devs, Q1-Q2 2026 (ver Apéndice del reporte original para el detalle completo de metodología).*

@@ -1,0 +1,6 @@
+.git
+informes/
+*.pdf
+*.md
+!CLAUDE.md
+.claude/memory/

@@ -47,6 +47,13 @@ arriba no son un caso aislado — son el mismo patron que describe el reporte
 mayoria de los equipos opera "en modo salto de fe" (85% conoce MCP, pero 42%
 sufre sobrecarga operativa y 41% problemas de instalacion/configuracion). Ver
 analisis completo y recomendaciones aplicadas a NARAKIA/Estudio Oro en
-`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md` —
-incluye propuesta de contenerizar `run-memory-mcp.sh` para eliminar de raiz
-esta clase de bug de rutas.
+`informes/2026-09-11-docker-state-of-agentic-ai-aplicado-narakia.md`.
+
+**Dockerfile del memory-mcp (2026-09-12):** `.claude/docker/memory-mcp.Dockerfile`
+contenedoriza el server de memoria (version de npm pinneada, usuario no-root,
+`/data/knowledge-graph.jsonl` como volumen) — build y smoke test (handshake
+MCP `initialize`) validados localmente. `.mcp.json` sigue usando
+`run-memory-mcp.sh` sin cambios: esta imagen es una alternativa para
+entornos que la soporten (local/WSL), no un reemplazo automatico, porque
+falta confirmar si el harness de Claude Code on the web permite correr un
+MCP `command` que a su vez invoque `docker run` dentro de esta sesion remota.
