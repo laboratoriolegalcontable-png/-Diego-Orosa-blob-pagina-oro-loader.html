@@ -19,7 +19,9 @@
   circulares con estrellas (como una "space station lounge").
   ============================================================
   [IMG-1] .hero            -> assets/hero-bg.jpg (generada por IA) ✅ cargada
-  [IMG-2] .mission-banner  -> assets/mission-bg.jpg (generada por IA) ✅ cargada
+  [IMG-2] .mission-banner  -> PENDIENTE. Se removió assets/mission-bg.jpg (mostraba
+                              un elemento incorrecto, tipo "zapatos"/piernas). Queda
+                              con gradiente sólido hasta generar un reemplazo correcto.
   [IMG-3] .console-section -> 2400x1000 (sala de control, paneles remachados, monitores) — PENDIENTE, sin créditos de generación al momento de crear esta versión
   [IMG-6] .cta-section     -> 2400x1400 (cierre: portal circular con estrellas) — PENDIENTE, sin créditos de generación al momento de crear esta versión
 -->
@@ -643,12 +645,13 @@
     min-height:78vh;
     display:flex;
     align-items:center;
-    /* [IMG-2] imagen generada por IA, acorde al banner de misión */
+    /* [IMG-2] PENDIENTE: se removió assets/mission-bg.jpg (mostraba un elemento incorrecto tipo "zapatos"); reemplazar por una imagen nueva cuando haya crédito de generación disponible */
     background:
-      linear-gradient(100deg, rgba(10,11,13,.88) 20%, rgba(10,11,13,.5) 78%),
-      radial-gradient(circle at 80% 30%, rgba(182,162,232,.18), transparent 55%),
-      radial-gradient(circle at 30% 80%, rgba(143,179,201,.18), transparent 55%),
-      url('assets/mission-bg.jpg');
+      linear-gradient(100deg, rgba(10,11,13,.95) 20%, rgba(10,11,13,.75) 78%),
+      radial-gradient(circle at 80% 30%, rgba(182,162,232,.28), transparent 55%),
+      radial-gradient(circle at 30% 80%, rgba(143,179,201,.28), transparent 55%),
+      radial-gradient(circle at 50% 100%, rgba(182,162,232,.15), transparent 60%),
+      #0a0b0d;
     background-size:cover;
     background-position:center;
     border-top:1px solid var(--line);
