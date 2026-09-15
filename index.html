@@ -19,9 +19,12 @@
   circulares con estrellas (como una "space station lounge").
   ============================================================
   [IMG-1] .hero            -> assets/hero-bg.jpg (generada por IA) ✅ cargada
-  [IMG-2] .mission-banner  -> PENDIENTE. Se removió assets/mission-bg.jpg (mostraba
-                              un elemento incorrecto, tipo "zapatos"/piernas). Queda
-                              con gradiente sólido hasta generar un reemplazo correcto.
+  [IMG-2] .mission-banner  -> Reemplazada por ilustración propia (holograma SVG
+                              animado, .mission-art) — assets/mission-bg.jpg mostraba
+                              un elemento incorrecto, tipo "zapatos"/piernas, y se quitó.
+                              Reemplazar por una foto generada por IA cuando haya
+                              crédito disponible (Gamma sin crédito / ElevenLabs sin
+                              scope de imagen al momento de crear esta versión).
   [IMG-3] .console-section -> 2400x1000 (sala de control, paneles remachados, monitores) — PENDIENTE, sin créditos de generación al momento de crear esta versión
   [IMG-6] .cta-section     -> 2400x1400 (cierre: portal circular con estrellas) — PENDIENTE, sin créditos de generación al momento de crear esta versión
 -->
@@ -645,7 +648,8 @@
     min-height:78vh;
     display:flex;
     align-items:center;
-    /* [IMG-2] PENDIENTE: se removió assets/mission-bg.jpg (mostraba un elemento incorrecto tipo "zapatos"); reemplazar por una imagen nueva cuando haya crédito de generación disponible */
+    overflow:hidden;
+    /* [IMG-2] assets/mission-bg.jpg removida (mostraba un elemento incorrecto tipo "zapatos"). En su lugar: fondo de gradiente + ilustración propia .mission-art (holograma SVG) */
     background:
       linear-gradient(100deg, rgba(10,11,13,.95) 20%, rgba(10,11,13,.75) 78%),
       radial-gradient(circle at 80% 30%, rgba(182,162,232,.28), transparent 55%),
@@ -658,6 +662,34 @@
     border-bottom:1px solid var(--line);
     z-index:1;
   }
+  .mission-art{
+    position:absolute;
+    right:-8%;
+    top:50%;
+    transform:translateY(-50%);
+    width:min(680px, 60%);
+    aspect-ratio:1/1;
+    opacity:.85;
+    pointer-events:none;
+    z-index:0;
+    mix-blend-mode:screen;
+  }
+  .mission-art .ring-outer{
+    transform-origin:200px 200px;
+    animation:spin-slow 60s linear infinite;
+  }
+  .mission-art .ring-inner{
+    transform-origin:200px 200px;
+    animation:spin-slow-rev 44s linear infinite;
+  }
+  .mission-art .core{
+    transform-origin:200px 200px;
+    animation:core-pulse 4.5s ease-in-out infinite;
+  }
+  @keyframes spin-slow{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @keyframes spin-slow-rev{ from{transform:rotate(360deg);} to{transform:rotate(0deg);} }
+  @keyframes core-pulse{ 0%,100%{opacity:.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (max-width:900px){ .mission-art{opacity:.5; width:80%; right:-15%;} }
   .mission-content{max-width:640px; padding-block:100px;}
   .mission-content .label{display:block; margin-bottom:24px;}
   .mission-content h2{
@@ -1294,6 +1326,51 @@
 </section>
 
 <section class="mission-banner">
+  <!-- [IMG-2] Ilustración propia (holograma SVG animado) — reemplaza a assets/mission-bg.jpg -->
+  <svg class="mission-art" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f3edff" stop-opacity="1"/>
+        <stop offset="35%" stop-color="#b6a2e8" stop-opacity=".9"/>
+        <stop offset="70%" stop-color="#8fb3c9" stop-opacity=".35"/>
+        <stop offset="100%" stop-color="#8fb3c9" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#b6a2e8"/>
+        <stop offset="100%" stop-color="#8fb3c9"/>
+      </linearGradient>
+    </defs>
+
+    <g class="ring-outer">
+      <circle cx="200" cy="200" r="188" fill="none" stroke="url(#ringGrad)" stroke-width="1" stroke-dasharray="2 10" opacity=".55"/>
+      <circle cx="200" cy="200" r="150" fill="none" stroke="url(#ringGrad)" stroke-width="1.5" stroke-dasharray="1 4" opacity=".4"/>
+      <circle cx="200" cy="200" r="150" fill="none" stroke="#b6a2e8" stroke-width="2" stroke-dasharray="60 900" opacity=".9"/>
+      <circle cx="371" cy="200" r="4" fill="#b6a2e8"/>
+      <circle cx="29" cy="200" r="3" fill="#8fb3c9"/>
+      <circle cx="200" cy="29" r="3" fill="#8fb3c9"/>
+      <circle cx="200" cy="371" r="4" fill="#b6a2e8"/>
+      <line x1="200" y1="12" x2="200" y2="46" stroke="#b6a2e8" stroke-width="1.5" opacity=".7"/>
+      <line x1="200" y1="354" x2="200" y2="388" stroke="#b6a2e8" stroke-width="1.5" opacity=".7"/>
+    </g>
+
+    <g class="ring-inner">
+      <circle cx="200" cy="200" r="112" fill="none" stroke="#8fb3c9" stroke-width="1" opacity=".45"/>
+      <polygon points="200,108 279,154 279,246 200,292 121,246 121,154" fill="none" stroke="#b6a2e8" stroke-width="1" opacity=".5"/>
+      <circle cx="279" cy="154" r="4" fill="#f3edff"/>
+      <circle cx="279" cy="246" r="3" fill="#b6a2e8"/>
+      <circle cx="121" cy="154" r="3" fill="#b6a2e8"/>
+      <circle cx="121" cy="246" r="4" fill="#f3edff"/>
+      <circle cx="200" cy="108" r="3" fill="#8fb3c9"/>
+      <circle cx="200" cy="292" r="3" fill="#8fb3c9"/>
+    </g>
+
+    <g class="core">
+      <circle cx="200" cy="200" r="86" fill="url(#coreGlow)"/>
+      <circle cx="200" cy="200" r="34" fill="none" stroke="#f3edff" stroke-width="1.5" opacity=".8"/>
+      <circle cx="200" cy="200" r="14" fill="#f3edff"/>
+    </g>
+  </svg>
+
   <div class="wrap">
     <div class="mission-content">
       <span class="label">// MISIÓN SOLOGINT</span>
