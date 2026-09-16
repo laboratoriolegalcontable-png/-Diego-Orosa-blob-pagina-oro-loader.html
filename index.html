@@ -1051,22 +1051,49 @@
   .footer-bottom .legal-links{display:flex; gap:24px; flex-wrap:wrap;}
 
   /* ---------- FLOATING BOT WIDGET ---------- */
-  .float-bot-btn{
+  .float-stack{
     position:fixed;
     bottom:28px; right:28px;
+    z-index:300;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:14px;
+  }
+  .float-bot-btn, .float-wa-btn{
     width:64px; height:64px;
     border-radius:50%;
-    background:var(--gradient-metal);
     display:flex; align-items:center; justify-content:center;
     font-size:26px;
     cursor:pointer;
     box-shadow:0 4px 0 rgba(0,0,0,.4), 0 14px 34px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.7);
-    z-index:300;
     border:none;
+    text-decoration:none;
+    position:relative;
   }
+  .float-bot-btn{ background:var(--gradient-metal); }
+  .float-wa-btn{ background:#25D366; }
+  .float-tip{
+    position:absolute;
+    right:76px; top:50%; transform:translateY(-50%);
+    background:#101114;
+    color:#eef1f6;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.3px;
+    white-space:nowrap;
+    padding:7px 12px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.12);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .float-bot-btn:hover .float-tip, .float-wa-btn:hover .float-tip{ opacity:1; }
+  @media (max-width:640px){ .float-tip{display:none;} }
   .float-bot-panel{
     position:fixed;
-    bottom:104px; right:28px;
+    bottom:182px; right:28px;
     width:360px;
     max-width:calc(100vw - 40px);
     background:linear-gradient(180deg, #1c1e22, #101114);
@@ -1411,7 +1438,7 @@
     <div class="section-head center">
       <span class="label">// TERMINAL EN VIVO</span>
       <h2>Natalia, operando ahora mismo</h2>
-      <p>Esta terminal reproduce una conversación real de cómo Natalia, el agente de IA de Sologint, atiende, resuelve objeciones y agenda una demo — en tiempo real.</p>
+      <p>Natalia es humana, empática y una gran vendedora — no una máquina de respuestas armadas. Conoce todo lo que Sologint vende, hace demos en vivo de cada programa y te asesora sobre qué te conviene sumar. Esta terminal muestra cómo atiende y resuelve objeciones en tiempo real; abajo podés escribirle de verdad, por acá o por WhatsApp.</p>
     </div>
 
     <div class="console-frame hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
@@ -1421,13 +1448,62 @@
       </div>
       <div class="console-body" id="chatBody"></div>
       <div class="console-foot">
-        <input type="text" placeholder="> escribir mensaje..." disabled>
-        <button type="button" disabled>Enviar</button>
+        <input type="text" placeholder="> escribí tu pregunta a Natalia..." id="consoleInput">
+        <button type="button" id="consoleSend">Enviar</button>
       </div>
     </div>
-    <p class="console-caption">Simulación en tiempo real · Natalia responde en menos de 2 segundos</p>
-    <div style="text-align:center; margin-top:28px;">
+    <p class="console-caption">Probá el chat arriba · Natalia responde en menos de 2 segundos</p>
+    <div style="text-align:center; margin-top:28px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
       <a href="https://wa.me/5491138338018" target="_blank" rel="noopener" class="btn btn-primary">Hablar con Natalia por WhatsApp</a>
+      <button type="button" class="btn btn-ghost" id="openFloatFromConsole">Abrir chat web con Natalia</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="demos">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="label">// CATÁLOGO DE DEMOS</span>
+      <h2>Pedile a Natalia una demo en vivo</h2>
+      <p>Cada programa que vendemos tiene una demo real que Natalia te puede mostrar y explicar al detalle, por WhatsApp o en el chat web.</p>
+    </div>
+    <div class="features-grid">
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <span class="idx">01 · GESTIÓN</span>
+        <h3>Administrador PRO</h3>
+        <p>Panel único para administrar clientes, turnos, cobros y stock de tu negocio, con reportes automáticos y accesos por rol.</p>
+        <a href="#" class="link-arrow demo-cta" data-demo="Administrador PRO"><span class="dot-arrow">→</span> Pedir demo a Natalia</a>
+      </article>
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <span class="idx">02 · ATENCIÓN</span>
+        <h3>Recepción IA 360</h3>
+        <p>El bot que atiende WhatsApp, Instagram y tu web al mismo tiempo, con la misma memoria de cliente en los tres canales.</p>
+        <a href="#" class="link-arrow demo-cta" data-demo="Recepción IA 360"><span class="dot-arrow">→</span> Pedir demo a Natalia</a>
+      </article>
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <span class="idx">03 · VENTAS</span>
+        <h3>Tienda Inteligente</h3>
+        <p>E-commerce con un vendedor de IA integrado que recomienda productos, arma el carrito y cierra la venta por chat.</p>
+        <a href="#" class="link-arrow demo-cta" data-demo="Tienda Inteligente"><span class="dot-arrow">→</span> Pedir demo a Natalia</a>
+      </article>
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <span class="idx">04 · OPERACIONES</span>
+        <h3>Panel de Automatización</h3>
+        <p>Conecta tu CRM, calendario y planillas en un tablero donde ves cada proceso corriendo solo, en tiempo real.</p>
+        <a href="#" class="link-arrow demo-cta" data-demo="Panel de Automatización"><span class="dot-arrow">→</span> Pedir demo a Natalia</a>
+      </article>
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <span class="idx">05 · WEB</span>
+        <h3>Sitio &amp; Landing a Medida</h3>
+        <p>Tu página web o landing, diseñada y programada de cero, conectada desde el día uno a tu bot y tus sistemas.</p>
+        <a href="#" class="link-arrow demo-cta" data-demo="Sitio y Landing a Medida"><span class="dot-arrow">→</span> Pedir demo a Natalia</a>
+      </article>
+      <article class="feature-card hud-corners"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <span class="idx">06 · DATOS</span>
+        <h3>Reportes IA</h3>
+        <p>Informes automáticos de ventas y operación que se arman solos cada semana y te avisan qué necesita tu atención.</p>
+        <a href="#" class="link-arrow demo-cta" data-demo="Reportes IA"><span class="dot-arrow">→</span> Pedir demo a Natalia</a>
+      </article>
     </div>
   </div>
 </section>
@@ -1631,8 +1707,17 @@
   </div>
 </footer>
 
-<!-- Widget flotante del bot -->
-<button class="float-bot-btn" id="floatBotBtn" aria-label="Abrir chat">🤖</button>
+<!-- Widget flotante: dos formas de hablar con Natalia -->
+<div class="float-stack">
+  <a class="float-wa-btn" href="https://wa.me/5491138338018" target="_blank" rel="noopener" aria-label="Hablar con Natalia por WhatsApp">
+    <span class="float-tip">WhatsApp Business</span>
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10.1 9 9.6 7.7 9.4 7.2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-1 .9-1 2.3s1 2.6 1.1 2.8c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.3-.6-.3zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.6 21.5 10.3 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3.1-.4-4.5-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4 15.1 3.5 13.6 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5z"/></svg>
+  </a>
+  <button class="float-bot-btn" id="floatBotBtn" aria-label="Abrir chat web con Natalia">
+    <span class="float-tip">Chatear en la web</span>
+    🤖
+  </button>
+</div>
 <div class="float-bot-panel" id="floatBotPanel">
   <div class="console-bar">
     <div class="console-dots"><span></span><span></span><span></span></div>
@@ -1852,11 +1937,13 @@
     container.scrollTop = container.scrollHeight;
   }
 
+  let chatAutoplayActive = true;
   function typeSequence(containerId, script, loop){
     const container = document.getElementById(containerId);
     if(!container) return;
     let i = 0;
     function step(){
+      if(containerId === 'chatBody' && !chatAutoplayActive) return;
       if(i >= script.length){
         if(loop){ i = 0; container.innerHTML=''; setTimeout(step, 1600); }
         return;
@@ -1869,6 +1956,7 @@
 
       setTimeout(() => {
         cursor.remove();
+        if(containerId === 'chatBody' && !chatAutoplayActive) return;
         renderLine(container, script[i].who, script[i].text);
         i++;
         setTimeout(step, 1000);
@@ -1889,10 +1977,97 @@
     });
   });
 
+  /* ----------------------------------------------------------------
+     "Cerebro" de Natalia: demo interactiva basada en reglas (palabras
+     clave), NO una IA conectada en vivo. Cubre las preguntas más
+     comunes sobre lo que vende Sologint y siempre deriva a WhatsApp
+     para lo que necesita trato humano real. Ampliar esta lista es la
+     forma de "enseñarle" más cosas a Natalia en esta página.
+     ---------------------------------------------------------------- */
+  function natBrain(msgRaw){
+    const msg = msgRaw.toLowerCase();
+    const has = (...words) => words.some(w => msg.includes(w));
+
+    if(has('hola','buenas','buen dia','buenos dias','buenas tardes','buenas noches')){
+      return '¡Hola! 😊 Soy Natalia, de Sologint. Contame qué necesitás — ¿una web, un bot para WhatsApp o automatizar algo de tu negocio? — y te cuento cómo lo armamos.';
+    }
+    if(has('precio','costo','cuanto sale','cuánto sale','vale','presupuesto','cotiz')){
+      return 'El valor depende del alcance de cada proyecto, así que prefiero armarte una cotización real en vez de tirarte un número al aire. ¿Seguimos por WhatsApp? Ahí te preparo una propuesta a medida.';
+    }
+    if(has('administrador pro','administrador')){
+      return 'Administrador PRO es nuestro panel de gestión: clientes, turnos, cobros y stock en un solo lugar, con reportes automáticos. Te muestro una demo en vivo por WhatsApp cuando quieras.';
+    }
+    if(has('recepcion ia','recepción ia','omnicanal','instagram')){
+      return 'Recepción IA 360 atiende WhatsApp, Instagram y tu web al mismo tiempo, con la misma memoria del cliente en los tres canales. ¿Querés ver cómo respondería a tus clientes reales?';
+    }
+    if(has('tienda inteligente','ecommerce','e-commerce','tienda online')){
+      return 'Tienda Inteligente es un e-commerce con un vendedor de IA adentro: recomienda productos, arma el carrito y cierra la venta por chat. Te armo una demo con productos de tu rubro.';
+    }
+    if(has('panel de automatizacion','panel de automatización','automatizar','automatizacion','automatización')){
+      return 'El Panel de Automatización conecta tu CRM, calendario y planillas para que los procesos corran solos. Contame qué proceso te consume más tiempo hoy y te digo si se puede automatizar.';
+    }
+    if(has('reportes ia','reporte','informe','metricas','métricas')){
+      return 'Reportes IA arma informes de ventas y operación automáticamente cada semana, y te avisa qué necesita tu atención. ¿Qué te gustaría medir primero?';
+    }
+    if(has('sitio','landing','pagina web','página web','sitio web')){
+      return 'Diseñamos y programamos tu sitio o landing a medida, sin plantillas genéricas, y lo conectamos desde el día uno con tu bot y tus sistemas. ¿Ya tenés una web hoy o arrancamos de cero?';
+    }
+    if(has('bot','whatsapp','chatbot','agente de ia','agente ia')){
+      return 'Armamos bots de WhatsApp e IA que venden, atienden y agendan solos, las 24 horas, entrenados con la información real de tu negocio. ¿Para qué rubro sería?';
+    }
+    if(has('demo','probar','ver como funciona','ver cómo funciona')){
+      return 'Con gusto. Decime qué programa te interesa — Administrador PRO, Recepción IA 360, Tienda Inteligente, Panel de Automatización, Sitio a Medida o Reportes IA — y coordinamos la demo por WhatsApp.';
+    }
+    if(has('gracias')){
+      return '¡Un placer! Cualquier otra duda, seguimos por acá o por WhatsApp cuando quieras.';
+    }
+    if(has('sos un bot','eres un bot','sos real','sos humana','eres humana')){
+      return 'Soy Natalia, del equipo de Sologint — te acompaño yo o cualquiera del equipo, según lo que necesites. Para una charla más a fondo, seguimos por WhatsApp.';
+    }
+    return 'Buena pregunta — para darte una respuesta completa y a medida, prefiero seguir esta charla por WhatsApp, ¿te parece? Ahí te cuento con detalle y coordinamos una demo.';
+  }
+
+  function sendChatMessage(inputEl, bodyId){
+    const val = inputEl.value.trim();
+    if(!val) return;
+    if(bodyId === 'chatBody') chatAutoplayActive = false;
+    const container = document.getElementById(bodyId);
+    renderLine(container, 'user', val);
+    inputEl.value = '';
+
+    const cursor = document.createElement('div');
+    cursor.className = 'console-cursor';
+    cursor.innerHTML = '<span>procesando</span><span class="blinker"></span>';
+    container.appendChild(cursor);
+    container.scrollTop = container.scrollHeight;
+
+    setTimeout(() => {
+      cursor.remove();
+      renderLine(container, 'bot', natBrain(val));
+    }, 1000);
+  }
+
+  // ---- Consola principal (sección Natalia) ----
+  const consoleInput = document.getElementById('consoleInput');
+  const consoleSend = document.getElementById('consoleSend');
+  if(consoleInput && consoleSend){
+    consoleSend.addEventListener('click', () => sendChatMessage(consoleInput, 'chatBody'));
+    consoleInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendChatMessage(consoleInput, 'chatBody'); });
+  }
+
   // ---- Widget flotante ----
   const floatBotBtn = document.getElementById('floatBotBtn');
   const floatBotPanel = document.getElementById('floatBotPanel');
+  const floatChatBody = document.getElementById('floatChatBody');
   let floatStarted = false;
+
+  function openFloatChat(){
+    floatBotPanel.classList.add('open');
+    if(!floatStarted){
+      floatStarted = true;
+      typeSequence('floatChatBody', demoScript, false);
+    }
+  }
 
   floatBotBtn.addEventListener('click', () => {
     floatBotPanel.classList.toggle('open');
@@ -1902,30 +2077,34 @@
     }
   });
 
+  const openFloatFromConsole = document.getElementById('openFloatFromConsole');
+  if(openFloatFromConsole) openFloatFromConsole.addEventListener('click', openFloatChat);
+
   const floatInput = document.getElementById('floatInput');
   const floatSend = document.getElementById('floatSend');
-  const floatChatBody = document.getElementById('floatChatBody');
+  floatSend.addEventListener('click', () => sendChatMessage(floatInput, 'floatChatBody'));
+  floatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendChatMessage(floatInput, 'floatChatBody'); });
 
-  function sendFloatMessage(){
-    const val = floatInput.value.trim();
-    if(!val) return;
-    renderLine(floatChatBody, 'user', val);
-    floatInput.value = '';
-
-    const cursor = document.createElement('div');
-    cursor.className = 'console-cursor';
-    cursor.innerHTML = '<span>procesando</span><span class="blinker"></span>';
-    floatChatBody.appendChild(cursor);
-    floatChatBody.scrollTop = floatChatBody.scrollHeight;
-
-    setTimeout(() => {
-      cursor.remove();
-      renderLine(floatChatBody, 'bot', 'Gracias por tu mensaje. Un agente configurado con tu información va a responderte así de rápido, siempre. ¿Agendamos una demo?');
-    }, 1100);
-  }
-
-  floatSend.addEventListener('click', sendFloatMessage);
-  floatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendFloatMessage(); });
+  // ---- Tarjetas del catálogo de demos: piden la demo directo en el chat web ----
+  document.querySelectorAll('.demo-cta').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const demoName = btn.dataset.demo || 'este programa';
+      openFloatChat();
+      setTimeout(() => {
+        renderLine(floatChatBody, 'user', 'Quiero ver una demo de ' + demoName);
+        const cursor = document.createElement('div');
+        cursor.className = 'console-cursor';
+        cursor.innerHTML = '<span>procesando</span><span class="blinker"></span>';
+        floatChatBody.appendChild(cursor);
+        floatChatBody.scrollTop = floatChatBody.scrollHeight;
+        setTimeout(() => {
+          cursor.remove();
+          renderLine(floatChatBody, 'bot', natBrain(demoName));
+        }, 900);
+      }, 350);
+    });
+  });
 </script>
 
 </body>
