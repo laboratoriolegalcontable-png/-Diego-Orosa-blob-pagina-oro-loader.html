@@ -1093,7 +1093,7 @@
   @media (max-width:640px){ .float-tip{display:none;} }
   .float-bot-panel{
     position:fixed;
-    bottom:104px; right:28px;
+    bottom:182px; right:28px;
     width:360px;
     max-width:calc(100vw - 40px);
     background:linear-gradient(180deg, #1c1e22, #101114);
@@ -1455,7 +1455,7 @@
     <p class="console-caption">Probá el chat arriba · Natalia responde en menos de 2 segundos</p>
     <div style="text-align:center; margin-top:28px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
       <!-- [WHATSAPP] Número pendiente de confirmar — ver comentario junto a .float-wa-btn más abajo -->
-      <button type="button" class="btn btn-primary" id="openFloatFromConsoleMain">Hablar con Natalia ahora</button>
+      <a href="#" id="waMainCta" class="btn btn-primary">Hablar con Natalia por WhatsApp</a>
       <button type="button" class="btn btn-ghost" id="openFloatFromConsole">Abrir chat web con Natalia</button>
     </div>
   </div>
@@ -1693,6 +1693,7 @@
       <div class="footer-col">
         <h4>Hablá con Natalia</h4>
         <ul>
+          <li><a href="#" id="waFooterCta">WhatsApp Business</a></li>
           <li><a href="#bot">Probar el bot en esta página</a></li>
         </ul>
       </div>
@@ -1708,17 +1709,18 @@
 </footer>
 
 <!--
-  [WHATSAPP PENDIENTE] El ícono de WhatsApp Business (.float-wa-btn) se
-  sacó temporalmente el 2026-09-16: los dos números que se probaron
+  [WHATSAPP] El número aún no está confirmado: los dos que se probaron
   (+54 9 11 3833-8018 y +54 9 11 6819-9707) resultaron ser de OTROS
   contactos/bots reales (Valentina y el bot "Angelina" de Estudio Oro),
-  no de Natalia/Sologint. No volver a poner un número sin confirmarlo
-  primero abriendo WhatsApp y viendo el nombre de perfil que muestra.
-  Cuando esté confirmado, restaurar el <a class="float-wa-btn"
-  href="https://wa.me/54911XXXXXXXX" ...> con el SVG de WhatsApp (ver
-  historial de git) dentro de .float-stack.
+  no de Natalia/Sologint. El ícono se mantiene visible y abre el chat
+  web mientras tanto. En cuanto se confirme el número real, cambiar el
+  href de abajo de "#" a "https://wa.me/54911XXXXXXXX".
 -->
 <div class="float-stack">
+  <a class="float-wa-btn" href="#" id="floatWaBtn" aria-label="Hablar con Natalia por WhatsApp">
+    <span class="float-tip">WhatsApp Business</span>
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5C10.1 9 9.6 7.7 9.4 7.2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-1 .9-1 2.3s1 2.6 1.1 2.8c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.3-.6-.3zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5.1-1.3C8.6 21.5 10.3 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3.1-.4-4.5-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4 15.1 3.5 13.6 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5z"/></svg>
+  </a>
   <button class="float-bot-btn" id="floatBotBtn" aria-label="Abrir chat web con Natalia">
     <span class="float-tip">Chatear con Natalia</span>
     🤖
@@ -2085,9 +2087,20 @@
 
   const openFloatFromConsole = document.getElementById('openFloatFromConsole');
   if(openFloatFromConsole) openFloatFromConsole.addEventListener('click', openFloatChat);
-  const openFloatFromConsoleMain = document.getElementById('openFloatFromConsoleMain');
-  if(openFloatFromConsoleMain) openFloatFromConsoleMain.addEventListener('click', () => {
-    if(consoleInput) consoleInput.focus();
+
+  /* [WHATSAPP] Mientras no esté confirmado el número real de Natalia,
+     estos accesos "de WhatsApp" abren el chat web para no mandar a
+     nadie a un contacto equivocado. En cuanto se confirme el número,
+     cambiar cada href de "#" a "https://wa.me/54911XXXXXXXX" y borrar
+     este bloque de fallback. */
+  ['floatWaBtn', 'waMainCta', 'waFooterCta'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('click', (e) => {
+      if(el.getAttribute('href') === '#'){
+        e.preventDefault();
+        openFloatChat();
+      }
+    });
   });
 
   const floatInput = document.getElementById('floatInput');
